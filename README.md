@@ -36,7 +36,7 @@ Open **Options** with the sliders button in the search row, the gear in the view
 
 - visibility switches for each group and each sheet,
 - a switch for the Favorites section,
-- **Reset visibility**,
+- **Reset visibility** (groups, sheets and the Favorites section),
 - **Open Settings**, filtered to SnipSheet's settings.
 
 Hiding a group hides all of its sheets. A hidden sheet stays hidden even if it is favorited, and its star is kept for when you unhide it. The **Favorites** section is hidden automatically when it is empty or disabled.

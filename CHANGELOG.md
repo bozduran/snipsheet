@@ -14,3 +14,9 @@ All notable changes to SnipSheet are documented here.
 - User-scoped `snipsheet.favorites`, `snipsheet.hiddenGroups`, `snipsheet.hiddenSheets` and `snipsheet.showFavorites` settings.
 - Offline security hardening: manifest path validation, strict CSP with per-render nonces, stripped font requests, https-only external links, and message validation.
 - CI, manual tag/release workflow, unit tests, and packaging configuration.
+
+### Fixed
+
+- Reset visibility also restores the Favorites section, and the Reset button is enabled when only that section is hidden.
+- Sheet documents keep `<meta charset>` inside the 1024-byte encoding prescan window; CSP and the webview shim are injected after it.
+- The sheet link interceptor accepts `https:` only, matching the host-side link policy.

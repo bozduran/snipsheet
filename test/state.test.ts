@@ -4,6 +4,7 @@ import {
   buildSidebarState,
   findSheetState,
   hasHiddenEntries,
+  hasHiddenVisibility,
   isSheetVisible,
   sanitizeCollapsedGroups,
   visibleSheetStates,
@@ -89,6 +90,13 @@ test('collapsed groups are flagged and stale ids are ignored', () => {
     ['containers'],
   );
   assert.deepEqual(sanitizeCollapsedGroups('not-an-array', catalog), []);
+});
+
+test('reset is offered whenever any visibility control is off', () => {
+  assert.equal(hasHiddenVisibility(stateWith({})), false);
+  assert.equal(hasHiddenVisibility(stateWith({ showFavorites: false })), true);
+  assert.equal(hasHiddenVisibility(stateWith({ hiddenGroups: ['containers'] })), true);
+  assert.equal(hasHiddenVisibility(stateWith({ hiddenSheets: ['git'] })), true);
 });
 
 test('showFavorites and mode are carried through', () => {

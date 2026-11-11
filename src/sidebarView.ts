@@ -261,6 +261,7 @@ export class SidebarViewProvider implements vscode.WebviewViewProvider, vscode.D
   private async resetVisibility(): Promise<void> {
     await this.updateConfig(HIDDEN_GROUPS_KEY, []);
     await this.updateConfig(HIDDEN_SHEETS_KEY, []);
+    await this.updateConfig(SHOW_FAVORITES_KEY, true);
   }
 
   private async updateConfig(key: string, value: unknown): Promise<void> {

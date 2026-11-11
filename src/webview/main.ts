@@ -1,4 +1,4 @@
-import type { GroupState, SheetState, SidebarMode, SidebarState } from '../state';
+import { hasHiddenVisibility, type GroupState, type SheetState, type SidebarMode, type SidebarState } from '../state';
 import type { HostMessage, WebviewRequest } from '../protocol';
 import { sheetMatches } from '../search';
 
@@ -380,9 +380,7 @@ function renderOptions(current: SidebarState): void {
     content.append(wrapper);
   }
 
-  const hasHidden =
-    current.groups.some((group) => group.hidden) ||
-    current.groups.some((group) => group.sheets.some((sheet) => sheet.hidden));
+  const hasHidden = hasHiddenVisibility(current);
 
   const actions = make('div', 'options-actions');
   const reset = makeButton('Reset visibility', 'secondary-button', () => {
