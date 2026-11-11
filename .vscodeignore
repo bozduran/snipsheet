@@ -1,4 +1,5 @@
 .vscode/**
+.review/**
 .github/**
 .vscode-test/**
 test/**

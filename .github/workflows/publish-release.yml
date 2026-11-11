@@ -1,0 +1,102 @@
+name: Publish release
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Tag and publish
+    # The release PR is merged with this prefix in its title/message. This
+    # prevents ordinary master merges from creating a release.
+    if: contains(github.event.head_commit.message, 'chore(release):')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Resolve release state
+        id: state
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          VERSION=$(node -p "require('./package.json').version")
+          TAG="v${VERSION}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+            echo "Release ${TAG} already exists; nothing to do."
+            exit 0
+          fi
+          echo "needed=true" >> "$GITHUB_OUTPUT"
+
+          if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
+            TAG_COMMIT=$(git rev-list -n1 "refs/tags/${TAG}")
+            if [ "${TAG_COMMIT}" != "$(git rev-parse HEAD)" ]; then
+              echo "::error::Tag ${TAG} exists at ${TAG_COMMIT}, not the current HEAD. Refusing to publish a mismatched release."
+              exit 1
+            fi
+            echo "tag_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag_exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install dependencies
+        if: steps.state.outputs.needed == 'true'
+        run: npm ci
+
+      - name: Verify
+        if: steps.state.outputs.needed == 'true'
+        run: |
+          npm run audit
+          npm run lint
+          npm run typecheck
+          npm test
+
+      - name: Package VSIX and checksums
+        if: steps.state.outputs.needed == 'true'
+        env:
+          VERSION: ${{ steps.state.outputs.version }}
+        run: |
+          npm run build
+          npx --no-install vsce package --no-dependencies --out "snipsheet-${VERSION}.vsix"
+          sha256sum "snipsheet-${VERSION}.vsix" > SHA256SUMS
+
+      - name: Create tag
+        if: steps.state.outputs.needed == 'true' && steps.state.outputs.tag_exists == 'false'
+        env:
+          TAG: ${{ steps.state.outputs.tag }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git tag -a "${TAG}" -m "${TAG}"
+          git push origin "refs/tags/${TAG}"
+
+      - name: Create GitHub release
+        if: steps.state.outputs.needed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.state.outputs.tag }}
+        run: |
+          set -euo pipefail
+          gh release create "${TAG}" ./*.vsix SHA256SUMS --verify-tag --generate-notes --title "SnipSheet ${TAG}"
