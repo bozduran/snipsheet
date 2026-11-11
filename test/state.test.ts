@@ -5,6 +5,7 @@ import {
   findSheetState,
   hasHiddenEntries,
   isSheetVisible,
+  sanitizeCollapsedGroups,
   visibleSheetStates,
 } from '../src/state';
 import { sanitizeSettings } from '../src/settings';
@@ -12,9 +13,13 @@ import { loadCatalogFixture } from './helpers';
 
 const catalog = loadCatalogFixture();
 
-function stateWith(rawSettings: Record<string, unknown>, mode: 'browse' | 'options' = 'browse') {
+function stateWith(
+  rawSettings: Record<string, unknown>,
+  mode: 'browse' | 'options' = 'browse',
+  collapsedGroups: string[] = [],
+) {
   const settings = sanitizeSettings(rawSettings, catalog);
-  return buildSidebarState(catalog, settings, mode);
+  return buildSidebarState(catalog, settings, mode, null, collapsedGroups);
 }
 
 test('sidebar state mirrors groups, sheets and favorites in manifest order', () => {
@@ -69,6 +74,21 @@ test('hiding a group hides its sheets but keeps the group in the model', () => {
   assert.ok(java);
   assert.equal(java.sheets.length, 4);
   assert.equal(visibleSheetStates(state).some((sheet) => sheet.groupId === 'java-spring'), false);
+});
+
+test('collapsed groups are flagged and stale ids are ignored', () => {
+  const state = stateWith({}, 'browse', ['containers', 'missing', 'containers']);
+  const containers = state.groups.find((group) => group.id === 'containers');
+  assert.ok(containers);
+  assert.equal(containers.collapsed, true);
+  assert.equal(state.groups.filter((group) => group.collapsed).length, 1);
+
+  assert.ok(stateWith({}).groups.every((group) => !group.collapsed));
+  assert.deepEqual(
+    sanitizeCollapsedGroups(['containers', 'missing', 'containers', 42], catalog),
+    ['containers'],
+  );
+  assert.deepEqual(sanitizeCollapsedGroups('not-an-array', catalog), []);
 });
 
 test('showFavorites and mode are carried through', () => {

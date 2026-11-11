@@ -19,6 +19,7 @@ export interface GroupState {
   readonly title: string;
   readonly description: string;
   readonly hidden: boolean;
+  readonly collapsed: boolean;
   readonly sheets: readonly SheetState[];
 }
 
@@ -36,16 +37,19 @@ export function buildSidebarState(
   settings: SnipSheetSettings,
   mode: SidebarMode,
   error: string | null = null,
+  collapsedGroups: readonly string[] = [],
 ): SidebarState {
   const favorites = new Set(settings.favorites);
   const hiddenGroups = new Set(settings.hiddenGroups);
   const hiddenSheets = new Set(settings.hiddenSheets);
+  const collapsed = new Set(collapsedGroups);
 
   const groups: GroupState[] = catalog.groups.map((group) => ({
     id: group.id,
     title: group.title,
     description: group.description,
     hidden: hiddenGroups.has(group.id),
+    collapsed: collapsed.has(group.id),
     sheets: catalog.sheets
       .filter((sheet) => sheet.group === group.id)
       .map((sheet) => ({
@@ -100,4 +104,18 @@ export function findSheetState(state: SidebarState, sheetId: string): SheetState
 
 export function hasHiddenEntries(settings: SnipSheetSettings): boolean {
   return settings.hiddenGroups.length > 0 || settings.hiddenSheets.length > 0;
+}
+
+export function sanitizeCollapsedGroups(value: unknown, catalog: Catalog): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  const knownGroups = new Set(catalog.groups.map((group) => group.id));
+  const collapsed: string[] = [];
+  for (const item of value) {
+    if (typeof item === 'string' && knownGroups.has(item) && !collapsed.includes(item)) {
+      collapsed.push(item);
+    }
+  }
+  return collapsed;
 }

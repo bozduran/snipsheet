@@ -12,6 +12,7 @@ import {
 } from './settings';
 import {
   buildSidebarState,
+  sanitizeCollapsedGroups,
   visibleSheetStates,
   type SidebarMode,
   type SidebarState,
@@ -24,6 +25,7 @@ import type { Catalog } from './types';
 
 const MEDIA_DIR = 'media';
 const SETTINGS_QUERY = '@ext:BozNtouranLabs.snipsheet';
+const COLLAPSED_GROUPS_STATE_KEY = 'snipsheet.collapsedGroups';
 
 interface SheetPickItem extends vscode.QuickPickItem {
   readonly sheet: SheetState;
@@ -146,6 +148,14 @@ export class SidebarViewProvider implements vscode.WebviewViewProvider, vscode.D
       this.readSettings(),
       this.mode,
       this.startupError,
+      this.readCollapsedGroups(),
+    );
+  }
+
+  private readCollapsedGroups(): string[] {
+    return sanitizeCollapsedGroups(
+      this.context.globalState.get<unknown>(COLLAPSED_GROUPS_STATE_KEY, []),
+      this.catalog,
     );
   }
 
@@ -196,6 +206,10 @@ export class SidebarViewProvider implements vscode.WebviewViewProvider, vscode.D
         void this.run(() => this.setMembership(HIDDEN_GROUPS_KEY, request.groupId, request.hidden));
         return;
 
+      case 'setGroupCollapsed':
+        void this.run(() => this.setGroupCollapsed(request.groupId, request.collapsed));
+        return;
+
       case 'setSheetHidden':
         void this.run(() => this.setMembership(HIDDEN_SHEETS_KEY, request.sheetId, request.hidden));
         return;
@@ -236,6 +250,12 @@ export class SidebarViewProvider implements vscode.WebviewViewProvider, vscode.D
       ? current.filter((item): item is string => typeof item === 'string')
       : [];
     await config.update(key, withMembership(list, id, present), vscode.ConfigurationTarget.Global);
+  }
+
+  private async setGroupCollapsed(groupId: string, collapsed: boolean): Promise<void> {
+    const next = withMembership(this.readCollapsedGroups(), groupId, collapsed);
+    await this.context.globalState.update(COLLAPSED_GROUPS_STATE_KEY, next);
+    this.postState();
   }
 
   private async resetVisibility(): Promise<void> {

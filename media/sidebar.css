@@ -184,6 +184,56 @@ button {
   text-transform: uppercase;
 }
 
+.group-toggle {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  margin: -2px -4px;
+  padding: 2px 4px;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: inherit;
+  text-align: left;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.group-toggle:hover {
+  background: var(--vscode-list-hoverBackground);
+}
+
+.group-toggle:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+.group-toggle:disabled {
+  background: transparent;
+  cursor: default;
+}
+
+.group-toggle:disabled .group-chevron {
+  visibility: hidden;
+}
+
+.group-chevron {
+  width: 10px;
+  color: var(--vscode-descriptionForeground);
+  font-size: 10px;
+  text-align: center;
+}
+
+.section-title-text {
+  min-width: 0;
+}
+
 .section-star {
   color: var(--vscode-charts-yellow, #e2c08d);
   font-size: 12px;

@@ -6,6 +6,7 @@ Offline cheat sheets in your editor sidebar. SnipSheet bundles 16 curated comman
 
 - **Search at the top of the sidebar** across titles, descriptions, keywords and group names.
 - **Six groups**: Git & GitHub, Containers, Java & Spring, Salesforce, Reporting & Data, Languages & Syntax.
+- **Collapsible groups**: click a group heading to fold it away; collapsed groups are remembered across reloads and expand automatically while searching.
 - **Favorites** stay pinned in their own section and remain in their normal group.
 - **Options** lets you hide whole groups or individual sheets; every change is written to your user settings immediately.
 - **Sheets open in editor tabs** with their own search, copy buttons and theme toggle intact.
@@ -29,7 +30,7 @@ code --install-extension snipsheet.vsix
 
 ## Use
 
-Click the SnipSheet icon in the Activity Bar. Type in the search box to filter; press `Escape` to clear the search, or use the `×` button. Click a sheet to open it. Click the star to add or remove a favorite.
+Click the SnipSheet icon in the Activity Bar. Type in the search box to filter; press `Escape` to clear the search, or use the `×` button. Click a sheet to open it. Click the star to add or remove a favorite. Click a group heading to collapse or expand it; collapse choices are remembered, and groups expand temporarily while a search is active so matches stay visible.
 
 Open **Options** with the sliders button in the search row, the gear in the view title, or the Command Palette. Options contains:
 
