@@ -1,0 +1,170 @@
+{
+  "name": "snipsheet",
+  "displayName": "SnipSheet",
+  "description": "Offline cheat sheets in your sidebar — search, favorite, and open curated command references.",
+  "version": "0.1.0",
+  "publisher": "BozNtouranLabs",
+  "license": "MIT",
+  "author": {
+    "name": "Boz Ntouran",
+    "email": "duris2009@windowslive.co"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bozduran/snipsheet.git"
+  },
+  "homepage": "https://github.com/bozduran/snipsheet#readme",
+  "bugs": {
+    "url": "https://github.com/bozduran/snipsheet/issues"
+  },
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#16171C",
+    "theme": "dark"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Education",
+    "Snippets",
+    "Other"
+  ],
+  "keywords": [
+    "cheatsheet",
+    "cheat sheet",
+    "reference",
+    "snippets",
+    "favorites",
+    "git",
+    "docker",
+    "java",
+    "salesforce"
+  ],
+  "main": "./dist/extension.js",
+  "extensionKind": [
+    "ui"
+  ],
+  "activationEvents": [],
+  "capabilities": {
+    "virtualWorkspaces": true,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  },
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "snipsheet",
+          "title": "SnipSheet",
+          "icon": "media/activity-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "snipsheet": [
+        {
+          "id": "snipsheet.main",
+          "name": "Cheat Sheets",
+          "type": "webview",
+          "contextualTitle": "SnipSheet"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "snipsheet.focus",
+        "title": "Focus SnipSheet",
+        "category": "SnipSheet"
+      },
+      {
+        "command": "snipsheet.openOptions",
+        "title": "Open SnipSheet Options",
+        "category": "SnipSheet",
+        "icon": "$(settings-gear)"
+      },
+      {
+        "command": "snipsheet.openSheet",
+        "title": "Open Cheat Sheet...",
+        "category": "SnipSheet"
+      },
+      {
+        "command": "snipsheet.resetVisibility",
+        "title": "Reset SnipSheet Visibility",
+        "category": "SnipSheet"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "snipsheet.openOptions",
+          "when": "view == snipsheet.main",
+          "group": "navigation@1"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "SnipSheet",
+      "properties": {
+        "snipsheet.favorites": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "uniqueItems": true,
+          "scope": "application",
+          "description": "Sheet ids pinned to the Favorites section. Managed by the SnipSheet Options panel."
+        },
+        "snipsheet.hiddenGroups": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "uniqueItems": true,
+          "scope": "application",
+          "description": "Group ids hidden from the SnipSheet sidebar. Managed by the SnipSheet Options panel."
+        },
+        "snipsheet.hiddenSheets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "uniqueItems": true,
+          "scope": "application",
+          "description": "Sheet ids hidden from the SnipSheet sidebar. Managed by the SnipSheet Options panel."
+        },
+        "snipsheet.showFavorites": {
+          "type": "boolean",
+          "default": true,
+          "scope": "application",
+          "description": "Show the Favorites section at the top of the SnipSheet sidebar."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src test",
+    "test": "node --import tsx --test test/*.test.ts",
+    "verify": "npm run lint && npm run typecheck && npm test && npm run build",
+    "package:vsix": "vsce package --no-dependencies --out snipsheet.vsix",
+    "package": "npm run verify && npm run package:vsix",
+    "vscode:prepublish": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "20.19.43",
+    "@types/vscode": "1.85.0",
+    "@vscode/vsce": "4.1.0",
+    "esbuild": "0.28.2",
+    "eslint": "9.39.5",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.2"
+  }
+}

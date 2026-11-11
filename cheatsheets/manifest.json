@@ -1,0 +1,347 @@
+{
+  "schemaVersion": 1,
+  "groups": [
+    {
+      "id": "git-github",
+      "title": "Git & GitHub",
+      "description": "Commits, branches, history, pull requests and review workflows."
+    },
+    {
+      "id": "containers",
+      "title": "Containers",
+      "description": "Images, containers, volumes and multi-service Compose setups."
+    },
+    {
+      "id": "java-spring",
+      "title": "Java & Spring",
+      "description": "Streams, lambdas, Maven builds and Spring Boot fundamentals."
+    },
+    {
+      "id": "salesforce",
+      "title": "Salesforce",
+      "description": "Lightning Web Components and Visualforce pages."
+    },
+    {
+      "id": "reporting-data",
+      "title": "Reporting & Data",
+      "description": "JasperReports/Jaspersoft authoring, Kibana queries and report data."
+    },
+    {
+      "id": "languages-syntax",
+      "title": "Languages & Syntax",
+      "description": "Go language basics and regular expressions."
+    }
+  ],
+  "sheets": [
+    {
+      "id": "git",
+      "title": "Git",
+      "file": "git-cheatsheet.html",
+      "group": "git-github",
+      "description": "Staging, commits, remotes, history, stashing and undoing mistakes.",
+      "keywords": [
+        "git",
+        "commit",
+        "stage",
+        "stash",
+        "reset",
+        "revert",
+        "cherry-pick",
+        "reflog",
+        "remote",
+        "fetch",
+        "push",
+        "pull",
+        "merge",
+        "rebase",
+        "tag",
+        "undo"
+      ]
+    },
+    {
+      "id": "git-branches",
+      "title": "Git Branches",
+      "file": "git-branches-cheatsheet.html",
+      "group": "git-github",
+      "description": "Branch, merge, rebase and recover from conflicts with confidence.",
+      "keywords": [
+        "branch",
+        "switch",
+        "checkout",
+        "merge",
+        "rebase",
+        "conflict",
+        "fast-forward",
+        "worktree",
+        "upstream",
+        "compare"
+      ]
+    },
+    {
+      "id": "github",
+      "title": "GitHub",
+      "file": "github-cheatsheet.html",
+      "group": "git-github",
+      "description": "Pull requests, reviews, issues, Actions and GitHub-flavored Markdown.",
+      "keywords": [
+        "github",
+        "pull request",
+        "pr",
+        "review",
+        "issue",
+        "actions",
+        "workflow",
+        "markdown",
+        "fork",
+        "gh"
+      ]
+    },
+    {
+      "id": "docker",
+      "title": "Docker",
+      "file": "docker-cheatsheet.html",
+      "group": "containers",
+      "description": "Build images, run containers, manage volumes and inspect state.",
+      "keywords": [
+        "docker",
+        "image",
+        "container",
+        "volume",
+        "network",
+        "build",
+        "run",
+        "exec",
+        "logs",
+        "prune",
+        "inspect"
+      ]
+    },
+    {
+      "id": "docker-compose",
+      "title": "Docker Compose",
+      "file": "docker-compose-cheatsheet.html",
+      "group": "containers",
+      "description": "Compose file structure, services, networking and everyday commands.",
+      "keywords": [
+        "compose",
+        "docker-compose",
+        "services",
+        "yaml",
+        "up",
+        "down",
+        "logs",
+        "volumes",
+        "networks",
+        "healthcheck",
+        "environment"
+      ]
+    },
+    {
+      "id": "java-lambdas",
+      "title": "Java Lambdas",
+      "file": "java-lambdas-cheatsheet.html",
+      "group": "java-spring",
+      "description": "Functional interfaces, method references and lambda syntax.",
+      "keywords": [
+        "java",
+        "lambda",
+        "functional interface",
+        "method reference",
+        "predicate",
+        "function",
+        "consumer",
+        "supplier",
+        "closure"
+      ]
+    },
+    {
+      "id": "java-streams",
+      "title": "Java Optional & Streams",
+      "file": "java-streams-cheatsheet.html",
+      "group": "java-spring",
+      "description": "Stream pipelines, collectors, Optional and common transformations.",
+      "keywords": [
+        "java",
+        "stream",
+        "optional",
+        "collector",
+        "map",
+        "filter",
+        "reduce",
+        "groupingby",
+        "flatmap",
+        "parallel"
+      ]
+    },
+    {
+      "id": "maven",
+      "title": "Maven",
+      "file": "maven-cheatsheet.html",
+      "group": "java-spring",
+      "description": "Lifecycle, dependencies, plugins, scopes and multi-module builds.",
+      "keywords": [
+        "maven",
+        "mvn",
+        "pom",
+        "dependency",
+        "plugin",
+        "lifecycle",
+        "scope",
+        "multi-module",
+        "reactor",
+        "version"
+      ]
+    },
+    {
+      "id": "spring-boot",
+      "title": "Spring Boot",
+      "file": "spring-boot-cheatsheet.html",
+      "group": "java-spring",
+      "description": "Application setup, configuration, REST controllers, data and testing.",
+      "keywords": [
+        "spring",
+        "spring boot",
+        "rest",
+        "controller",
+        "configuration",
+        "properties",
+        "jpa",
+        "test",
+        "actuator",
+        "bean"
+      ]
+    },
+    {
+      "id": "lwc",
+      "title": "LWC",
+      "file": "lwc-cheatsheet.html",
+      "group": "salesforce",
+      "description": "Component anatomy, decorators, wire adapters and event handling.",
+      "keywords": [
+        "lwc",
+        "lightning",
+        "salesforce",
+        "component",
+        "decorator",
+        "wire",
+        "apex",
+        "event",
+        "template",
+        "track",
+        "api"
+      ]
+    },
+    {
+      "id": "visualforce",
+      "title": "Visualforce",
+      "file": "visualforce-cheatsheet.html",
+      "group": "salesforce",
+      "description": "Page structure, controllers, expressions and common components.",
+      "keywords": [
+        "visualforce",
+        "salesforce",
+        "apex",
+        "page",
+        "controller",
+        "component",
+        "expression",
+        "vf"
+      ]
+    },
+    {
+      "id": "jaspersoft",
+      "title": "Jaspersoft",
+      "file": "jaspersoft-cheatsheet.html",
+      "group": "reporting-data",
+      "description": "Expressions, parameters, fields, bands and report structure.",
+      "keywords": [
+        "jaspersoft",
+        "jasper",
+        "jasperreports",
+        "report",
+        "jrxml",
+        "parameter",
+        "field",
+        "band",
+        "expression",
+        "query"
+      ]
+    },
+    {
+      "id": "jaspersoft-advanced",
+      "title": "Jaspersoft Advanced",
+      "file": "jaspersoft-advanced-cheatsheet.html",
+      "group": "reporting-data",
+      "description": "Advanced expressions, datasets, subreports and built-in functions.",
+      "keywords": [
+        "jaspersoft",
+        "jasper",
+        "subreport",
+        "dataset",
+        "variable",
+        "group",
+        "chart",
+        "expression",
+        "built-in",
+        "jrxml"
+      ]
+    },
+    {
+      "id": "kibana",
+      "title": "Kibana Queries",
+      "file": "kibana-cheatsheet.html",
+      "group": "reporting-data",
+      "description": "KQL, filters, aggregations and practical search recipes.",
+      "keywords": [
+        "kibana",
+        "kql",
+        "elasticsearch",
+        "query",
+        "filter",
+        "aggregation",
+        "discover",
+        "dashboard",
+        "lucene"
+      ]
+    },
+    {
+      "id": "go",
+      "title": "Go",
+      "file": "go-cheatsheet.html",
+      "group": "languages-syntax",
+      "description": "Types, slices, maps, goroutines, errors and standard library basics.",
+      "keywords": [
+        "go",
+        "golang",
+        "goroutine",
+        "channel",
+        "slice",
+        "map",
+        "struct",
+        "interface",
+        "error",
+        "defer",
+        "module"
+      ]
+    },
+    {
+      "id": "regex",
+      "title": "Regex",
+      "file": "regex-cheatsheet.html",
+      "group": "languages-syntax",
+      "description": "Syntax, groups, lookarounds and ready-made patterns.",
+      "keywords": [
+        "regex",
+        "regexp",
+        "pattern",
+        "group",
+        "lookahead",
+        "lookbehind",
+        "quantifier",
+        "anchor",
+        "replace",
+        "escape"
+      ]
+    }
+  ]
+}
