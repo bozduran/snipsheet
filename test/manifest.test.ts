@@ -10,8 +10,8 @@ import {
 
 test('bundled manifest parses and covers every sheet file', () => {
   const catalog = loadCatalogFixture();
-  assert.equal(catalog.groups.length, 6);
-  assert.equal(catalog.sheets.length, 16);
+  assert.equal(catalog.groups.length, 7);
+  assert.equal(catalog.sheets.length, 18);
 
   const manifestFiles = catalog.sheets.map((sheet) => sheet.file).sort();
   assert.deepEqual(manifestFiles, sheetFiles().filter((file) => file !== 'cheatsheet-template.html'));
@@ -26,7 +26,15 @@ test('group membership and counts are coherent', () => {
   const catalog = loadCatalogFixture();
   assert.deepEqual(
     catalog.groups.map((group) => group.id),
-    ['git-github', 'containers', 'java-spring', 'salesforce', 'reporting-data', 'languages-syntax'],
+    [
+      'git-github',
+      'containers',
+      'java-spring',
+      'salesforce',
+      'reporting-data',
+      'languages-syntax',
+      'ai-tooling',
+    ],
   );
 
   const gitAndGithub = catalog.sheets

@@ -29,7 +29,12 @@
     {
       "id": "languages-syntax",
       "title": "Languages & Syntax",
-      "description": "Go language basics and regular expressions."
+      "description": "Go, PowerShell and regular expressions."
+    },
+    {
+      "id": "ai-tooling",
+      "title": "AI & Tooling",
+      "description": "Claude Code workflows, prompts, permissions and project automation."
     }
   ],
   "sheets": [
@@ -55,6 +60,10 @@
         "merge",
         "rebase",
         "tag",
+        "worktree",
+        "submodule",
+        "bisect",
+        "restore",
         "undo"
       ]
     },
@@ -325,6 +334,33 @@
       ]
     },
     {
+      "id": "powershell",
+      "title": "PowerShell",
+      "file": "powershell-cheatsheet.html",
+      "group": "languages-syntax",
+      "description": "Cmdlets, pipelines, objects, parameters, modules and practical one-liners.",
+      "keywords": [
+        "powershell",
+        "pwsh",
+        "cmdlet",
+        "pipeline",
+        "object",
+        "script",
+        "module",
+        "parameter",
+        "function",
+        "variable",
+        "error",
+        "regex",
+        "csv",
+        "json",
+        "registry",
+        "file",
+        "process",
+        "network"
+      ]
+    },
+    {
       "id": "regex",
       "title": "Regex",
       "file": "regex-cheatsheet.html",
@@ -341,6 +377,29 @@
         "anchor",
         "replace",
         "escape"
+      ]
+    },
+    {
+      "id": "claude-code",
+      "title": "Claude Code",
+      "file": "claude-code-cheatsheet.html",
+      "group": "ai-tooling",
+      "description": "Prompting, slash commands, permissions, hooks, subagents, skills and MCP.",
+      "keywords": [
+        "claude",
+        "claude code",
+        "ai",
+        "agent",
+        "prompt",
+        "slash command",
+        "permission",
+        "hook",
+        "subagent",
+        "skill",
+        "plugin",
+        "mcp",
+        "context",
+        "claude.md"
       ]
     }
   ]

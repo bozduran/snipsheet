@@ -6,9 +6,10 @@ All notable changes to SnipSheet are documented here.
 
 ### Added
 
-- SnipSheet Activity Bar view with a persistent search field, six curated groups, and 16 bundled cheat sheets.
+- SnipSheet Activity Bar view with a persistent search field, seven curated groups, and 18 bundled cheat sheets.
 - Collapsible group headings; collapse state is remembered across reloads and groups expand while searching.
 - Favorites section with per-sheet star toggles.
+- New Claude Code and PowerShell sheets, and an updated Git sheet.
 - In-view Options panel for hiding groups or individual sheets, hiding the Favorites section, resetting visibility, and opening settings.
 - Editor-tab sheet viewer with the sheets' own search, copy actions and theme toggle preserved.
 - User-scoped `snipsheet.favorites`, `snipsheet.hiddenGroups`, `snipsheet.hiddenSheets` and `snipsheet.showFavorites` settings.

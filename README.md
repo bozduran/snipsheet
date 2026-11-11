@@ -2,10 +2,10 @@
 
 [![CI](https://github.com/bozduran/snipsheet/actions/workflows/ci.yml/badge.svg)](https://github.com/bozduran/snipsheet/actions/workflows/ci.yml)
 
-Offline cheat sheets in your editor sidebar. SnipSheet bundles 16 curated command references, groups them by topic, lets you pin favorites, and hides the groups or individual sheets you do not need.
+Offline cheat sheets in your editor sidebar. SnipSheet bundles 18 curated command references, groups them by topic, lets you pin favorites, and hides the groups or individual sheets you do not need.
 
 - **Search at the top of the sidebar** across titles, descriptions, keywords and group names.
-- **Six groups**: Git & GitHub, Containers, Java & Spring, Salesforce, Reporting & Data, Languages & Syntax.
+- **Seven groups**: Git & GitHub, Containers, Java & Spring, Salesforce, Reporting & Data, Languages & Syntax, AI & Tooling.
 - **Collapsible groups**: click a group heading to fold it away; collapsed groups are remembered across reloads and expand automatically while searching.
 - **Favorites** stay pinned in their own section and remain in their normal group.
 - **Options** lets you hide whole groups or individual sheets; every change is written to your user settings immediately.
@@ -83,7 +83,7 @@ The bundled sheets are first-party content. Their inline scripts render the page
 2. Add its id, title, group, description and search keywords to `cheatsheets/manifest.json`.
 3. Run `npm run verify`. The tests check that every non-template HTML file has exactly one manifest entry, that paths are safe, and that the sheet has no remote scripts or unexpected network references.
 
-The six groups and their descriptions also live in the manifest.
+The seven groups and their descriptions also live in the manifest.
 
 ## Development
 

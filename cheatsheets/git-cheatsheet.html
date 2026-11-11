@@ -143,6 +143,17 @@
   footer{padding:40px 0 70px;margin-top:30px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--code-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
   footer a{color:var(--accent);text-decoration:none}
 
+  /* Hook scripts */
+  .script{border:1px solid #2b2824;border-radius:8px;overflow:hidden;margin:0 0 16px;background:var(--code-bg)}
+  .script-top{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 14px;background:#26231f;border-bottom:1px solid #2b2824;flex-wrap:wrap}
+  .script-file{font-family:'JetBrains Mono',monospace;font-size:.76rem;color:var(--code-accent);flex-shrink:0}
+  .script-title{font-size:.88rem;color:var(--code-ink);flex:1;min-width:140px}
+  .copy-script{flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.05em;padding:6px 13px;border:1px solid #3a352f;border-radius:6px;background:#1f1d1a;color:var(--code-dim);cursor:pointer;transition:all .15s}
+  .copy-script:hover{color:var(--code-ink);border-color:var(--code-dim)}
+  .copy-script.done{color:var(--code-green);border-color:var(--code-green)}
+  .script pre{font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:1.6;color:var(--code-ink);padding:12px 14px;overflow-x:auto;white-space:pre;margin:0;max-height:420px}
+  .script-desc{font-size:.9rem;color:var(--ink-soft);margin:-8px 2px 16px}
+
   /* Explainer toast */
   .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);width:min(560px,calc(100% - 36px));z-index:60;background:var(--paper);border:1px solid var(--line-strong);border-radius:14px;box-shadow:0 18px 50px -12px rgba(40,30,20,.4);padding:18px 20px 19px;opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.2,.9,.25,1),opacity .35s}
   .toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
@@ -169,7 +180,7 @@
 <div class="wrap" id="top">
 
   <header>
-    <div class="kicker">Reference · v4 · recipes · fill · learn</div>
+    <div class="kicker">Reference · v6 · recipes · fill · learn</div>
     <h1><span class="slash">/</span>git cheat sheet</h1>
     <p class="lede">Task-based recipes up top, a full command reference below. Fill the orange blanks with your own values, copy, and get a plain-English explanation.</p>
     <p class="hint">⌨ Orange blanks inside commands are editable. ⊕ Copying pops up what a command does. ⊞ Hit “Glossary” for the jargon.</p>
@@ -265,7 +276,7 @@ const SCENARIOS = [
     blocks:[
       { label:"Move the latest commits onto a new branch", steps:[
         ["git branch <feature-branch>","Create a new branch right here — it now points at your commits, keeping them safe."],
-        ["git reset --hard HEAD~<n>","Rewind the wrong branch by <n> commits to remove them from it. Safe, because they live on the new branch now."],
+        ["git reset --hard HEAD~<n>","Rewind the wrong branch by n commits to remove them from it. Safe, because they live on the new branch now."],
         ["git switch <feature-branch>","Hop onto the branch that now holds your work."],
       ]},
       { label:"Onto an existing branch instead", steps:[
@@ -397,6 +408,226 @@ const SCENARIOS = [
       ]},
     ]
   },
+  {
+    q:"Cherry-pick a range of commits (from one commit to another, or to the end of a branch)",
+    when:"You want a run of consecutive commits from another branch copied onto your current branch.",
+    blocks:[
+      { label:"1 · Find the first and last commit you want", steps:[
+        ["git log --oneline <source-branch>","Newest commits are at the top. Note the hash of the oldest commit you want (first) and the newest (last)."],
+        ["git switch <target-branch>","Move to the branch that should receive the commits."],
+      ]},
+      { label:"From one commit up to another (both included)", steps:[
+        ["git cherry-pick <first>^..<last>","The ^ after the first hash makes the range include it. Without the ^, the first commit is skipped, because a..b means 'after a, up to b'."],
+      ]},
+      { label:"From a commit to the very end of the branch", steps:[
+        ["git cherry-pick <first>^..<source-branch>","Using the branch name as the end means 'up to its latest commit'."],
+      ]},
+      { label:"Everything the other branch has that yours doesn't", steps:[
+        ["git cherry-pick <target-branch>..<source-branch>","Copies every commit reachable from the source branch but not from the target. Handy for backporting a whole feature."],
+      ]},
+      { label:"Land the whole range as ONE commit", steps:[
+        ["git cherry-pick -n <first>^..<last>","Apply all the changes but don't commit yet."],
+        ["git commit -m \"<combined message>\"","Record everything as a single commit."],
+      ]},
+      { label:"If a conflict stops it half-way", steps:[
+        ["git status","See which files conflict. Fix them in your editor."],
+        ["git add <file>","Mark the conflict as resolved."],
+        ["git cherry-pick --continue","Carry on with the remaining commits."],
+        ["git cherry-pick --skip","Alternative: drop the problem commit and move on."],
+        ["git cherry-pick --abort","Alternative: cancel the whole range and go back to how things were."],
+      ]},
+    ]
+  },
+  {
+    q:"Fix, reword or edit an OLD commit (not just the latest)",
+    when:"The mistake is a few commits back. Nothing pushed yet, or you're happy to force-push your own branch.",
+    blocks:[
+      { label:"Interactive rebase", steps:[
+        ["git rebase -i <commit>^","The ^ means 'start from the parent', so the commit you name is included in the list (oldest at the top). In the editor, change 'pick' to 'reword' (message only) or 'edit' (change the content), then save and close."],
+      ]},
+      { label:"If you chose edit — Git pauses on that commit", steps:[
+        ["git add <file>","Stage your fix."],
+        ["git commit --amend --no-edit","Fold the fix into the paused commit."],
+        ["git rebase --continue","Replay the remaining commits on top."],
+      ]},
+      { label:"Bail out any time", steps:[
+        ["git rebase --abort","Everything returns to exactly how it was before you started."],
+      ]},
+    ]
+  },
+  {
+    q:"Fold a small fix into an earlier commit (fixup + autosquash)",
+    when:"You spot a typo or forgotten line that belongs to a commit further back, and want it merged in quietly.",
+    blocks:[
+      { label:"Mark the fix, then let Git file it away", steps:[
+        ["git add <file>","Stage the fix."],
+        ["git commit --fixup=<commit>","Creates a commit labelled as a fix for that commit."],
+        ["git rebase -i --autosquash <commit>^","The editor opens with the fixup already placed under its target. Just save and close."],
+      ]},
+      { label:"Make autosquash the default (optional)", steps:[
+        ["git config --global rebase.autoSquash true","From now on every interactive rebase arranges fixup commits automatically."],
+      ]},
+    ]
+  },
+  {
+    q:"Split one commit into two (or more)",
+    when:"A commit does too many things and you want separate, reviewable commits.",
+    blocks:[
+      { label:"Stop on the commit and break it apart", steps:[
+        ["git rebase -i <commit>^","Mark the commit you want to split as 'edit', then save."],
+        ["git reset HEAD^","Undo the commit but keep all its changes in your files, unstaged."],
+        ["git add -p","Pick just the chunks for the first part."],
+        ["git commit -m \"<first part>\"","Record the first commit."],
+        ["git add .","Stage the rest (repeat the add -p / commit cycle if you want more than two)."],
+        ["git commit -m \"<second part>\"","Record the second commit."],
+        ["git rebase --continue","Finish the rebase."],
+      ]},
+    ]
+  },
+  {
+    q:"Drop or reorder commits in the middle of a branch",
+    when:"A commit shouldn't be there at all, or the commits are in a confusing order. History not shared yet.",
+    blocks:[
+      { label:"Edit the to-do list", steps:[
+        ["git rebase -i <commit>^","The editor lists commits oldest first. To drop one, change 'pick' to 'drop' (or delete its line). To reorder, move the lines around."],
+      ]},
+      { label:"Already pushed and shared? Use revert instead", steps:[
+        ["git revert <commit>","Adds a new commit that cancels the old one, without rewriting anything."],
+      ]},
+    ]
+  },
+  {
+    q:"Move part of a branch onto a different base (rebase --onto)",
+    when:"Your branch started from another feature branch (not main), or you want to cut a stretch of commits out.",
+    blocks:[
+      { label:"Transplant a branch to a new base", steps:[
+        ["git rebase --onto <new-base> <old-base> <branch>","Takes the commits after old-base, up to branch, and replays them on top of new-base. Typical case: --onto main feature-a feature-b after feature-a got merged."],
+      ]},
+      { label:"Cut a range of commits out of the middle", steps:[
+        ["git rebase --onto <before-range> <last-in-range>","On the current branch: keeps everything up to before-range, throws away the commits between, and replays the commits after last-in-range."],
+      ]},
+    ]
+  },
+  {
+    q:"Grab a single file (or folder) from another branch or commit",
+    when:"You want just one file as it exists elsewhere, without merging or cherry-picking whole commits.",
+    blocks:[
+      { label:"Restore it into your working folder", steps:[
+        ["git restore --source=<branch-or-commit> <file>","Overwrites your copy of the file with the version from that branch or commit. Works on folders too."],
+        ["git restore --source=<branch-or-commit> --staged --worktree <file>","Same, and stages it as well, ready to commit."],
+      ]},
+      { label:"Older equivalent", steps:[
+        ["git checkout <branch-or-commit> -- <file>","The pre-restore way. Overwrites and stages the file."],
+      ]},
+    ]
+  },
+  {
+    q:"My rebase / merge / cherry-pick went wrong — get back to before",
+    when:"The operation finished (or you aborted too late) and the result is a mess.",
+    blocks:[
+      { label:"Still in the middle of it", steps:[
+        ["git rebase --abort","Cancels a rebase and restores the branch."],
+        ["git merge --abort","Cancels a conflicted merge."],
+        ["git cherry-pick --abort","Cancels a cherry-pick."],
+      ]},
+      { label:"Already finished", steps:[
+        ["git reset --hard ORIG_HEAD","ORIG_HEAD remembers where your branch was just before the last rebase, merge or reset. This jumps back there. ⚠️ discards uncommitted edits."],
+        ["git reflog","If that doesn't work (another operation overwrote ORIG_HEAD), find the right spot in the reflog and use reset --hard to HEAD@{n}."],
+      ]},
+    ]
+  },
+  {
+    q:"Undo a merge",
+    when:"A merge brought in something unwanted.",
+    blocks:[
+      { label:"Not pushed yet", steps:[
+        ["git reset --hard ORIG_HEAD","Rewinds the branch to just before the merge. ⚠️"],
+      ]},
+      { label:"Already pushed (shared branch)", steps:[
+        ["git revert -m 1 <merge-commit>","Creates a new commit that reverses the merge. -m 1 means 'keep the first parent', i.e. the branch you merged INTO."],
+      ]},
+    ]
+  },
+  {
+    q:"What's on my branch that isn't on main (and the other way round)?",
+    when:"Before a PR, a merge or a cherry-pick, you want to see the difference between two branches.",
+    blocks:[
+      { label:"Commits", steps:[
+        ["git log --oneline <base>..<branch>","Commits on branch that are NOT on base."],
+        ["git log --oneline --left-right <a>...<b>","Commits unique to either side, each marked with an arrow showing which side it is on (three dots)."],
+        ["git cherry -v <upstream>","Shows which of your commits are not yet in upstream. '+' means missing there, '-' means an equivalent is already there."],
+      ]},
+      { label:"Changes", steps:[
+        ["git diff <base>...<branch>","Three dots: only what the branch changed since it split from base. This is what a PR shows."],
+        ["git diff --stat <base>..<branch>","A summary: which files differ and by how many lines."],
+        ["git diff --name-only <base>..<branch>","Just the names of the files that differ."],
+      ]},
+    ]
+  },
+  {
+    q:"Make git pull rebase automatically (and other sane defaults)",
+    when:"You're tired of 'Merge branch main of …' commits appearing every time you pull. More options live in the Config Recipes section.",
+    blocks:[
+      { label:"Rebase on every pull", steps:[
+        ["git config --global pull.rebase true","From now on git pull replays your local commits on top of the remote ones instead of making a merge commit."],
+        ["git config --global rebase.autoStash true","Lets pull/rebase work even with uncommitted changes: they're stashed and restored for you."],
+        ["git config --global fetch.prune true","Cleans up remote branches that were deleted on the server whenever you fetch or pull."],
+      ]},
+      { label:"Or be strict: refuse anything that isn't a fast-forward", steps:[
+        ["git config --global pull.ff only","git pull then fails when branches have diverged, and you consciously choose rebase or merge."],
+      ]},
+      { label:"Override it for one pull", steps:[
+        ["git pull --no-rebase","Merge-style pull just this once, ignoring your setting."],
+        ["git pull --rebase","Rebase-style pull just this once."],
+      ]},
+    ]
+  },
+  {
+    q:"Enforce semantic (Conventional Commits) messages with a hook",
+    when:"You want Git itself to reject messages that aren't like feat(scope): description. The script is in the Git Hooks section.",
+    blocks:[
+      { label:"1 · Create a shared hooks folder", steps:[
+        ["mkdir -p .githooks","A normal folder inside the repo, so hooks can be committed and shared (unlike .git/hooks)."],
+        ["git config core.hooksPath .githooks","Tell Git to load hooks from that folder."],
+      ]},
+      { label:"2 · Add the commit-msg hook", steps:[
+        ["touch .githooks/commit-msg","Create the file, then paste in the commit-msg script from the Git Hooks section. The file name must be exactly the hook name."],
+        ["chmod +x .githooks/commit-msg","Hooks only run if they're executable."],
+        ["git add .githooks","Stage the hooks folder so the hook is versioned."],
+        ["git update-index --chmod=+x .githooks/commit-msg","Records the executable bit inside Git, so teammates (and Windows checkouts) get it too."],
+      ]},
+      { label:"3 · Test it", steps:[
+        ["git commit --allow-empty -m \"bad message\"","Should be rejected with an explanation."],
+        ["git commit --allow-empty -m \"chore: test the hook\"","Should pass. Undo this test commit afterwards with git reset --soft HEAD~1."],
+      ]},
+      { label:"Everyone else, once after cloning", steps:[
+        ["git config core.hooksPath .githooks","core.hooksPath is local config and is not cloned, so each person runs this once. Worth putting in the README."],
+      ]},
+    ]
+  },
+  {
+    q:"Skip a hook just this once",
+    when:"A pre-commit or commit-msg check is blocking you and you need to get past it (WIP commit, emergency fix).",
+    blocks:[
+      { label:"Bypass", steps:[
+        ["git commit --no-verify -m \"<message>\"","Skips the pre-commit and commit-msg hooks for this commit only."],
+        ["git push --no-verify","Skips the pre-push hook for this push only."],
+      ]},
+      { label:"Note", steps:[
+        ["git config --get core.hooksPath","Local hooks can always be bypassed, so run the same checks in CI if the rule really matters. This prints where your hooks are loaded from."],
+      ]},
+    ]
+  },
+  {
+    q:"Resolve the same conflict only once (rerere)",
+    when:"You rebase the same branch repeatedly and keep fixing identical conflicts.",
+    blocks:[
+      { label:"Turn on conflict memory", steps:[
+        ["git config --global rerere.enabled true","Git records how you resolve each conflict and re-applies that resolution automatically if the same conflict shows up again."],
+        ["git rerere diff","During a conflict, shows what rerere has recorded or resolved so far."],
+      ]},
+    ]
+  },
 ];
 
 /* ===================== COMMIT CONVENTIONS ===================== */
@@ -419,6 +650,31 @@ const CONV_CMDS = [
   ["git commit -m \"<type>!: <short description>\"","Flag a breaking change.","The ! right after the type signals a breaking change that may force others to update their code."],
 ];
 
+/* ===================== INTERACTIVE REBASE GUIDE ===================== */
+const RB_KEYS = [
+  ["pick (p)","keep the commit as it is"],
+  ["reword (r)","keep the changes, edit the message"],
+  ["edit (e)","pause here so you can change the commit or split it"],
+  ["squash (s)","merge into the commit above; combine both messages"],
+  ["fixup (f)","merge into the commit above; discard this message"],
+  ["drop (d)","delete the commit (same as removing the line)"],
+  ["exec (x)","run a shell command at this point, e.g. your tests"],
+  ["break (b)","stop here; continue later with --continue"],
+];
+const RB_CMDS = [
+  ["git rebase -i HEAD~<n>","Last n commits.","Opens the to-do list for your last n commits. Oldest is at the TOP, newest at the bottom — the opposite of git log."],
+  ["git rebase -i <commit>^","From a commit (included).","Starts at the commit you name, including it. Without the ^, that commit would not be in the list."],
+  ["git rebase -i <base-branch>","Everything on your branch.","Lists every commit on your branch since it split from the base branch. The usual starting point for cleaning up before a PR."],
+  ["git rebase --continue","Next step.","After saving an edit or resolving a conflict, tells Git to carry on."],
+  ["git rebase --abort","Bail out.","Returns to exactly how things were before the rebase started. Always available while it's in progress."],
+  ["git push --force-with-lease","Publish rewritten history.","Needed after rebasing a branch that's already on the remote. Refuses if someone else pushed in between."],
+];
+
+/* ===================== GIT HOOKS ===================== */
+const HOOK_TYPES = [["pre-commit", "before a commit is made; check staged files"], ["prepare-commit-msg", "pre-fill the message (ticket ids, templates)"], ["commit-msg", "validate the message; semantic commits live here"], ["post-commit", "after a commit; notifications, logging"], ["pre-merge-commit", "before a merge commit is created"], ["pre-rebase", "before a rebase; refuse risky ones"], ["post-checkout", "after switching branch or restoring files"], ["post-merge", "after a merge or pull; remind about deps"], ["post-rewrite", "after amend or rebase rewrote commits"], ["pre-push", "before a push; run tests, protect branches"], ["pre-receive / update", "server side: enforce rules on every push"]];
+const HOOK_CMDS = [["mkdir -p .githooks", "Create a shared hooks folder.", "Creates a normal folder inside the repo. Unlike .git/hooks, it can be committed and shared with the team."], ["git config core.hooksPath .githooks", "Load hooks from that folder.", "Points this repo at the folder. It replaces .git/hooks entirely, and since it's local config each person runs it once after cloning."], ["git config --global core.hooksPath <~/.git-hooks>", "Global hooks for every repo.", "Applies one set of hooks to all your repos. It overrides each repo's own .git/hooks, so use it deliberately."], ["touch .githooks/<hook-name> && chmod +x .githooks/<hook-name>", "Create a hook and make it executable.", "The file name must exactly match the hook (no extension), and it must be executable or Git silently ignores it."], ["git update-index --chmod=+x .githooks/<hook-name>", "Record the executable bit in Git.", "After staging the file, this stores the executable flag in the commit so teammates get a runnable hook."], ["git hook run <hook-name>", "Run a hook by hand.", "Runs the named hook right now so you can test it without making a commit (Git 2.36+)."], ["git commit --allow-empty -m \"<test message>\"", "Test commit-msg with an empty commit.", "Makes a commit with no changes, which is perfect for checking whether your message hook accepts or rejects a message."], ["git config --get core.hooksPath", "Where are hooks loaded from?", "Prints the hooks folder in use. Empty output means the default .git/hooks."], ["git commit --no-verify -m \"<message>\"", "Skip hooks once.", "Bypasses pre-commit and commit-msg for this commit only."], ["git push --no-verify", "Skip pre-push once.", "Bypasses the pre-push hook for this push only."]];
+const HOOK_SCRIPTS = [["commit-msg", "Enforce semantic (Conventional Commits) messages", "Rejects any commit whose first line isn't type(scope): description. Merges, reverts and fixup commits are let through so rebase and autosquash keep working. Save as .githooks/commit-msg.", "#!/bin/sh\n# .githooks/commit-msg: enforce Conventional Commits\nmsg_file=\"$1\"\nfirst_line=$(head -n 1 \"$msg_file\")\n\n# Let merges, reverts and fixup/squash commits through untouched\ncase \"$first_line\" in\n  Merge\\ *|Revert\\ *|fixup!\\ *|squash!\\ *|amend!\\ *) exit 0 ;;\nesac\n\npattern='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\\([a-z0-9._/-]+\\))?!?: .{1,72}$'\n\nif ! echo \"$first_line\" | grep -Eq \"$pattern\"; then\n  cat >&2 <<'EOF'\nx Commit message does not follow Conventional Commits.\n\n  Format:    type(scope): short description\n  Types:     feat fix docs style refactor perf test build ci chore revert\n  Examples:  feat(auth): add password reset\n             fix!: drop support for the v1 API\n\nEOF\n  echo \"  Your message: $first_line\" >&2\n  exit 1\nfi\n", "Save as .githooks/commit-msg, then make it executable. Git passes the path of the message file as the first argument; exiting non-zero rejects the commit."], ["commit-msg", "Same rule, Python version", "Any executable works as a hook as long as it has a shebang line. Same behaviour as the shell version; use one or the other, not both.", "#!/usr/bin/env python3\n# .githooks/commit-msg: enforce Conventional Commits (Python version)\nimport re\nimport sys\n\nwith open(sys.argv[1], encoding=\"utf-8\") as f:\n    first_line = f.readline().strip()\n\nif first_line.startswith((\"Merge \", \"Revert \", \"fixup! \", \"squash! \", \"amend! \")):\n    sys.exit(0)\n\npattern = r\"^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\\([\\w./-]+\\))?!?: .{1,72}$\"\nif not re.match(pattern, first_line):\n    sys.exit(\n        \"x Use Conventional Commits: type(scope): description\\n\"\n        \"  Your message: \" + first_line\n    )\n", "Save as .githooks/commit-msg (replace the shell version). Hooks can be written in any language, as long as the file is executable and starts with a shebang."], ["pre-commit", "Catch whitespace errors, debug leftovers, secrets, huge files", "Runs before the commit is created and looks only at what's staged. The secret pattern is a rough net, so tune it to your project.", "#!/bin/sh\n# .githooks/pre-commit: quick sanity checks on what is staged\n\n# 1. Whitespace errors and leftover conflict markers\ngit diff --cached --check || exit 1\n\n# 2. Debug leftovers or things that look like secrets in ADDED lines\nif git diff --cached -U0 | grep -E '^\\+' | grep -Ev '^\\+\\+\\+' \\\n   | grep -Eiq 'console\\.log|debugger|binding\\.pry|(api[_-]?key|secret|password)[[:space:]]*[:=]'; then\n  echo \"x Staged changes contain a debug statement or something that looks like a secret.\" >&2\n  echo \"  Review with: git diff --cached\" >&2\n  exit 1\nfi\n\n# 3. Refuse files bigger than 5 MB\ngit diff --cached --name-only --diff-filter=ACM | {\n  bad=0\n  while IFS= read -r f; do\n    [ -f \"$f\" ] || continue\n    size=$(wc -c < \"$f\")\n    if [ \"$size\" -gt 5242880 ]; then\n      echo \"x $f is larger than 5 MB\" >&2\n      bad=1\n    fi\n  done\n  exit $bad\n} || exit 1\n\nexit 0\n", "Save as .githooks/pre-commit. Any non-zero exit aborts the commit. It checks only staged changes, so it stays fast."], ["prepare-commit-msg", "Add the ticket id from the branch name", "On a branch like feature/ABC-123-login this appends a 'Refs: ABC-123' footer. It's a footer rather than a prefix so it doesn't break Conventional Commits.", "#!/bin/sh\n# .githooks/prepare-commit-msg: add a \"Refs: ABC-123\" footer from the branch name\n# Works with branches like feature/ABC-123-add-login\nmsg_file=\"$1\"\nsource=\"$2\"\n\n# Skip merges and squashes\ncase \"$source\" in merge|squash) exit 0 ;; esac\n\nbranch=$(git symbolic-ref --short HEAD 2>/dev/null) || exit 0\nticket=$(echo \"$branch\" | grep -oE '[A-Z][A-Z0-9]+-[0-9]+' | head -n 1)\n[ -n \"$ticket\" ] || exit 0\n\n# Don't add it twice (e.g. on --amend)\ngrep -q \"$ticket\" \"$msg_file\" && exit 0\n\ngit interpret-trailers --in-place --trailer \"Refs: $ticket\" \"$msg_file\"\n", "Save as .githooks/prepare-commit-msg. It edits the draft message before your editor opens, adding the ticket as a trailer."], ["pre-push", "Block direct pushes to main / master", "Reads what you're about to push on stdin and refuses if a protected branch is the target. Real protection belongs on the server (branch protection rules); this is a friendly local guard.", "#!/bin/sh\n# .githooks/pre-push: block direct pushes to protected branches\nprotected=\"main master\"\n\nwhile read -r local_ref local_sha remote_ref remote_sha; do\n  branch=$(echo \"$remote_ref\" | sed 's|^refs/heads/||')\n  for p in $protected; do\n    if [ \"$branch\" = \"$p\" ]; then\n      echo \"x Direct push to '$branch' is blocked. Open a pull request instead.\" >&2\n      echo \"  (Bypass once with: git push --no-verify)\" >&2\n      exit 1\n    fi\n  done\ndone\n\nexit 0\n", "Save as .githooks/pre-push. It stops accidental pushes to protected branches; bypass once with --no-verify."], ["post-merge", "Remind you to reinstall dependencies after a pull", "Runs after a successful merge or pull. Post hooks can't abort anything, so they're good for reminders and housekeeping.", "#!/bin/sh\n# .githooks/post-merge: remind you when a pull changed dependency files\nchanged=$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)\n\nif echo \"$changed\" | grep -Eq '(^|/)(package-lock\\.json|yarn\\.lock|requirements\\.txt|go\\.sum|pom\\.xml|build\\.gradle)$'; then\n  echo \"i Dependency files changed in this pull. You may need to reinstall dependencies.\"\nfi\nexit 0\n", "Save as .githooks/post-merge. It compares the files changed by the pull and prints a hint if dependency files were among them."]];
+
 /* ===================== COMMAND REFERENCE ===================== */
 const DATA = [
   { id:"setup", title:"Setup & Config", sub:"identity, defaults", groups:[
@@ -434,6 +690,56 @@ const DATA = [
       ["git config --global pull.rebase true","Rebase instead of merge on pull.","Changes how 'git pull' brings in changes: instead of a merge commit, it stacks your commits neatly on top, keeping history a straight line."],
       ["git config --global push.autoSetupRemote true","Auto-create upstream on first push.","Pushing a brand-new branch normally fails because it has no remote yet. This makes Git create that link automatically."],
       ["git config --global color.ui auto","Enable colored output.","Turns on colored text so added lines, removed lines, and branches are easier to tell apart."],
+    ]},
+  ]},
+  { id:"config", title:"Config Recipes", sub:"pull, push, rebase, quality of life", groups:[
+    { label:"Pull & fetch — set it and forget it", items:[
+      ["git config --global pull.rebase true","Rebase automatically on pull.","Every 'git pull' replays your local commits on top of what came from the remote instead of creating a merge commit. Keeps history linear."],
+      ["git config --global pull.rebase merges","Rebase on pull, keep merges.","Like pull.rebase true, but preserves any merge commits in your local work instead of flattening them."],
+      ["git config --global pull.ff only","Refuse messy pulls.","git pull only succeeds if it can fast-forward. If the branches have diverged it stops and makes you choose merge or rebase on purpose."],
+      ["git config --global rebase.autoStash true","Auto-stash around rebase / pull.","Automatically stashes uncommitted changes before a rebase (or pull --rebase) and restores them afterwards, so a dirty working tree no longer blocks it."],
+      ["git config --global fetch.prune true","Drop deleted remote branches.","Every fetch or pull removes remote-tracking branches whose branch was deleted on the server, keeping 'git branch -a' tidy."],
+      ["git pull --no-rebase","One-off merge-style pull.","Overrides your pull.rebase setting for a single pull. Use --rebase for the opposite."],
+    ]},
+    { label:"Push", items:[
+      ["git config --global push.default simple","Push only the current branch.","Pushes the current branch to the same-named branch on the remote, and nothing else. The safe default in modern Git."],
+      ["git config --global push.followTags true","Push tags along with commits.","When you push, annotated tags pointing at the pushed commits are sent automatically."],
+    ]},
+    { label:"Rebase & merge helpers", items:[
+      ["git config --global rebase.autoSquash true","Auto-arrange fixup commits.","Interactive rebases automatically move 'fixup!' and 'squash!' commits under the commit they belong to."],
+      ["git config --global rebase.updateRefs true","Move stacked branches too.","When you rebase a branch, other branches stacked on top of it are moved along with it (Git 2.38+)."],
+      ["git config --global merge.conflictStyle zdiff3","Clearer conflict markers.","Conflict markers also show the common ancestor version, which makes it much easier to see what each side changed (Git 2.35+; use diff3 on older versions)."],
+      ["git config --global rerere.enabled true","Remember conflict resolutions.","Git records how you resolve a conflict and re-applies it automatically if the same conflict appears again, e.g. across repeated rebases."],
+      ["git config --global diff.algorithm histogram","Better diffs.","Uses a diff algorithm that often produces more readable results than the default, especially for moved code."],
+      ["git config --global diff.colorMoved default","Highlight moved lines.","Lines that were moved rather than added or removed get a different colour in diffs."],
+    ]},
+    { label:"Comfort & output", items:[
+      ["git config --global help.autocorrect prompt","Suggest fixes for typos.","If you mistype a command, Git offers to run the closest match. 'prompt' needs Git 2.40+; older versions take a delay in tenths of a second, e.g. 20."],
+      ["git config --global commit.verbose true","Show the diff while writing a message.","Includes the full diff in the commit message editor, so you can see what you're describing."],
+      ["git config --global branch.sort -committerdate","Newest branches first.","'git branch' lists branches by most recent commit instead of alphabetically."],
+      ["git config --global tag.sort version:refname","Sort tags as versions.","Lists tags in version order (v1.2 before v1.10) instead of alphabetical order."],
+      ["git config --global column.ui auto","Columns for long lists.","Prints branch and tag lists in columns when the output is long."],
+      ["git config --global core.autocrlf input","Normalize line endings (Mac/Linux).","Converts Windows line endings to Unix when committing. On Windows use 'true' instead."],
+      ["git config --global core.fileMode false","Ignore permission changes.","Stops Git reporting files as changed just because their executable bit differs, handy on shared or Windows-mounted folders."],
+    ]},
+    { label:"Identity, signing, per-folder settings", items:[
+      ["git config --global gpg.format ssh","Sign with an SSH key.","Lets you sign commits with an SSH key instead of GPG (Git 2.34+)."],
+      ["git config --global user.signingkey <path-to-key>","Choose the signing key.","Tells Git which key to sign with. For SSH signing this is the path to your public key file."],
+      ["git config --global commit.gpgsign true","Sign every commit.","All commits are signed automatically, so you don't need -S each time."],
+      ["git config --global includeIf.gitdir:<~/work/>.path <~/.gitconfig-work>","Different identity per folder.","Loads an extra config file only for repos under that folder, e.g. put your work email in ~/.gitconfig-work and use it for everything under ~/work/."],
+    ]},
+    { label:"Scope & inspection", items:[
+      ["git config --local <key> <value>","Set for this repo only.","Writes the setting into this repo's .git/config. It overrides your global settings here."],
+      ["git config --system <key> <value>","Set for the whole machine.","Writes to the machine-wide config used by all users. Usually needs admin rights."],
+      ["git config --list --show-origin","Where does each setting come from?","Lists every active setting together with the file it was defined in. Great for debugging surprises."],
+      ["git config --get <key>","Read one value.","Prints the value Git is currently using for a setting."],
+      ["git config --get-regexp \"<alias>\"","Search settings by pattern.","Lists all settings whose name matches the pattern, e.g. all aliases."],
+      ["git config --global --unset <key>","Remove a setting.","Deletes a setting from your global config."],
+    ]},
+    { label:"Credentials & URLs", items:[
+      ["git config --global credential.helper \"cache --timeout=<3600>\"","Remember password in memory.","Keeps your HTTPS credentials in memory for the given number of seconds, then forgets them."],
+      ["git config --global credential.helper store","Store credentials on disk. ⚠️","Saves credentials in plain text in ~/.git-credentials. Convenient, but prefer your OS keychain or credential manager."],
+      ["git config --global url.\"git@github.com:\".insteadOf \"https://github.com/\"","Always use SSH for GitHub.","Silently rewrites https://github.com/ URLs to SSH ones, so cloning and pushing use your SSH key."],
     ]},
   ]},
   { id:"start", title:"Create & Clone", sub:"new repos", groups:[
@@ -525,6 +831,8 @@ const DATA = [
       ["git stash pop","Apply + remove latest stash.","Re-applies your most recent stash and removes it from the list."],
       ["git stash apply","Apply, keep in list.","Re-applies your most recent stash but keeps a copy in the list, in case you need it again."],
       ["git stash apply stash@{<n>}","Apply a specific stash.","Re-applies a particular stash you pick by its number in the list."],
+      ["git stash push -m \"<message>\" -- <file>","Stash only some files.","Shelves just the files or folders you name and leaves everything else as it is."],
+      ["git stash push -p","Stash chosen hunks.","Walks you through your changes chunk by chunk, asking which to shelve."],
     ]},
     { label:"Manage", items:[
       ["git stash show -p","Show stash diff.","Shows the actual line-by-line changes saved in your latest stash."],
@@ -570,6 +878,16 @@ const DATA = [
       ["git diff <a>..<b>","Diff two points.","Shows the differences between two commits or two branches."],
       ["git shortlog -sn","Commits per author.","Summarizes how many commits each contributor made, sorted by count."],
     ]},
+    { label:"Compare branches & ranges", items:[
+      ["git log --oneline <base>..<branch>","Commits on branch, not on base.","Two dots: what the branch has that base doesn't. Perfect for 'what will this PR contain?'."],
+      ["git log --oneline --left-right <a>...<b>","Commits unique to either side.","Three dots: shows what's different on each side, with arrows telling you which side a commit belongs to."],
+      ["git diff <base>...<branch>","Changes since the branch split off.","Three dots in diff means 'what the branch changed since it diverged' — the same view a pull request shows."],
+      ["git diff --stat <a>..<b>","Summary of differences.","Lists the files that differ and how many lines changed, without the full diff."],
+      ["git diff --name-only <a>..<b>","Names of changed files.","Prints only the names of files that differ between the two points."],
+      ["git merge-base <a> <b>","Where two branches split.","Prints the commit where the two branches last shared history."],
+      ["git branch --contains <commit>","Which branches contain a commit?","Lists every branch that includes the given commit."],
+      ["git log --first-parent --oneline","Mainline-only history.","Follows only the first parent of merges, giving a clean list of what landed on this branch."],
+    ]},
   ]},
   { id:"tag", title:"Tags", sub:"releases & milestones", groups:[
     { label:"Create & list", items:[
@@ -600,6 +918,26 @@ const DATA = [
       ["git rebase -i --root","Rework from the start.","Interactively edit history all the way back to the very first commit."],
       ["git rebase --onto <new> <old> <branch>","Transplant commits.","Advanced: detaches a series of commits and reattaches them onto a different base."],
     ]},
+    { label:"Interactive — include the commit you name", items:[
+      ["git rebase -i <commit>^","Start at a specific commit (inclusive).","The ^ means 'the parent of'. Plain 'git rebase -i <commit>' starts AFTER that commit, so it can't edit the commit itself. Add ^ to include it."],
+      ["git rebase -i --root","Include the very first commit.","The only way to rewrite the first commit in the repo."],
+      ["git rebase --edit-todo","Re-open the to-do list mid-rebase.","While a rebase is paused, lets you change the remaining list of instructions."],
+      ["git rebase --show-current-patch","Show the commit being applied.","During a conflicted rebase, shows the commit Git is currently trying to replay — useful for understanding the conflict."],
+      ["git rebase -i --exec \"<test command>\" <commit>^","Run a command after each commit.","Inserts a command (e.g. your test suite) after every commit in the list and stops if one fails. Great for checking that each commit builds."],
+    ]},
+    { label:"Fixup & autosquash", items:[
+      ["git commit --fixup=<commit>","Commit as a fix for an older commit.","Creates a commit labelled 'fixup!' plus the target's message, so a later autosquash can find its place."],
+      ["git commit --squash=<commit>","Commit to be squashed into an older one.","Like fixup, but lets you edit the combined commit message later."],
+      ["git rebase -i --autosquash <commit>^","Auto-arrange fixup commits.","Moves each fixup!/squash! commit directly under its target and sets the right action for you. Just save the editor."],
+      ["git config --global rebase.autoSquash true","Always autosquash.","Makes every interactive rebase do the autosquash arranging by default."],
+    ]},
+    { label:"Safer, smarter rebasing", items:[
+      ["git rebase --update-refs <base>","Move stacked branches too.","If you have branches stacked on each other, this moves all of them along instead of only the one you're on."],
+      ["git rebase --rebase-merges <base>","Keep merge commits.","Re-creates merge commits instead of flattening them, so a branch's internal structure survives."],
+      ["git reset --hard ORIG_HEAD","Undo a finished rebase. ⚠️","ORIG_HEAD is where the branch was before the rebase started. Jumps back to it."],
+      ["git range-diff <base> <old-tip> <new-tip>","Compare before and after.","Compares two versions of a branch (e.g. before and after a rebase) commit by commit, so you can verify nothing got lost."],
+      ["git push --force-with-lease","Publish a rebased branch.","After rewriting history you must force-push. The lease variant refuses if someone else pushed in the meantime."],
+    ]},
   ]},
   { id:"cherry", title:"Cherry-pick", sub:"grab specific commits", groups:[
     { label:"Pick commits", items:[
@@ -609,6 +947,21 @@ const DATA = [
       ["git cherry-pick -n <commit>","Apply without committing.","Brings in a commit's changes but stops before committing, so you can tweak or combine first."],
       ["git cherry-pick --continue","Continue after a conflict.","Resumes the cherry-pick after you've resolved a conflict."],
       ["git cherry-pick --abort","Cancel cherry-pick.","Cancels the cherry-pick and restores your branch to its previous state."],
+      ["git cherry-pick --skip","Skip the problem commit.","Drops the commit that's causing trouble and carries on with the rest of the range."],
+      ["git cherry-pick --quit","Stop but keep progress.","Leaves the cherry-pick sequence without undoing the commits already applied."],
+    ]},
+    { label:"Ranges (from one commit to another / to the end)", items:[
+      ["git cherry-pick <first>^..<last>","Range, both ends included.","The ^ after first includes it. Plain a..b would skip the first commit. Order is oldest to newest."],
+      ["git cherry-pick <first>^..<branch>","From a commit to the end of a branch.","Everything from first up to the tip of the named branch, inclusive of first."],
+      ["git cherry-pick <first>..<last>","Range, first excluded.","Everything AFTER first, up to and including last."],
+      ["git cherry-pick <base>..<branch>","Everything the branch has that base doesn't.","Applies every commit reachable from the branch but not from base — a whole feature in one go."],
+      ["git cherry-pick -n <first>^..<last>","Range as one commit.","Applies the whole range without committing, so you can commit it as a single combined commit."],
+    ]},
+    { label:"Useful options", items:[
+      ["git cherry-pick -x <commit>","Record where it came from.","Appends 'cherry picked from commit …' to the message. Good practice when backporting to release branches."],
+      ["git cherry-pick -e <commit>","Edit the message.","Opens an editor so you can reword the commit message as it's copied."],
+      ["git cherry-pick -m 1 <merge-commit>","Pick a merge commit.","A merge has two parents, so Git needs to know which side to diff against. -m 1 means the first parent (usually the branch merged into)."],
+      ["git cherry -v <upstream>","Which commits are not yet applied?","Lists your commits with '+' if they're missing from upstream and '-' if an equivalent is already there. Useful before cherry-picking."],
     ]},
   ]},
   { id:"reflog", title:"Reflog & Recovery", sub:"undo the undo", groups:[
@@ -663,6 +1016,25 @@ const DATA = [
       ["git submodule update --remote","Update submodules.","Fetches the newest commits for each submodule from their own remotes."],
       ["git submodule foreach git pull","Run in every submodule.","Runs the same command inside every submodule — e.g. pulling updates for all at once."],
       ["git submodule deinit <path>","Stop using a submodule.","Clears a submodule's working files and config, without removing its definition."],
+    ]},
+  ]},
+  { id:"files", title:"Files & Patches", sub:"single files, export, apply", groups:[
+    { label:"Grab files from elsewhere", items:[
+      ["git restore --source=<branch-or-commit> <file>","File from another branch/commit.","Overwrites your copy of the file (or folder) with the version from that branch or commit, without touching anything else."],
+      ["git restore --source=<branch-or-commit> --staged --worktree <file>","…and stage it too.","Same as above, but also stages the file so it's ready to commit."],
+      ["git checkout <branch-or-commit> -- <file>","File from elsewhere (older).","The older way to pull a file's version from another branch or commit."],
+      ["git show <commit>:<file> > <out-file>","Save an old version to a new file.","Writes what a file looked like at a commit into a separate file, without changing the original."],
+      ["git diff <branch> -- <file>","Compare one file with a branch.","Shows how one file differs between your working copy and another branch."],
+      ["git log --follow <file>","History across renames.","Shows a file's history even through renames and moves."],
+      ["git mv <old> <new>","Rename or move a tracked file.","Renames a file and stages the change in one step, which keeps history tracking clean."],
+    ]},
+    { label:"Patches (share changes as files)", items:[
+      ["git diff > <changes.patch>","Save changes as a patch.","Writes your uncommitted changes into a patch file you can send to someone."],
+      ["git format-patch -<n>","Export last n commits as patches.","Creates one patch file per commit, including author and message. Replace n with a number."],
+      ["git format-patch <base>..<branch>","Export a range as patches.","Creates a patch file for every commit on the branch since base."],
+      ["git apply <changes.patch>","Apply a patch to files.","Applies a patch to your working files without creating a commit."],
+      ["git am <patch-file>","Apply a patch as a commit.","Applies patches made with format-patch and keeps the original author, date and message."],
+      ["git am --abort","Cancel a patch apply.","Stops applying patches and restores the original state."],
     ]},
   ]},
   { id:"advanced", title:"Aliases & Power Tools", sub:"speed it up", groups:[
@@ -735,6 +1107,8 @@ function addChip(label, target, lead){
 }
 addChip('★ Scenarios','scenarios',true);
 addChip('★ Commit Style','conventions',true);
+addChip('★ Rebase Guide','rebaseguide',true);
+addChip('★ Git Hooks','hooks',true);
 DATA.forEach(t=>addChip(t.title.split('(')[0].trim(), t.id));
 
 /* --- Scenarios section --- */
@@ -803,6 +1177,78 @@ convSection.innerHTML = `
     </div></div></div>
   </div>`;
 content.appendChild(convSection);
+
+/* --- Interactive rebase guide --- */
+const rbSection = document.createElement('section');
+rbSection.id = 'rebaseguide';
+const rbKeysHtml = RB_KEYS.map(([t,d])=>`<div class="type"><b>${t}</b><span>${d}</span></div>`).join('');
+const rbCmdHtml = RB_CMDS.map(([cmd,desc,explain])=>{
+  const search = (cmd+' '+desc+' '+explain+' interactive rebase squash reorder reword edit drop fixup').toLowerCase();
+  return `<div class="cmd-block searchable" data-search="${escAttr(search)}">${cmdRow(cmd,explain)}<div class="desc">${desc}</div></div>`;
+}).join('');
+rbSection.innerHTML = `
+  <div class="section-head"><h2>Interactive Rebase Guide</h2><span class="meta">rewrite history, safely</span></div>
+  <div class="topic">
+    <button class="topic-head" aria-expanded="false">
+      <span class="num">★</span>
+      <span class="topic-title">How interactive rebase works</span>
+      <span class="topic-sub">pick · squash · edit · drop</span>
+      <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+    </button>
+    <div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">
+      <div class="group-label">The idea</div>
+      <p class="conv-rule">Git opens an editor with a to-do list of commits, <b>oldest first</b>. You change the word at the start of each line (or reorder/delete lines), save, and Git replays the commits following your instructions.</p>
+      <p class="conv-rule">Rewriting only affects your local branch. If it was already pushed, finish with <code>--force-with-lease</code>. Don't rewrite branches other people are building on.</p>
+      <div class="group-label">Words you can use in the list</div>
+      <div class="types">${rbKeysHtml}</div>
+      <p class="conv-rule">Tip: <code>squash</code> and <code>fixup</code> always merge into the line <b>above</b>, so the commit you keep must come first. Deleting a line drops that commit. Deleting everything aborts the rebase.</p>
+      <div class="group-label">Start one</div>
+      ${rbCmdHtml}
+    </div></div></div>
+  </div>`;
+content.appendChild(rbSection);
+
+/* --- Git hooks section --- */
+const hkSection = document.createElement('section');
+hkSection.id = 'hooks';
+const hkTypesHtml = HOOK_TYPES.map(([t,d])=>`<div class="type"><b>${t}</b><span>${d}</span></div>`).join('');
+const hkCmdHtml = HOOK_CMDS.map(([cmd,desc,explain])=>{
+  const search = (cmd+' '+desc+' '+explain+' git hook hooks').toLowerCase();
+  return `<div class="cmd-block searchable" data-search="${escAttr(search)}">${cmdRow(cmd,explain)}<div class="desc">${desc}</div></div>`;
+}).join('');
+const hkScriptHtml = HOOK_SCRIPTS.map(([file,title,desc,code,explain],i)=>{
+  const search = (file+' '+title+' '+desc+' '+code+' hook script').toLowerCase();
+  return `<div class="searchable" data-search="${escAttr(search)}">
+    <div class="script">
+      <div class="script-top"><span class="script-file">${escHtml(file)}</span><span class="script-title">${escHtml(title)}</span><button class="copy-script" data-i="${i}" aria-label="Copy script">copy script</button></div>
+      <pre>${escHtml(code)}</pre>
+    </div>
+    <div class="script-desc">${escHtml(desc)}</div>
+  </div>`;
+}).join('');
+hkSection.innerHTML = `
+  <div class="section-head"><h2>Git Hooks</h2><span class="meta">scripts Git runs for you</span></div>
+  <div class="topic">
+    <button class="topic-head" aria-expanded="false">
+      <span class="num">★</span>
+      <span class="topic-title">Hooks &amp; ready-made scripts</span>
+      <span class="topic-sub">commit-msg · pre-commit · pre-push</span>
+      <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+    </button>
+    <div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">
+      <div class="group-label">How hooks work</div>
+      <p class="conv-rule">A hook is an executable file named exactly after the event (e.g. <code>commit-msg</code>, no extension). Git runs it at that moment, and if a <code>pre-*</code> hook or <code>commit-msg</code> exits with a non-zero status, the action is cancelled. Any language works, as long as the file starts with a shebang like <code>#!/bin/sh</code> or <code>#!/usr/bin/env python3</code>.</p>
+      <p class="conv-rule"><code>.git/hooks</code> is not versioned, so keep shared hooks in a folder like <code>.githooks</code> and point Git at it with <code>core.hooksPath</code>. That setting is local, so each person runs it once after cloning.</p>
+      <p class="conv-rule"><code>--no-verify</code> skips local hooks, so enforce important rules in CI as well. Ready-made tools exist too: pre-commit, husky, lefthook and commitlint.</p>
+      <div class="group-label">Hook types</div>
+      <div class="types">${hkTypesHtml}</div>
+      <div class="group-label">Set up &amp; test</div>
+      ${hkCmdHtml}
+      <div class="group-label">Ready-to-use scripts</div>
+      ${hkScriptHtml}
+    </div></div></div>
+  </div>`;
+content.appendChild(hkSection);
 
 /* --- Command reference sections --- */
 DATA.forEach((topic,i)=>{
@@ -919,6 +1365,18 @@ content.addEventListener('click', e=>{
       showToast(text, 'Run these commands in order in your terminal. Replace anything still shown as <…> with your own value first.');
     });
   }
+});
+
+/* ===================== COPY HOOK SCRIPTS ===================== */
+content.addEventListener('click', e=>{
+  const b = e.target.closest('.copy-script');
+  if(!b) return;
+  const [file,title,desc,code,explain] = HOOK_SCRIPTS[+b.dataset.i];
+  navigator.clipboard.writeText(code).then(()=>{
+    b.textContent='copied'; b.classList.add('done');
+    setTimeout(()=>{ b.textContent='copy script'; b.classList.remove('done'); },1400);
+    showToast('# save as .githooks/'+file+'\nchmod +x .githooks/'+file, explain);
+  });
 });
 
 /* ===================== SEARCH ===================== */

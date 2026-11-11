@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code — Cheat Sheet v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* EDIT THEME: Anthropic / Claude Code palette */
+:root{--bg:#faf9f5;--paper:#fff;--ink:#141413;--mute:#6b6a63;--line:#e8e6dc;--accent:#d97757;--accent-d:#b85a3c;--soft:#f3e4dc;
+--code-bg:#141413;--code-fg:#e8e6dc;--code-ph:#d97757;--code-green:#9fb582;--blue:#6a9bcc;
+--disp:'Newsreader',Georgia,serif;--body:'Inter',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,Menlo,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--body)}
+.wrap{max-width:920px;margin:0 auto;padding:0 20px 60px}
+header{padding:48px 0 20px}.kick{font:500 12px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent-d)}
+h1{font:600 46px/1.05 var(--disp);margin:8px 0 10px}h1 .mark{font:500 .5em var(--mono);background:var(--accent);color:#fff;padding:2px 10px;border-radius:6px;vertical-align:middle;margin-right:8px}
+.sub{font-size:17px;max-width:620px}.hint{color:var(--mute);font-size:13px;margin-top:8px}
+.bar{position:sticky;top:0;z-index:10;background:var(--bg);padding:12px 0;border-bottom:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
+.bar input{flex:1;min-width:200px;padding:10px 14px;border:1px solid var(--line);border-radius:8px;font:inherit;background:var(--paper)}
+button{font:500 13px var(--body);padding:9px 13px;border:1px solid var(--line);background:var(--paper);border-radius:8px;cursor:pointer;color:var(--ink)}
+button:hover{border-color:var(--accent);color:var(--accent-d)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0}.chips a{font-size:13px;padding:4px 11px;border-radius:99px;background:var(--soft);color:var(--accent-d);text-decoration:none}
+h2{font:600 26px var(--disp);margin:36px 0 4px}.meta{color:var(--mute);font-size:13px;margin-bottom:12px}
+.card,.acc{background:var(--paper);border:1px solid var(--line);border-radius:12px;margin:12px 0;overflow:hidden}
+.card{padding:14px 16px}.card h3{margin:0 0 2px;font:600 18px var(--disp)}.when{color:var(--mute);font-size:13px;margin-bottom:8px}
+.acc>summary{cursor:pointer;padding:14px 16px;list-style:none;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.acc>summary::-webkit-details-marker{display:none}.acc>summary b{font:600 19px var(--disp)}.acc>summary span{color:var(--mute);font-size:13px}
+.acc[open]>summary{border-bottom:1px solid var(--line)}.body{padding:4px 16px 14px}
+.glabel{font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent-d);margin:14px 0 6px}
+.row{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:8px 0;border-top:1px solid var(--line)}.row:first-of-type{border-top:0}
+.code{grid-column:1;background:var(--code-bg);color:var(--code-fg);font:13px/1.8 var(--mono);padding:4px 10px;border-radius:7px;overflow-x:auto;white-space:nowrap}
+.code input{font:inherit;color:var(--code-ph);background:#2a2927;border:0;border-bottom:1px dashed var(--code-ph);border-radius:3px;padding:0 3px;outline:0;min-width:3ch}
+.code input.f{color:var(--code-green);border-color:var(--code-green)}
+.cp{grid-column:2;grid-row:1}.lab{grid-column:1/3;font-weight:500}.ex{grid-column:1/3;color:var(--mute);font-size:13.5px}
+ol.steps{margin:0;padding:0;list-style:none}.step-n{font:500 11px var(--mono);color:var(--accent-d)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px;margin:8px 0}
+.g{display:flex;gap:10px;align-items:baseline;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px}
+.g code{font:500 12px var(--mono);background:var(--code-bg);color:var(--code-fg);padding:1px 7px;border-radius:5px;white-space:nowrap}
+.rule{background:var(--soft);border-left:3px solid var(--accent);padding:10px 14px;border-radius:0 8px 8px 0;margin:10px 0}
+.rule code,.ex code{font:12.5px var(--mono);background:#0001;padding:0 4px;border-radius:3px}
+#gloss{display:none}#gloss.on{display:block}dl{margin:0}dt{font-weight:600;margin-top:8px}dd{margin:0;color:var(--mute)}
+.hide{display:none!important}
+#toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,140%);transition:.3s;background:var(--code-bg);color:var(--code-fg);padding:12px 16px;border-radius:10px;max-width:560px;width:calc(100% - 32px);z-index:50;border-left:4px solid var(--accent)}
+#toast.on{transform:translate(-50%,0)}#toast code{font:13px var(--mono);color:var(--accent);display:block;margin-bottom:4px;overflow-wrap:anywhere}#toast span{font-size:13.5px}
+footer{margin-top:40px;color:var(--mute);font-size:13px}
+</style></head><body><div class="wrap">
+<!-- EDIT CONTENT ① -->
+<header><div class="kick">Cheat sheet · v2 · everyday + advanced</div>
+<h1><span class="mark">&gt;_</span>Claude Code</h1>
+<p class="sub">Slash commands, shortcuts, prompting, hooks, MCP, subagents and skills for the terminal agent — tap any snippet to copy it and see what it does.</p>
+<p class="hint">Fill in the glowing blanks before copying. Press <b>?</b> inside Claude Code to see the shortcuts your terminal supports.</p></header>
+<div class="bar"><input id="q" placeholder="Search commands, shortcuts, tasks…" autocomplete="off"><button id="bg">Glossary</button><button id="be">Expand</button><button id="bc">Collapse</button></div>
+<div class="chips" id="chips"></div>
+<section id="gloss" class="card"><h3>Glossary</h3><dl id="gl"></dl></section>
+<div id="app"></div>
+<footer>Verified against Anthropic's Claude Code docs (interactive mode &amp; command reference). Features change fast — run <code>/help</code> for your version's list.</footer>
+</div><div id="toast"></div>
+<script>
+/* EDIT CONTENT ② */
+const SCENARIOS=[
+{q:'How do I start working on a new project?',when:'First time in a repo.',blocks:[{label:'Setup',steps:[['cd <project-folder>','Go to the project root.'],['claude','Start an interactive session.'],['/init','Claude scans the repo and writes a starter CLAUDE.md of project notes.'],['/memory','Open CLAUDE.md to tidy what Claude wrote.']]}]},
+{q:'How do I change code safely?',when:'You want to review before anything is edited.',blocks:[{label:'Plan first',steps:[['/plan <what-you-want-changed>','Plan Mode: Claude reads and proposes, but changes nothing.'],['Shift+Tab','Cycle permission modes when you are happy with the plan.'],['/diff','Review exactly what changed.'],['Esc Esc','Not right? Rewind code and/or conversation.']]}]},
+{q:'How do I stop the context from getting full?',when:'Replies get worse or slower in long sessions.',blocks:[{label:'Context hygiene',steps:[['/context','See what is using up the context window.'],['/compact <what-to-keep>','Summarise the history, keeping what you name.'],['/clear','Fresh start for an unrelated task (loses the conversation) ⚠️']]}]},
+{q:'How do I pick up where I left off?',when:'You closed the terminal yesterday.',blocks:[{label:'Resume',steps:[['claude -c','Continue the most recent session in this folder.'],['claude -r','Pick from a list of past sessions.'],['/rename <session-name>','Give the current session a findable name.']]}]},
+{q:'How do I run Claude Code in a script?',when:'One-shot answers, pipes, automation.',blocks:[{label:'Print mode',steps:[['claude -p "<question>"','Answer once, print, exit.'],['cat <file> | claude -p "<instruction>"','Pipe a file in as context.']]}]},
+{q:'How do I fix a failing test?',when:'Red test, unknown cause.',blocks:[{label:'Reproduce, then fix',steps:[['!<test-command>','Run the tests inline so the failure lands in the conversation.'],['Fix the failing test in @<test-file>. Find the root cause first, then make the test pass without weakening it.','Ask for root cause, not a patch.'],['!<test-command>','Re-run to prove it is green.'],['/diff','Check what changed before committing.']]}]},
+{q:'How do I review code before a PR?',when:'About to open a pull request.',blocks:[{label:'Self-review',steps:[['/diff','Skim every change Claude and you made.'],['Review my uncommitted changes for bugs, missing tests and unclear names.','Ask for a critical second pair of eyes.'],['Write a PR description for these changes: summary, why, how to test.','Draft the PR text.']]}]},
+{q:'How do I connect Claude to an outside tool?',when:'Issue tracker, docs, browser, database.',blocks:[{label:'Add an MCP server',steps:[['claude mcp add --transport http <name> <url>','Register a hosted MCP server.'],['claude mcp list','Confirm it is connected.'],['/mcp','Inside a session: check status and manage connections.']]}]},
+{q:'How do I auto-format every file Claude edits?',when:'Stop asking for formatting by hand.',blocks:[{label:'PostToolUse hook',steps:[['mkdir -p .claude','Project settings live here.'],['Add a PostToolUse hook to .claude/settings.json that runs <formatter-command> after the Write or Edit tool.','Let Claude write the hook JSON for you.'],['/hooks','Confirm the hook is listed.']]}]},
+{q:'How do I turn a repeated prompt into a command?',when:'You keep typing the same instructions.',blocks:[{label:'Custom command',steps:[['mkdir -p .claude/commands','Folder for project commands.'],['Create .claude/commands/<command-name>.md containing the prompt I keep repeating: <describe-it>','Claude writes the file.'],['/<command-name>','Run it like any slash command (restart the session if it is missing).']]}]},
+{q:'How do I hand off a side task?',when:'Research or review that would clutter the main chat.',blocks:[{label:'Subagent',steps:[['/agents','Browse or create subagents.'],['Use a subagent to <task> and report back a short summary.','Delegate in plain language; only the summary returns.'],['Ctrl+B','Background a long-running task and keep working.']]}]}];
+const PLACEHOLDER_STYLE='angle';
+const REFERENCE={sectionTitle:'Reference',sectionMeta:'The mental model',accTitle:'How a session works',accSub:'prompt → plan → permission → review',blocks:[
+{kind:'rule',html:'Everything has a lane: <code>/commands</code> control the <em>session</em>, plain sentences tell Claude the <em>task</em>, and <code>Shift+Tab</code> controls how much it may do <em>without asking</em>.'},
+{kind:'grid',items:[['Esc','Interrupt, keep work'],['Esc Esc','Rewind menu'],['Shift+Tab','Cycle permission mode'],['Ctrl+R','Search history'],['Ctrl+O','Transcript viewer'],['Ctrl+T','Task list'],['@','Mention a file'],['!','Shell command'],['#','Add to memory']]},
+{kind:'grid',items:[['PreToolUse','Before a tool runs · can block'],['PostToolUse','After a tool succeeds'],['Stop','When Claude finishes a reply'],['Notification','When Claude needs you']]},
+{kind:'cmds',items:[['Look at <file> and explain how <thing> works. Do not change anything.','Read-only explore','Starts with understanding. Pairs well with Plan Mode.']]}]};
+/* items: [code, short label, explanation] */
+const DATA=[
+{id:'start',title:'Start & quit',sub:'launching a session',groups:[{label:'Launch',items:[
+['claude','Start interactive session','Opens Claude Code in the current folder. Always start in the project root.'],
+['claude "<prompt>"','Start with a first prompt','Same as above but sends your opening request immediately.'],
+['claude -c','Continue last session','Reopens the most recent conversation for this folder.'],
+['claude -r','Resume a past session','Shows a picker of earlier sessions.'],
+['claude -p "<prompt>"','Print mode','Answers once and exits. Good for scripts and pipes.']]},
+{label:'Leave',items:[['/exit','Quit','Also available as /quit.'],['Ctrl+D','Quit (EOF)','Exits the session from the keyboard.']]}]},
+{id:'slash',title:'Essential slash commands',sub:'type / to see the menu',groups:[{label:'Session',items:[
+['/help','Show commands','Lists every command in your installed version.'],
+['/clear','Wipe the conversation','Starts fresh (aliases /reset, /new). Anything not saved to files or CLAUDE.md is gone ⚠️'],
+['/resume','Reopen a past session','Alias /continue.'],
+['/rename <name>','Name this session','Makes it easy to find later.'],
+['/rewind','Undo code and chat','Restores an earlier checkpoint. Same as Esc Esc.']]},
+{label:'Context & setup',items:[
+['/init','Generate CLAUDE.md','Claude reads your repo and writes starter project notes.'],
+['/context','Inspect context usage','Shows what is eating the window.'],
+['/compact <focus>','Summarise history','Frees space; the focus text says what to preserve.'],
+['/memory','Edit CLAUDE.md','Also toggles and lists auto memory.'],
+['/add-dir <path>','Add another folder','Lets Claude work across several directories.']]},
+{label:'Review & control',items:[
+['/diff','Review changes','Interactive viewer of working-tree changes and per-turn diffs.'],
+['/plan <task>','Enter Plan Mode','Read-only planning, straight from the prompt.'],
+['/permissions','Manage allow/ask/deny rules','Pre-approve safe tools so you stop getting prompts.'],
+['/model','Switch model','Pick a different model mid-session.'],
+['/config','Open settings','Change defaults, including vim mode.'],
+['/btw <question>','Side question','Quick aside that does not clutter the main conversation.']]},
+{label:'Housekeeping',items:[
+['/doctor','Diagnose install','First stop when something is broken.'],
+['/terminal-setup','Enable Shift+Enter','Makes newline-on-Shift+Enter work in your terminal.'],
+['/ide','Manage IDE link','Connects to your editor.'],
+['/login','Sign in','Switch or refresh your Anthropic account.'],
+['/feedback','Report an issue','Sends feedback with session context.']]}]},
+{id:'keys',title:'Keyboard shortcuts',sub:'hands-on-keys speed',groups:[{label:'Control',items:[
+['Esc','Interrupt Claude','Stops the current turn but keeps work already done.'],
+['Esc Esc','Rewind / clear draft','Empty prompt: opens rewind. With text: clears the draft.'],
+['Ctrl+C','Cancel input','Cancels current input or generation.'],
+['Shift+Tab','Cycle permission modes','default → acceptEdits → plan (plus auto/bypass if enabled).'],
+['Tab','Toggle thinking','Turns extended thinking on or off.']]},
+{label:'View',items:[['Ctrl+O','Transcript / verbose','Shows detailed tool use and execution.'],['Ctrl+T','Task list','Toggles Claude\'s checklist.'],['Ctrl+B','Background a task','Sends a running command or agent to the background.'],['Ctrl+L','Clear screen','Keeps the conversation history.']]},
+{label:'History & input',items:[['Ctrl+R','Search prompt history','Ctrl+R again for older matches; Enter runs, Tab edits.'],['Up / Down','Previous prompts','Walk through earlier input.'],['Ctrl+V','Paste image','Alt+V on Windows. Pastes a screenshot into the prompt.']]}]},
+{id:'input',title:'Prompt shortcuts',sub:'@ ! # and multiline',groups:[{label:'Prefixes',items:[
+['@<path>','Attach a file','Autocompletes paths so Claude reads that exact file.'],
+['!<shell-command>','Run shell inline','Runs the command and puts the output in the conversation.'],
+['# <note>','Save to memory','Adds the note to a CLAUDE.md file so it persists.']]},
+{label:'Multiline',items:[['\\ then Enter','Newline anywhere','Works in all terminals.'],['Shift+Enter','Newline','Run /terminal-setup first in some terminals.'],['Ctrl+J','Newline (line feed)','Universal fallback.']]}]},
+{id:'modes',title:'Permission modes',sub:'how much it can do alone',groups:[{label:'Modes (Shift+Tab to cycle)',items:[
+['Shift+Tab','Default','Asks before edits and commands. Safest.'],
+['Shift+Tab','Accept edits','Auto-approves file writes. Good once you trust the direction.'],
+['Shift+Tab','Plan Mode','Read-only: explores and proposes, executes nothing.'],
+['/permissions','Fine-tune rules','Allow safe commands like tests so only risky ones prompt.']]}]},
+{id:'prompt',title:'Prompting well',sub:'templates that work',groups:[{label:'Ask',items:[
+['Explain how <feature> works in this repo. Point to the key files.','Understand code','Use @files to narrow it.'],
+['Find where <behavior> is implemented and list the call chain.','Trace code','Read-only; no edits.']]},
+{label:'Change',items:[
+['Fix <bug>. Reproduce it first with a failing test, then make the test pass.','Bug fix','Giving Claude a way to verify makes results far more reliable.'],
+['Refactor @<file> to <goal>. Keep behavior identical and run the tests after.','Refactor','Name the constraint and the check.'],
+['Add <feature>. Follow the pattern in @<example-file>.','Follow a pattern','Pointing at an example beats long descriptions.']]},
+{label:'Check',items:[['Review my uncommitted changes for bugs and missing tests.','Self-review','Run before committing.'],['Summarise what you changed and why in 5 bullets.','Wrap-up','Handy for commit messages and PRs.']]}]},
+{id:'memory',title:'Memory & custom commands',sub:'teach it once',groups:[{label:'CLAUDE.md',items:[
+['# <rule-for-claude>','Quick rule','Saves a one-line instruction to memory.'],
+['/memory','Edit memory files','Open and edit CLAUDE.md.']]},
+{label:'Your own commands',items:[
+['mkdir -p .claude/commands','Create commands folder','Any markdown file inside becomes a /command for this project.'],
+['mkdir -p .claude/skills/<skill-name>','Create a skill folder','Put a SKILL.md inside; the name becomes /<skill-name>.'],
+['/plugin','Manage plugins','Install bundles of commands and skills.']]}]},
+{id:'flags',title:'Everyday CLI flags',sub:'before you launch',groups:[{label:'Flags',items:[
+['claude -p "<prompt>" --output-format json','JSON output','Structured output for scripts.'],
+['claude --model <model-name>','Pick a model','Choose the model at launch.'],
+['claude --verbose','Verbose logging','Useful when debugging behaviour.'],
+['claude --help','All flags','The authoritative list for your version.']]}]},
+{id:'prompt2',title:'More prompt templates',sub:'debug · test · docs · git',groups:[{label:'Debug',items:[
+['This error appears when <action>: <error-message>. Find the cause before suggesting a fix.','Debug an error','Paste the exact error text. Asking for the cause first avoids band-aids.'],
+['Add logging to @<file> to show why <behavior> happens, run it, then remove the logging.','Investigate with logs','Claude runs it and reads the output itself.']]},
+{label:'Test',items:[
+['Write tests for @<file> covering edge cases and error paths. Follow the style in @<example-test>.','Write tests','Point at an existing test so the style matches.'],
+['Run <test-command> and fix any failures. Stop and ask if a fix would change expected behavior.','Test loop','The stop condition keeps Claude from rewriting tests to pass.']]},
+{label:'Docs & git',items:[
+['Document @<file>: add concise comments for non-obvious logic only.','Comment code','Limits noise; says what to skip.'],
+['Commit my changes with a clear message describing why, not just what.','Commit','Claude stages and commits. Check /diff first.'],
+['Create a branch named <branch-name> and commit the work there.','Branch','Keeps experiments off main.']]},
+{label:'Steering',items:[
+['Before changing anything, ask me any questions you need.','Clarify first','Prevents wrong assumptions on vague tasks.'],
+['Stop. Undo that last change and try a smaller approach.','Course-correct','Or press Esc then Esc Esc to rewind.']]}]},
+{id:'mcp',title:'MCP servers',sub:'connect outside tools',groups:[{label:'Add & manage',items:[
+['claude mcp add --transport http <name> <url>','Add a hosted server','HTTP transport for remote servers.'],
+['claude mcp add <name> -- <command> <args>','Add a local (stdio) server','Everything after -- is the command that starts the server, e.g. npx -y a package.'],
+['claude mcp add --scope user --transport http <name> <url>','Add for all projects','User scope: just you, everywhere.'],
+['claude mcp add --scope project --transport http <name> <url>','Share with the team','Project scope writes .mcp.json so everyone gets it. Only add servers you trust.'],
+['claude mcp list','List servers','Shows what is configured and connected.'],
+['claude mcp remove <name>','Remove a server','Disconnects it ⚠️'],
+['/mcp','Manage inside a session','Check status and authenticate.']]},
+{label:'Using it',items:[['Use the <name> server to <task>.','Ask for it by name','MCP tools appear as mcp__<server>__<tool>; you rarely need the raw name.']]}]},
+{id:'hooks',title:'Hooks',sub:'rules that always run',groups:[{label:'Where they live',items:[
+['.claude/settings.json','Project hooks','Committed to git; the whole team gets them.'],
+['~/.claude/settings.json','User hooks','Personal, applies to every project.'],
+['/hooks','View hooks','Lists what is configured in this session.']]},
+{label:'Recipes (settings.json)',items:[
+['{"hooks":{"PostToolUse":[{"matcher":"Write|Edit","hooks":[{"type":"command","command":"<formatter-command>"}]}]}}','Format after every edit','Runs your formatter each time Claude writes or edits a file.'],
+['{"hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"type":"command","command":"<script-path>"}]}]}}','Check commands before running','Your script reads the event JSON on stdin; exit code 2 blocks the call.'],
+['{"hooks":{"Stop":[{"hooks":[{"type":"command","command":"<notify-command>"}]}]}}','Notify when done','Fires when Claude finishes responding.']]},
+{label:'Rules of thumb',items:[['Matcher is a tool name like Bash, Edit or Write','Matcher','Names are case-sensitive. Use | to match several, e.g. Write|Edit.'],['Restart the session if a new hook does nothing','Troubleshooting','Then check the command works when pasted into a terminal.']]}]},
+{id:'agents',title:'Subagents',sub:'focused helpers',groups:[{label:'Manage',items:[
+['/agents','Browse and create','Interactive manager for subagents.'],
+['/list-agents','List running agents','Shows subagents and other sessions.'],
+['mkdir -p .claude/agents','Project agents folder','Agent files here are shared with the project.'],
+['mkdir -p ~/.claude/agents','Personal agents folder','Available in every project.']]},
+{label:'Invoke',items:[
+['Use a subagent to <task> and summarise the findings.','Natural language','Claude picks or spins up a helper; only the summary returns to your chat.'],
+['@<agent-name> <task>','@-mention','Explicitly call a named agent.'],
+['Create a subagent called <agent-name> that <what-it-does>. Give it only read-only tools.','Have Claude write one','Restricting tools keeps reviewers from editing code.']]}]},
+{id:'skills',title:'Skills & plugins',sub:'reusable capabilities',groups:[{label:'Skills',items:[
+['mkdir -p .claude/skills/<skill-name>','Create a project skill','Add a SKILL.md with a name and a description of when to use it.'],
+['mkdir -p ~/.claude/skills/<skill-name>','Create a personal skill','Works across all projects.'],
+['Create a skill called <skill-name> that <what-it-does>.','Ask Claude to draft it','Then edit the SKILL.md it produces.']]},
+{label:'Custom commands',items:[['.claude/commands/<command-name>.md','Command file','A markdown prompt; becomes /<command-name>.']]},
+{label:'Plugins',items:[['/plugin','Open plugin manager','Browse, install and manage bundles of commands, skills and agents.'],['/plugin-authoring','Learn to write one','Loads the reference Claude uses to build a plugin.']]}]}
+];
+const GLOSSARY=[['CLAUDE.md','A markdown file of project notes and rules that Claude reads at the start of every session.'],['Context window','How much conversation Claude can hold in mind at once. When it fills, quality drops.'],['Slash command','A command typed inside a session (starts with /) that controls Claude Code itself.'],['Plan Mode','A read-only mode: Claude researches and proposes, but does not edit or run anything.'],['Checkpoint','A saved point you can rewind to, restoring code and/or conversation.'],['Skill','A reusable folder of instructions (SKILL.md) Claude can load for a type of task.'],['Subagent','A helper Claude session handed a focused side task.'],['MCP','Model Context Protocol, a standard for connecting Claude to outside tools and data.'],['Print mode','Running with -p: one answer, then exit. Used in scripts.'],['Hook','A command that runs automatically at a lifecycle point, such as before or after a tool.'],['Matcher','The pattern (tool name like Bash or Write|Edit) deciding which tool calls a hook applies to.'],['PreToolUse','Hook event before a tool runs. It can block the action.'],['PostToolUse','Hook event after a tool succeeds, handy for formatting or logging.'],['MCP server','A program or service exposing tools to Claude over MCP, added with claude mcp add.'],['Scope','Where a setting lives: user (just you), project (shared in git) or local.'],['Transport','How Claude talks to an MCP server: http for remote, stdio for a local process.'],['Frontmatter','The small settings block at the top of a markdown file, between --- lines.'],['Exit code 2','The signal a hook script returns to say block this action.'],['Custom command','A markdown file in .claude/commands/ that becomes your own slash command.']];
+/* ENGINE */
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const RX=PLACEHOLDER_STYLE=='angle'?/&lt;([A-Za-z][^&]*?)&gt;/g:/‹([^›]+)›/g;
+const toastEl=$('#toast');let tt;
+function toast(code,ex){toastEl.innerHTML='<code></code><span></span>';$('code',toastEl).textContent=code;$('span',toastEl).textContent=ex;toastEl.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>toastEl.classList.remove('on'),4500)}
+function codeEl(src){const d=document.createElement('div');d.className='code';
+d.innerHTML=esc(src).replace(RX,(m,n)=>`<input data-n="${n}" placeholder="${n}" size="${Math.max(n.length,3)}">`).replace(/ /g,m=>m);
+d.dataset.src=src;
+$$('input',d).forEach(i=>i.addEventListener('input',()=>{i.size=Math.max(i.value.length,i.placeholder.length,3);i.classList.toggle('f',!!i.value);$$('input',d).forEach(o=>{if(o!==i&&o.dataset.n==i.dataset.n){o.value=i.value;o.size=i.size;o.classList.toggle('f',!!i.value)}})}));return d}
+function text(d){const o=document.createElement('div');o.innerHTML=d.innerHTML;$$('input',d).forEach((i,k)=>{const v=i.value||(PLACEHOLDER_STYLE=='angle'?'<'+i.dataset.n+'>':'‹'+i.dataset.n+'›');$$('input',o)[k].replaceWith(v)});return o.textContent}
+async function copy(t,ex){try{await navigator.clipboard.writeText(t)}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove()}toast(t,ex)}
+function row(code,short,ex){const r=document.createElement('div');r.className='row';const c=codeEl(code);const b=document.createElement('button');b.className='cp';b.textContent='Copy';b.onclick=()=>copy(text(c),ex||short);
+r.append(c,b);if(short){const l=document.createElement('div');l.className='lab';l.textContent=short;r.append(l)}if(ex&&ex!==short){const e=document.createElement('div');e.className='ex';e.textContent=ex;r.append(e)}return r}
+function sec(t,m,id){const h=document.createElement('div');if(id)h.id=id;h.innerHTML=`<h2>${t}</h2><div class="meta">${m}</div>`;return h}
+const app=$('#app'),chips=$('#chips');
+function chip(t,id){const a=document.createElement('a');a.href='#'+id;a.textContent=t;chips.append(a)}
+chip('★ Scenarios','scen');chip('★ Reference','ref');
+app.append(sec('Scenarios & Recipes','Start with the task, not the command','scen'));
+SCENARIOS.forEach(s=>{const c=document.createElement('div');c.className='card item';c.innerHTML=`<h3></h3><div class="when"></div>`;$('h3',c).textContent=s.q;$('.when',c).textContent=s.when||'';
+s.blocks.forEach(b=>{const g=document.createElement('div');g.className='glabel';g.textContent=b.label;c.append(g);b.steps.forEach((st,i)=>{const r=row(st[0],st[1]);const n=document.createElement('span');n.className='step-n';n.textContent='STEP '+(i+1);r.prepend(n);r.style.gridTemplateColumns='1fr auto';c.append(r)});
+if(b.steps.length>1){const bt=document.createElement('button');bt.textContent='Copy these steps';bt.onclick=()=>copy($$('.code',c).map(text).join('\n'),'All the steps above, one per line.');c.append(bt)}});app.append(c)});
+function acc(id,t,sub,open){const d=document.createElement('details');d.className='acc item';d.id=id;if(open)d.open=true;d.innerHTML=`<summary><b>${t}</b><span>${sub}</span></summary><div class="body"></div>`;return d}
+app.append(sec(REFERENCE.sectionTitle,REFERENCE.sectionMeta,'ref'));
+const ra=acc('refacc',REFERENCE.accTitle,REFERENCE.accSub,true);REFERENCE.blocks.forEach(b=>{const body=$('.body',ra);
+if(b.kind=='rule'){const r=document.createElement('div');r.className='rule';r.innerHTML=b.html;body.append(r)}
+if(b.kind=='grid'){const g=document.createElement('div');g.className='grid';b.items.forEach(([k,v])=>{const e=document.createElement('div');e.className='g';e.innerHTML='<code></code><span></span>';$('code',e).textContent=k;$('span',e).textContent=v;g.append(e)});body.append(g)}
+if(b.kind=='cmds')b.items.forEach(i=>body.append(row(...i)))});app.append(ra);
+app.append(sec('Topics','Simple → complex'));
+DATA.forEach((t,n)=>{chip(t.title,t.id);const a=acc(t.id,t.title,t.sub,n==0);t.groups.forEach(g=>{const l=document.createElement('div');l.className='glabel';l.textContent=g.label;$('.body',a).append(l);g.items.forEach(i=>$('.body',a).append(row(...i)))});app.append(a)});
+const gl=$('#gl');GLOSSARY.forEach(([t,d])=>{gl.insertAdjacentHTML('beforeend','<dt></dt><dd></dd>');gl.lastElementChild.previousElementSibling.textContent=t;gl.lastElementChild.textContent=d});
+$('#bg').onclick=()=>$('#gloss').classList.toggle('on');
+$('#be').onclick=()=>$$('details').forEach(d=>d.open=true);$('#bc').onclick=()=>$$('details').forEach(d=>d.open=false);
+$('#q').addEventListener('input',e=>{const v=e.target.value.toLowerCase().trim();
+$$('.row').forEach(r=>r.classList.toggle('hide',!!v&&!r.textContent.toLowerCase().includes(v)&&!(r.querySelector('.code').dataset.src||'').toLowerCase().includes(v)));
+$$('.card.item').forEach(c=>c.classList.toggle('hide',!!v&&!$$('.row:not(.hide)',c).length&&!c.querySelector('h3').textContent.toLowerCase().includes(v)));
+$$('details').forEach(d=>{const any=$$('.row:not(.hide),.g,.rule',d).length;const hit=$$('.row:not(.hide)',d).length;d.classList.toggle('hide',!!v&&!hit&&d.id!='refacc');if(v&&hit)d.open=true})});
+</script></body></html>
