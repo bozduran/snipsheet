@@ -20,6 +20,10 @@ test('accepts the complete sidebar message vocabulary', () => {
     { type: 'setGroupHidden', groupId: 'containers', hidden: true },
   );
   assert.deepEqual(
+    parseWebviewRequest({ type: 'setGroupCollapsed', groupId: 'containers', collapsed: true }, catalog),
+    { type: 'setGroupCollapsed', groupId: 'containers', collapsed: true },
+  );
+  assert.deepEqual(
     parseWebviewRequest({ type: 'setSheetHidden', sheetId: 'docker', hidden: false }, catalog),
     { type: 'setSheetHidden', sheetId: 'docker', hidden: false },
   );
@@ -54,6 +58,14 @@ test('rejects unknown ids, wrong types and unknown modes', () => {
   );
   assert.equal(
     parseWebviewRequest({ type: 'setSheetHidden', sheetId: 'containers', hidden: true }, catalog),
+    null,
+  );
+  assert.equal(
+    parseWebviewRequest({ type: 'setGroupCollapsed', groupId: 'git', collapsed: true }, catalog),
+    null,
+  );
+  assert.equal(
+    parseWebviewRequest({ type: 'setGroupCollapsed', groupId: 'containers', collapsed: 'yes' }, catalog),
     null,
   );
   assert.equal(parseWebviewRequest({ type: 'setMode', mode: 'preview' }, catalog), null);

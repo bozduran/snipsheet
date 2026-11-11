@@ -6,6 +6,11 @@ export type WebviewRequest =
   | { readonly type: 'setMode'; readonly mode: SidebarMode }
   | { readonly type: 'toggleFavorite'; readonly sheetId: string; readonly favorite: boolean }
   | { readonly type: 'setGroupHidden'; readonly groupId: string; readonly hidden: boolean }
+  | {
+      readonly type: 'setGroupCollapsed';
+      readonly groupId: string;
+      readonly collapsed: boolean;
+    }
   | { readonly type: 'setSheetHidden'; readonly sheetId: string; readonly hidden: boolean }
   | { readonly type: 'setShowFavorites'; readonly showFavorites: boolean }
   | { readonly type: 'resetVisibility' }
@@ -58,6 +63,15 @@ export function parseWebviewRequest(raw: unknown, catalog: Catalog): WebviewRequ
       const groupId = readId(raw.groupId);
       return groupId && isBoolean(raw.hidden) && catalog.groups.some((group) => group.id === groupId)
         ? { type: 'setGroupHidden', groupId, hidden: raw.hidden }
+        : null;
+    }
+
+    case 'setGroupCollapsed': {
+      const groupId = readId(raw.groupId);
+      return groupId &&
+        isBoolean(raw.collapsed) &&
+        catalog.groups.some((group) => group.id === groupId)
+        ? { type: 'setGroupCollapsed', groupId, collapsed: raw.collapsed }
         : null;
     }
 

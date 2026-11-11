@@ -142,29 +142,77 @@ function sheetRow(sheet: SheetState, inFavorites: boolean): HTMLLIElement {
   return row;
 }
 
-function sheetSection(
-  title: string,
-  entries: ReadonlyArray<{ group: GroupState; sheet: SheetState }>,
-  inFavorites: boolean,
-): HTMLElement {
-  const section = make('section', inFavorites ? 'section favorites' : 'section');
-  const heading = make('h2', 'section-title');
-  if (inFavorites) {
-    const star = make('span', 'section-star', '★');
-    star.setAttribute('aria-hidden', 'true');
-    heading.append(star);
-  }
-  heading.append(document.createTextNode(title));
-  const count = make('span', 'section-count', String(entries.length));
-  heading.append(count);
-  section.append(heading);
-
+function sheetList(sheets: readonly SheetState[], inFavorites: boolean): HTMLUListElement {
   const list = make('ul', 'sheet-list');
-  for (const entry of entries) {
-    list.append(sheetRow(entry.sheet, inFavorites));
+  for (const sheet of sheets) {
+    list.append(sheetRow(sheet, inFavorites));
   }
-  section.append(list);
+  return list;
+}
+
+function favoritesSection(sheets: readonly SheetState[]): HTMLElement {
+  const section = make('section', 'section favorites');
+  const heading = make('h2', 'section-title');
+  const star = make('span', 'section-star', '★');
+  star.setAttribute('aria-hidden', 'true');
+  heading.append(star, document.createTextNode('Favorites'));
+  heading.append(make('span', 'section-count', String(sheets.length)));
+  section.append(heading, sheetList(sheets, true));
   return section;
+}
+
+function groupSection(
+  group: GroupState,
+  sheets: readonly SheetState[],
+  searchActive: boolean,
+): HTMLElement {
+  const section = make('section', 'section group-section');
+  section.dataset.group = group.id;
+  // While a search is active, matches stay visible instead of disappearing
+  // behind a group the user collapsed earlier.
+  const collapsed = group.collapsed && !searchActive;
+  const heading = make('h2', 'section-title');
+  const toggle = make('button', 'group-toggle');
+  toggle.type = 'button';
+  toggle.dataset.focusKey = `group-toggle-${group.id}`;
+  toggle.setAttribute('aria-expanded', String(!collapsed));
+  toggle.disabled = searchActive;
+  toggle.title = searchActive
+    ? 'Clear search to collapse groups'
+    : collapsed
+      ? `Expand ${group.title}`
+      : `Collapse ${group.title}`;
+
+  const chevron = make('span', 'group-chevron', collapsed ? '▸' : '▾');
+  chevron.setAttribute('aria-hidden', 'true');
+  const count = make('span', 'section-count', String(sheets.length));
+  toggle.append(chevron, make('span', 'section-title-text', group.title), count);
+  toggle.addEventListener('click', () => {
+    const next = !group.collapsed;
+    setGroupCollapsedLocally(group.id, next);
+    post({ type: 'setGroupCollapsed', groupId: group.id, collapsed: next });
+  });
+
+  heading.append(toggle);
+  section.append(heading);
+  if (!collapsed) {
+    section.append(sheetList(sheets, false));
+  }
+  return section;
+}
+
+function setGroupCollapsedLocally(groupId: string, collapsed: boolean): void {
+  const current = state;
+  if (!current) {
+    return;
+  }
+  state = {
+    ...current,
+    groups: current.groups.map((group) =>
+      group.id === groupId ? { ...group, collapsed } : group,
+    ),
+  };
+  renderContent();
 }
 
 function emptyBlock(
@@ -211,17 +259,18 @@ function renderBrowse(current: SidebarState): void {
   }
 
   const sections: HTMLElement[] = [];
+  const searchActive = query.trim().length > 0;
 
   if (current.showFavorites) {
-    const favorites: Array<{ group: GroupState; sheet: SheetState }> = [];
+    const favorites: SheetState[] = [];
     for (const sheetId of current.favorites) {
       const found = findVisible(current, sheetId);
       if (found && sheetMatches(found.sheet, query)) {
-        favorites.push(found);
+        favorites.push(found.sheet);
       }
     }
     if (favorites.length > 0) {
-      sections.push(sheetSection('Favorites', favorites, true));
+      sections.push(favoritesSection(favorites));
     }
   }
 
@@ -229,11 +278,11 @@ function renderBrowse(current: SidebarState): void {
     if (group.hidden) {
       continue;
     }
-    const entries = group.sheets
-      .filter((sheet) => !sheet.hidden && sheetMatches(sheet, query))
-      .map((sheet) => ({ group, sheet }));
+    const entries = group.sheets.filter(
+      (sheet) => !sheet.hidden && sheetMatches(sheet, query),
+    );
     if (entries.length > 0) {
-      sections.push(sheetSection(group.title, entries, false));
+      sections.push(groupSection(group, entries, searchActive));
     }
   }
 
