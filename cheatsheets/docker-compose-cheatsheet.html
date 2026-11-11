@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Docker Compose — Cheat Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Mulish:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root,[data-theme="dark"]{--bg:#0d1a1c;--paper:#111f22;--ink:#e2f0f0;--ink-soft:#6aa8aa;--line:#172628;--line-strong:#22393c;--accent:#2dd4bf;--accent-soft:#5eead4;--green:#5fd38a;--code-bg:#080f10;--code-ink:#d8eeee;--code-dim:#3d6e72;--code-ph:#fcd34d;--code-green:#5fd38a;--on-accent:#040f10;--radius:10px;--dot:.7px;}
+  [data-theme="light"]{--bg:#edfafa;--paper:#ffffff;--ink:#0b1e20;--ink-soft:#2d6468;--line:#c8e8ea;--line-strong:#a8d4d6;--accent:#0d9488;--accent-soft:#14b8a6;--green:#15803d;--code-bg:#080f10;--code-ink:#d8eeee;--code-dim:#3d6e72;--code-ph:#fcd34d;--code-green:#5fd38a;--on-accent:#ffffff;--dot:.6px;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;transition:background-color .3s ease}
+  body,.topic,.scenario,.panel-pad,.btn,.search input,.toast,.cmd,.type{transition:background-color .3s ease,border-color .3s ease,color .3s ease}
+  body{background:var(--bg);color:var(--ink);font-family:'Mulish',system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;background-image:radial-gradient(var(--line) var(--dot),transparent var(--dot));background-size:22px 22px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px}
+  header{padding:64px 0 26px}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2.4rem,8vw,4.1rem);line-height:.98;letter-spacing:-.03em;margin-bottom:16px}
+  h1 .mark{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:.52em;font-weight:700}
+  .lede{font-size:1.05rem;color:var(--ink-soft);max-width:57ch}
+  .lede code{font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--accent-soft)}
+  .hint{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);margin-top:14px;border-left:2px solid var(--accent);padding-left:10px}
+  .controls{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 70%,transparent);padding:18px 0 14px;margin-bottom:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:200px;position:relative}
+  .search input{width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:12px 14px 12px 40px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+  .search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent)}
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.45}
+  .btn{font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.04em;padding:11px 16px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink-soft);cursor:pointer;transition:all .18s;white-space:nowrap}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+  .panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s ease}
+  .panel.open{grid-template-rows:1fr;margin-bottom:26px}
+  .panel-inner{overflow:hidden}
+  .panel-pad{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);padding:20px 22px;margin-top:2px}
+  .panel-pad h3{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:3px}
+  .panel-pad .sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);margin-bottom:16px}
+  .gloss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:15px 24px}
+  .gloss dt{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent-soft);margin-bottom:3px}
+  .gloss dd{font-size:.9rem;color:var(--ink-soft);line-height:1.5}
+  .index{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:34px;padding-bottom:30px;border-bottom:1px solid var(--line)}
+  .index a{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:99px;transition:all .15s}
+  .index a:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .index a.lead{border-color:var(--accent);color:var(--accent)}
+  .index a.lead:hover{background:var(--accent);color:var(--on-accent)}
+  .section-head{display:flex;align-items:baseline;gap:12px;margin:34px 0 16px;flex-wrap:wrap}
+  .section-head h2{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;letter-spacing:-.02em}
+  .section-head .meta{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim)}
+  section{margin-bottom:14px;scroll-margin-top:90px}
+  .topic{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden}
+  .topic-head{display:flex;align-items:center;gap:14px;width:100%;padding:18px 20px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .topic-head:hover .topic-title{color:var(--accent)}
+  .num{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);border:1px solid var(--line-strong);border-radius:6px;padding:3px 7px;flex-shrink:0}
+  .topic-title{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:-.01em;transition:color .2s;flex:1}
+  .topic-sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);font-weight:400}
+  .chev{flex-shrink:0;transition:transform .3s ease;color:var(--ink-soft)}
+  .topic.open .chev,.scenario.open .chev{transform:rotate(90deg)}
+  .topic-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .topic.open .topic-body{grid-template-rows:1fr}
+  .topic-body-inner{overflow:hidden}
+  .topic-pad{padding:0 20px 22px;border-top:1px solid var(--line)}
+  .group-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-soft);margin:22px 0 10px}
+  .scenario{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden;margin-bottom:10px}
+  .scn-head{display:flex;align-items:center;gap:13px;width:100%;padding:16px 18px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .scn-head:hover .scn-q{color:var(--accent)}
+  .scn-icon{flex-shrink:0;width:27px;height:27px;border-radius:7px;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:700}
+  .scn-q{flex:1;font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:-.01em;transition:color .2s}
+  .scn-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .scenario.open .scn-body{grid-template-rows:1fr}
+  .scn-inner{overflow:hidden}
+  .scn-pad{padding:2px 18px 18px;border-top:1px solid var(--line)}
+  .scn-when{font-size:.92rem;color:var(--ink-soft);margin:14px 0 2px;font-style:italic}
+  .scn-block{margin-top:14px}
+  .block-label{font-family:'JetBrains Mono',monospace;font-size:.71rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-soft);margin-bottom:10px}
+  .steps{list-style:none}
+  .step{display:flex;gap:11px;margin-bottom:11px}
+  .step-n{flex-shrink:0;width:22px;height:22px;margin-top:7px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--accent)}
+  .step-main{flex:1;min-width:0}
+  .step-note{font-size:.88rem;color:var(--ink-soft);margin:3px 0 0 2px}
+  .copy-all{margin-top:4px;font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:9px 14px;border:1px dashed var(--line-strong);border-radius:8px;background:none;color:var(--ink-soft);cursor:pointer;transition:all .15s}
+  .copy-all:hover{border-color:var(--accent);color:var(--accent)}
+  .copy-all.done{color:var(--green);border-color:var(--green)}
+  .types{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:8px;margin:6px 0 18px}
+  .type{display:flex;gap:9px;align-items:baseline;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--code-bg)}
+  .type b{font-family:'JetBrains Mono',monospace;color:var(--code-ph);font-size:.78rem;flex-shrink:0;white-space:nowrap}
+  .type span{font-size:.84rem;color:var(--code-dim)}
+  .conv-rule{font-size:.92rem;color:var(--ink-soft);margin-bottom:8px}
+  .conv-rule code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+  .cmd{display:flex;align-items:stretch;gap:0;margin-bottom:8px;border-radius:8px;overflow:hidden;border:1px solid #0a1618;background:var(--code-bg)}
+  .cmd-code{flex:1;font-family:'JetBrains Mono',monospace;font-size:.84rem;color:var(--code-ink);padding:9px 14px;overflow-x:auto;white-space:pre;line-height:1.7;display:flex;align-items:center;flex-wrap:wrap}
+  .cmd-code .lit{white-space:pre}
+  .ph{font-family:'JetBrains Mono',monospace;font-size:.84rem;background:rgba(252,211,77,.16);color:var(--code-ph);border:none;border-bottom:1px dashed var(--code-ph);padding:1px 2px;margin:0 1px;outline:none;border-radius:3px 3px 0 0;transition:background .15s;min-width:1ch}
+  .ph::placeholder{color:var(--code-ph);opacity:.6;font-style:italic}
+  .ph:focus{background:rgba(252,211,77,.3)}
+  .ph.filled{color:var(--code-green);border-bottom-color:var(--code-green);background:rgba(95,211,138,.15)}
+  .copy{flex-shrink:0;border:none;border-left:1px solid #0a1618;background:#091214;color:var(--code-dim);font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:0 15px;cursor:pointer;transition:all .15s;letter-spacing:.05em;align-self:stretch}
+  .copy:hover{background:#0f1c1e;color:var(--code-ink)}
+  .copy.done{color:var(--code-green)}
+  .desc{font-size:.92rem;color:var(--ink-soft);margin:1px 0 13px 2px;line-height:1.6}
+  .desc code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+  /* YAML block */
+  .yaml-block{background:var(--code-bg);border:1px solid var(--line-strong);border-radius:8px;padding:14px 16px;margin-bottom:10px;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--code-ink);line-height:1.7;overflow-x:auto;white-space:pre}
+  .yaml-key{color:var(--accent-soft)}
+  .yaml-val{color:var(--code-ink)}
+  .yaml-comment{color:var(--code-dim);font-style:italic}
+  .no-results{display:none;text-align:center;padding:50px 0;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;font-size:.9rem}
+  footer{padding:40px 0 70px;margin-top:30px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--code-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  footer a{color:var(--accent-soft);text-decoration:none}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);width:min(560px,calc(100% - 36px));z-index:60;background:var(--paper);border:1px solid var(--line-strong);border-radius:14px;box-shadow:0 18px 50px -12px rgba(0,0,0,.6);padding:18px 20px 19px;opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.2,.9,.25,1),opacity .35s}
+  .toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+  .toast-top{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+  .toast-badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--on-accent);background:var(--green);padding:3px 8px;border-radius:99px}
+  .toast-title{font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);flex:1}
+  .toast-close{border:none;background:none;cursor:pointer;color:var(--ink-soft);font-size:1.2rem;line-height:1;padding:2px 4px;border-radius:6px}
+  .toast-close:hover{color:var(--accent);background:var(--line)}
+  .toast-cmd{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--code-ink);background:var(--code-bg);border-radius:8px;padding:9px 12px;margin-bottom:12px;overflow-x:auto;white-space:pre;max-height:150px}
+  .toast-body{font-size:1rem;color:var(--ink);line-height:1.6}
+  .toast-progress{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);border-radius:0 0 0 14px;width:100%}
+  .toast.show .toast-progress{animation:drain 7s linear forwards}
+  @keyframes drain{from{width:100%}to{width:0%}}
+  ::selection{background:var(--accent);color:var(--on-accent)}
+  @media(max-width:540px){header{padding:42px 0 22px}.topic-sub{display:none}.cmd-code{font-size:.79rem}}
+</style>
+</head>
+<body>
+<div class="wrap" id="top">
+  <header>
+    <div class="kicker">Docker Compose · multi-container · CLI · YAML · v2</div>
+    <h1><span class="mark">compose</span> docker compose cheat sheet</h1>
+    <p class="lede">Define, run, and manage multi-container applications with a single <code>compose.yaml</code>. CLI commands, every service key, networking between containers, volumes, environment, health checks, and overrides — all in one place.</p>
+    <p class="hint">⌨ Gold blanks like &lt;service&gt; are editable. ⊕ Copying explains the key or flag. ☀/☾ toggles light &amp; dark. ⚠️ marks destructive commands. Uses the modern <code>docker compose</code> (v2) not the old <code>docker-compose</code>.</p>
+  </header>
+  <div class="controls">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="Search…  e.g. depends_on, healthcheck, override, scale, env" autocomplete="off">
+    </label>
+    <button class="btn" id="themeBtn">☀ Light</button>
+    <button class="btn" id="glossaryBtn">Glossary</button>
+    <button class="btn" id="expandAll">Expand all</button>
+    <button class="btn" id="collapseAll">Collapse all</button>
+  </div>
+  <div class="panel glossary" id="glossary"><div class="panel-inner"><div class="panel-pad">
+    <h3>Docker Compose glossary</h3><div class="sub">the multi-container words in plain language</div>
+    <dl class="gloss gloss-grid" id="glossList"></dl>
+  </div></div></div>
+  <nav class="index" id="index"></nav>
+  <main id="content"></main>
+  <div class="no-results" id="noResults">Nothing matches that search.</div>
+  <footer><span>Copy a command or key to learn it. Empty blanks copy as &lt;placeholder&gt;.</span><span><a href="#top">↑ back to top</a></span></footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <div class="toast-top"><span class="toast-badge">copied</span><span class="toast-title">what this does</span><button class="toast-close" id="toastClose">×</button></div>
+  <div class="toast-cmd" id="toastCmd"></div><div class="toast-body" id="toastBody"></div>
+  <div class="toast-progress"></div>
+</div>
+<script>
+const SCENARIOS=[
+  {q:"Start the whole stack",when:"Bring up all services defined in compose.yaml — the most common daily command.",blocks:[{label:"Up → check → logs",steps:[
+    ["docker compose up -d","Start all services in detached mode. Compose creates the network, volumes, and containers in dependency order. If images don't exist locally it pulls or builds them first."],
+    ["docker compose ps","Show the status of all services — running, stopped, or unhealthy."],
+    ["docker compose logs -f <service>","Follow the logs of one service. Omit the service name to tail all of them at once."],
+  ]}]},
+  {q:"Rebuild and restart after a code change",when:"You've changed a Dockerfile or source that's baked into the image.",blocks:[{label:"Build → recreate",steps:[
+    ["docker compose build <service>","Rebuild the image for one service without touching the others. Add --no-cache to force a full rebuild."],
+    ["docker compose up -d --force-recreate <service>","Restart just that service with the new image. --force-recreate replaces the container even if the config hasn't changed."],
+  ]}]},
+  {q:"Run a one-off command in a service container",when:"Run a database migration, a seed script, or a test suite inside a container.",blocks:[{label:"run vs exec",steps:[
+    ["docker compose run --rm <service> <command>","Spin up a fresh container for the service and run the command. --rm cleans it up afterwards. The service's dependencies start first."],
+    ["docker compose exec <service> sh","Open a shell in the already-running service container — no new container, no startup overhead."],
+  ]}]},
+  {q:"Stop without deleting data",when:"Pause the stack to free up resources but keep volumes intact.",blocks:[{label:"stop vs down",steps:[
+    ["docker compose stop","Stop all running containers without removing them or their volumes. Equivalent to docker stop on each one."],
+    ["docker compose start","Restart the stopped containers without recreating them."],
+  ]}]},
+  {q:"Tear down and clean up everything",when:"Wipe the stack completely — containers, networks, and optionally volumes.",blocks:[{label:"down with options",steps:[
+    ["docker compose down","Stop and remove all containers and the default network. Volumes and images are kept."],
+    ["docker compose down -v","⚠️ Also remove all named and anonymous volumes declared in the compose file. All database data, uploads, etc. are deleted permanently."],
+    ["docker compose down --rmi all -v","⚠️ Also remove the images built by this project. Combines a full reset of containers, volumes, and images."],
+  ]}]},
+  {q:"Use a different compose file or override",when:"Switch between dev and prod configs, or layer extra config on top.",blocks:[{label:"-f flag for multiple files",steps:[
+    ["docker compose -f compose.yaml -f compose.prod.yaml up -d","Layer two files — the second overrides the first. Use this for environment-specific config like prod resource limits or different env vars."],
+    ["docker compose --env-file <.env.prod> up -d","Load a different .env file instead of the default .env. Useful for pointing at a staging database without changing the compose file."],
+  ]}]},
+  {q:"Scale a service horizontally",when:"Run multiple instances of a stateless service behind a load balancer.",blocks:[{label:"scale at runtime",steps:[
+    ["docker compose up -d --scale <web>=<3>","Start 3 instances of the web service. Do not set container_name in the service — Compose auto-names the replicas. The instances share the same network and volumes."],
+  ]}]},
+  {q:"Check config and see what Compose resolves",when:"Debug why a value isn't what you expect — variable substitution, overrides, etc.",blocks:[{label:"config + convert",steps:[
+    ["docker compose config","Print the fully resolved compose config after merging all -f files and substituting all variables. The ground truth for what Compose will actually run."],
+    ["docker compose config --services","List just the service names defined in the resolved config."],
+  ]}]},
+];
+
+const KEYS=[
+  ["services:","top-level list of containers"],
+  ["image:","pre-built image to use"],
+  ["build:","build from a Dockerfile"],
+  ["ports:","host:container port mapping"],
+  ["volumes:","mount paths or named volumes"],
+  ["environment:","env vars for the service"],
+  ["env_file:","load vars from a file"],
+  ["depends_on:","startup ordering"],
+  ["networks:","networks to join"],
+  ["restart:","restart policy"],
+  ["healthcheck:","readiness probe"],
+  ["deploy:","resource limits & replicas"],
+];
+
+const YAML_SKELETON=`<span class="yaml-comment"># compose.yaml — a full-stack example</span>
+<span class="yaml-key">services:</span>
+
+  <span class="yaml-key">web:</span>
+    <span class="yaml-key">build:</span> <span class="yaml-val">.</span>                    <span class="yaml-comment"># build from Dockerfile in current dir</span>
+    <span class="yaml-key">ports:</span>
+      <span class="yaml-val">- "3000:3000"</span>
+    <span class="yaml-key">environment:</span>
+      <span class="yaml-val">NODE_ENV: production</span>
+      <span class="yaml-val">DB_URL: postgres://db:5432/myapp</span>
+    <span class="yaml-key">depends_on:</span>
+      <span class="yaml-val">db:</span>
+        <span class="yaml-val">condition: service_healthy</span>  <span class="yaml-comment"># wait for the healthcheck to pass</span>
+    <span class="yaml-key">networks:</span>
+      <span class="yaml-val">- app-net</span>
+
+  <span class="yaml-key">db:</span>
+    <span class="yaml-key">image:</span> <span class="yaml-val">postgres:16-alpine</span>
+    <span class="yaml-key">environment:</span>
+      <span class="yaml-val">POSTGRES_PASSWORD: secret</span>
+      <span class="yaml-val">POSTGRES_DB: myapp</span>
+    <span class="yaml-key">volumes:</span>
+      <span class="yaml-val">- db-data:/var/lib/postgresql/data</span>
+    <span class="yaml-key">healthcheck:</span>
+      <span class="yaml-val">test: ["CMD-SHELL", "pg_isready -U postgres"]</span>
+      <span class="yaml-val">interval: 5s</span>
+      <span class="yaml-val">retries: 5</span>
+    <span class="yaml-key">networks:</span>
+      <span class="yaml-val">- app-net</span>
+
+<span class="yaml-key">volumes:</span>
+  <span class="yaml-key">db-data:</span>                       <span class="yaml-comment"># named volume — survives "docker compose down"</span>
+
+<span class="yaml-key">networks:</span>
+  <span class="yaml-key">app-net:</span>                       <span class="yaml-comment"># services on the same network reach each other by service name</span>`;
+
+const DATA=[
+  {id:"cli",title:"CLI Commands",sub:"up · down · logs · exec · build",groups:[
+    {label:"Start and stop",items:[
+      ["docker compose up","Start all services (foreground).","Streams logs to your terminal. Ctrl+C stops everything. Use -d to detach."],
+      ["docker compose up -d","Start all services (detached).","Runs in the background. Compose starts services in dependency order."],
+      ["docker compose up -d <service>","Start one service only.","Starts the named service and anything it depends on."],
+      ["docker compose up -d --build","Build then start.","Builds (or rebuilds) images before starting. Equivalent to running build then up."],
+      ["docker compose stop","Stop without removing.","Stops all containers but keeps them and their data. Use start to resume."],
+      ["docker compose down","Stop and remove containers + network.","Volumes and images are preserved. The network Compose created is removed."],
+      ["docker compose down -v","⚠️ Also remove volumes.","Permanently deletes all data stored in named and anonymous volumes declared in the file."],
+      ["docker compose restart <service>","Restart one service.","Stops and starts the service container without rebuilding or recreating it."],
+    ]},
+    {label:"Inspect",items:[
+      ["docker compose ps","List services and their status.","Shows name, image, command, created time, status, and published ports for each service."],
+      ["docker compose logs -f <service>","Follow logs.","Streams stdout/stderr for the service. Omit the service name to tail all at once. --tail 50 limits history."],
+      ["docker compose top","Show running processes.","Lists the processes inside each running service container."],
+      ["docker compose config","Show resolved config.","Merges all -f files, substitutes variables, and prints the final config Compose will use. Essential for debugging."],
+      ["docker compose images","List images used.","Shows which image each service is using and its size."],
+    ]},
+    {label:"Run commands",items:[
+      ["docker compose exec <service> <command>","Run in a running container.","Executes inside the already-running service container — no new container, no startup delay. Great for a quick shell: exec web sh."],
+      ["docker compose run --rm <service> <command>","Run in a new container.","Spins up a fresh container for the service, runs the command, and removes it. Dependencies start first. Use for migrations, seeds, test runs."],
+      ["docker compose run --rm --no-deps <service> <command>","Run without starting dependencies.","--no-deps skips starting dependent services — useful when deps are already up or you're running isolated tasks."],
+    ]},
+    {label:"Build",items:[
+      ["docker compose build","Build all images.","Builds every service that has a build: key. Pulls base images if needed."],
+      ["docker compose build --no-cache <service>","Rebuild from scratch.","Ignores the layer cache — forces every step to re-run. Useful when a RUN step fetches remote content."],
+      ["docker compose pull","Pull all images.","Downloads the latest version of every image: entry. Doesn't restart running containers."],
+    ]},
+  ]},
+  {id:"services",title:"Service Keys",sub:"image · build · ports · volumes · env",groups:[
+    {label:"Image source",items:[
+      ["image: <postgres>:<16-alpine>","Use a pre-built image.","Pull this image from the registry. Always pin the tag — avoid 'latest' in any real environment."],
+      ["build: <.>","Build from a Dockerfile.","A dot means use the Dockerfile in the current directory. Compose builds the image before starting the service."],
+      ["build:\n  context: <./app>\n  dockerfile: <Dockerfile.prod>\n  args:\n    <BUILD_ENV>: <production>","Build with options.","context sets the build root; dockerfile names a non-default file; args pass build-time variables."],
+    ]},
+    {label:"Ports and networking",items:[
+      ["ports:\n  - \"<8080>:<3000>\"","Publish a port.","Maps host port 8080 to container port 3000. Omit the host port (- \"3000\") to let Docker choose a random one."],
+      ["expose:\n  - \"<3000>\"","Expose to other services only.","Makes the port reachable by other containers on the same network but does NOT publish it to the host. Use ports: for host access."],
+      ["networks:\n  - <app-net>","Join a network.","The service joins the named network and can reach other services on it by their service name — DNS is built in."],
+    ]},
+    {label:"Volumes",items:[
+      ["volumes:\n  - <db-data>:/var/lib/postgresql/data","Mount a named volume.","Data persists across container restarts and recreations. The volume must also be declared at the top-level volumes: key."],
+      ["volumes:\n  - <./src>:/app/src","Bind mount a host path.","Maps a local directory into the container. Changes are immediately visible on both sides — the live-reload pattern."],
+      ["volumes:\n  - <./src>:/app/src:ro","Read-only bind mount.",":ro prevents the container from writing to your local files."],
+    ]},
+    {label:"Environment",items:[
+      ["environment:\n  <NODE_ENV>: <production>\n  <DB_URL>: <postgres://db/myapp>","Inline env vars.","Set key-value pairs directly. Values can reference host env vars with ${VAR} syntax."],
+      ["env_file:\n  - <.env>","Load from a file.","Reads key=value pairs from the file. Compose also auto-loads .env from the project directory for variable substitution."],
+      ["environment:\n  <SECRET_KEY>: ${<SECRET_KEY>}","Pass a host env var through.","The value comes from the shell running docker compose. Missing vars produce an empty string by default — use ${VAR:?error} to make them required."],
+    ]},
+    {label:"Startup order",items:[
+      ["depends_on:\n  - <db>","Start after another service.","Compose starts db before web. With just a list, it only waits for the container to start — not for the app inside to be ready."],
+      ["depends_on:\n  <db>:\n    condition: service_healthy","Wait for healthy.","Waits until db passes its healthcheck before starting. The db service must define a healthcheck: block."],
+      ["depends_on:\n  <db>:\n    condition: service_completed_successfully","Wait for a job to finish.","Used for init containers — waits until the dependency exits with code 0 before starting."],
+    ]},
+    {label:"Restart policy",items:[
+      ["restart: no","Never restart (default).","The container stays stopped after it exits."],
+      ["restart: always","Always restart.","Restarts on any exit, including host reboots. Use for services that must always be running."],
+      ["restart: unless-stopped","Restart unless manually stopped.","Like always, but respects a manual docker compose stop. The most common production choice."],
+      ["restart: on-failure","Restart only on non-zero exit.","Restarts if the process crashes but not on a clean exit. Add :3 (on-failure:3) to limit retries."],
+    ]},
+  ]},
+  {id:"healthcheck",title:"Health Checks",sub:"readiness · liveness",groups:[
+    {label:"Define a health check",items:[
+      ["healthcheck:\n  test: [\"CMD\",\"curl\",\"-f\",\"http://localhost:<3000>/health\"]\n  interval: <10s>\n  timeout: <5s>\n  retries: <3>\n  start_period: <30s>","Full health check.","test runs the command; interval is how often; timeout is the per-attempt limit; retries is how many failures before unhealthy; start_period gives the app time to boot before counting failures."],
+      ["healthcheck:\n  test: [\"CMD-SHELL\",\"pg_isready -U <postgres>\"]\n  interval: <5s>\n  retries: <5>","PostgreSQL readiness check.","pg_isready exits 0 when the server is accepting connections. Pair with depends_on condition: service_healthy to gate dependent services."],
+      ["healthcheck:\n  disable: true","Disable the image's built-in check.","Some base images define a HEALTHCHECK — set disable: true to turn it off."],
+    ]},
+  ]},
+  {id:"networks",title:"Networks",sub:"custom · external · aliases",groups:[
+    {label:"Define networks",items:[
+      ["networks:\n  <app-net>:","Declare a custom network.","At the top level, declare the network. Compose creates it automatically. All services that list it can reach each other by service name."],
+      ["networks:\n  <legacy-net>:\n    external: true","Use an existing network.","external: true tells Compose the network already exists — don't create or remove it. Useful for connecting to services in another Compose project."],
+      ["networks:\n  <app-net>:\n    driver: bridge\n    ipam:\n      config:\n        - subnet: <172.28.0.0/16>","Custom subnet.","Specify a fixed subnet when you need predictable IPs, e.g. for firewall rules."],
+    ]},
+    {label:"Service-level network config",items:[
+      ["networks:\n  <app-net>:\n    aliases:\n      - <backend>","Network alias.","The service is reachable by this alias name on the network — useful when another service is hardcoded to a hostname."],
+    ]},
+  ]},
+  {id:"volumes-top",title:"Volumes (top-level)",sub:"named · external · driver",groups:[
+    {label:"Declare volumes",items:[
+      ["volumes:\n  <db-data>:","Declare a named volume.","An empty value uses the default local driver. The volume persists until you explicitly remove it or run down -v."],
+      ["volumes:\n  <uploads>:\n    driver: local\n    driver_opts:\n      type: none\n      o: bind\n      device: <./data/uploads>","Named volume backed by a host path.","Creates a named volume that actually stores data at a specific host path — a hybrid of named volume and bind mount. Useful when you want the volume API but a known location."],
+      ["volumes:\n  <shared-data>:\n    external: true","Use an existing volume.","external: true means Compose won't create or delete this volume — it must exist before docker compose up."],
+    ]},
+  ]},
+  {id:"overrides",title:"Overrides & Profiles",sub:"dev vs prod · profiles",groups:[
+    {label:"File overrides",items:[
+      ["docker compose -f compose.yaml -f compose.override.yaml up","Layer overrides.","Compose deep-merges the files. The second file wins on conflicts. docker compose up automatically applies compose.override.yaml if it exists alongside compose.yaml."],
+      ["docker compose -f compose.yaml -f compose.prod.yaml config","Preview merged config.","Always run config to verify the merged result before deploying — surprises here are better than in production."],
+    ]},
+    {label:"Profiles",items:[
+      ["profiles:\n  - <debug>","Tag a service with a profile.","The service only starts when that profile is active. Services without profiles always start."],
+      ["docker compose --profile <debug> up -d","Activate a profile.","Starts the normal services plus any tagged with 'debug'. Use for optional tools like pgAdmin, mail catchers, or monitoring sidecars."],
+    ]},
+    {label:"Variable substitution",items:[
+      ["<IMAGE_TAG>:<latest>","Variable with default.","In compose.yaml, ${IMAGE_TAG:-latest} uses the variable if set, falling back to 'latest'. Requires no quoting when the value has no special chars."],
+      ["<REQUIRED_VAR>","Required variable (no default).","${REQUIRED_VAR:?Must set REQUIRED_VAR} aborts with an error if the variable isn't set — safer than silently using an empty string."],
+    ]},
+  ]},
+  {id:"deploy",title:"Deploy & Resources",sub:"limits · replicas (Swarm / local)",groups:[
+    {label:"Resource limits",items:[
+      ["deploy:\n  resources:\n    limits:\n      cpus: '<0.5>'\n      memory: <512M>\n    reservations:\n      memory: <256M>","CPU and memory limits.","limits caps what the service can use; reservations is what Compose guarantees. In plain docker compose (non-Swarm) only limits are enforced."],
+      ["deploy:\n  replicas: <3>","Multiple replicas.","Runs 3 instances of the service. Don't set container_name — Compose names them automatically. Use a load balancer or a reverse proxy in front."],
+      ["deploy:\n  restart_policy:\n    condition: on-failure\n    max_attempts: <3>","Restart policy (deploy key).","The deploy.restart_policy key is the Swarm-compatible way to set restart behaviour."],
+    ]},
+  ]},
+];
+
+const GLOSSARY=[
+  ["compose.yaml","The project file — defines all services, networks, and volumes. Compose also accepts docker-compose.yml for compatibility."],
+  ["service","One container type in the compose file. Compose creates one (or more, with replicas) container per service."],
+  ["project","A group of services sharing a name (set by the directory name or --project-name). Compose prefixes all resources with the project name."],
+  ["depends_on","Declares startup ordering between services. With condition: service_healthy, it also waits for a healthcheck to pass."],
+  ["healthcheck","A command Compose runs periodically inside a container to determine if it's ready. status is healthy, unhealthy, or starting."],
+  ["named volume","A volume managed by Docker with a stable name. Persists across down and restart — only removed by down -v or volume rm."],
+  ["bind mount","A host path mounted into a container. Changes on either side are immediately visible on the other."],
+  ["network alias","An extra hostname a service is reachable by on a network — useful when other services are hardcoded to a specific hostname."],
+  ["external resource","A volume or network that already exists outside the Compose project — Compose won't create or delete it."],
+  ["override file","A second compose file merged on top of the first. compose.override.yaml is applied automatically if it exists."],
+  ["profile","A tag on a service that makes it opt-in — only started when the matching --profile flag is passed."],
+  ["env_file","A file of KEY=VALUE pairs loaded into a service's environment. Compose also auto-loads .env for variable substitution."],
+  ["variable substitution","${VAR} in compose.yaml is replaced by the environment variable. ${VAR:-default} falls back; ${VAR:?err} aborts if missing."],
+  ["deploy key","Service configuration for resource limits and replica counts. In plain Compose (non-Swarm), only resource limits apply."],
+  ["docker compose (v2)","The current plugin-based implementation (docker compose). Replaces the older standalone docker-compose (v1) binary."],
+  ["service_healthy","A depends_on condition that waits for the dependency's healthcheck to report healthy before starting."],
+];
+
+const escA=s=>String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const escH=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const PH_SPLIT=/(<[A-Za-z][\w.\-/:@#]*>)/g;
+const PH_MATCH=/^<([A-Za-z][\w.\-/:@#]*)>$/;
+function buildCmdHTML(cmd){return cmd.split(PH_SPLIT).map(p=>{const m=p.match(PH_MATCH);if(m){const n=m[1];return `<input class="ph" data-ph="${escA(n)}" placeholder="${escA(n)}" size="${Math.max(n.length,2)}" spellcheck="false" autocomplete="off">`;}return p?`<span class="lit">${escH(p)}</span>`:''}).join('');}
+function readCmd(el){let o='';el.childNodes.forEach(n=>{if(n.nodeType===1&&n.classList.contains('ph')){const v=n.value.trim();o+=v?v:'<'+n.dataset.ph+'>';}else o+=n.textContent;});return o;}
+const cmdRow=(c,ex)=>`<div class="cmd"><code class="cmd-code">${buildCmdHTML(c)}</code><button class="copy" data-explain="${escA(ex)}">copy</button></div>`;
+const content=document.getElementById('content'),index=document.getElementById('index');
+function addChip(l,t,lead){const a=document.createElement('a');a.href='#'+t;a.textContent=l;a.dataset.target=t;if(lead)a.classList.add('lead');index.appendChild(a);}
+addChip('★ Scenarios','scenarios',true);addChip('★ Skeleton','reference',true);
+DATA.forEach(t=>addChip(t.title,t.id));
+document.getElementById('glossList').innerHTML=GLOSSARY.map(([t,d])=>`<div><dt>${escH(t)}</dt><dd>${escH(d)}</dd></div>`).join('');
+
+const scn=document.createElement('section');scn.id='scenarios';
+let sH=`<div class="section-head"><h2>Scenarios &amp; Recipes</h2><span class="meta">"how do I…" → exact commands</span></div>`;
+SCENARIOS.forEach((s,i)=>{
+  let body='';if(s.when)body+=`<p class="scn-when">${escH(s.when)}</p>`;let sb=s.q;
+  s.blocks.forEach(b=>{body+=`<div class="scn-block">`;if(b.label)body+=`<div class="block-label">${escH(b.label)}</div>`;body+=`<ol class="steps">`;
+    b.steps.forEach(([c,n])=>{sb+=' '+c+' '+n;body+=`<li class="step"><span class="step-n">•</span><div class="step-main">${cmdRow(c,n)}<div class="step-note">${escH(n)}</div></div></li>`;});
+    body+=`</ol>`;if(b.steps.length>1)body+=`<button class="copy-all">Copy these steps</button>`;body+=`</div>`;
+  });
+  sH+=`<div class="scenario searchable" data-search="${escA(sb.toLowerCase())}"><button class="scn-head" aria-expanded="false"><span class="scn-icon">${i+1}</span><span class="scn-q">${escH(s.q)}</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="scn-body"><div class="scn-inner"><div class="scn-pad">${body}</div></div></div></div>`;
+});
+scn.innerHTML=sH;content.appendChild(scn);
+document.querySelectorAll('.scn-block .steps').forEach(ol=>ol.querySelectorAll('.step-n').forEach((n,i)=>n.textContent=i+1));
+
+const ref=document.createElement('section');ref.id='reference';
+const keysHtml=KEYS.map(([t,d])=>`<div class="type"><b>${escH(t)}</b><span>${escH(d)}</span></div>`).join('');
+ref.innerHTML=`<div class="section-head"><h2>Compose File Skeleton</h2><span class="meta">the full-stack template</span></div><div class="topic"><button class="topic-head" aria-expanded="false"><span class="num">★</span><span class="topic-title">A working compose.yaml with web + postgres</span><span class="topic-sub">healthcheck · named volume · custom network</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="topic-body"><div class="topic-body-inner"><div class="topic-pad"><p class="conv-rule">Every service is a container. Services on the same <code>network</code> reach each other by service name. <code>depends_on</code> with <code>condition: service_healthy</code> waits for the healthcheck — don't just use the plain list form if you need the DB to be ready.</p><div class="yaml-block">${YAML_SKELETON}</div><div class="group-label">Top-level keys at a glance</div><div class="types">${keysHtml}</div></div></div></div></div>`;
+content.appendChild(ref);
+
+DATA.forEach((topic,i)=>{
+  const sec=document.createElement('section');sec.id=topic.id;let gh='';
+  topic.groups.forEach(g=>{gh+=`<div class="group"><div class="group-label">${escH(g.label)}</div>`;
+    g.items.forEach(([c,desc,ex])=>{
+      const search=escA((c+' '+desc+' '+(ex||'')).toLowerCase());
+      const isYaml=c.includes('\n');
+      if(isYaml){
+        const lines=c.split('\n').map(l=>escH(l)).join('\n');
+        gh+=`<div class="cmd-block searchable" data-search="${search}"><div class="yaml-block">${lines}</div><div class="desc">${escH(desc)} — ${escH(ex||'')}</div></div>`;
+      } else {
+        gh+=`<div class="cmd-block searchable" data-search="${search}">${cmdRow(c,ex||desc)}<div class="desc">${escH(desc)}</div></div>`;
+      }
+    });
+    gh+=`</div>`;
+  });
+  sec.innerHTML=`<div class="topic"><button class="topic-head" aria-expanded="false"><span class="num">${String(i+1).padStart(2,'0')}</span><span class="topic-title">${escH(topic.title)}</span><span class="topic-sub">${escH(topic.sub)}</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">${gh}</div></div></div></div>`;
+  content.appendChild(sec);
+});
+
+function setOpen(el,open){el.classList.toggle('open',open);const h=el.querySelector('[aria-expanded]');if(h)h.setAttribute('aria-expanded',open);}
+document.querySelectorAll('.topic-head,.scn-head').forEach(h=>h.addEventListener('click',()=>{const t=h.closest('.topic,.scenario');setOpen(t,!t.classList.contains('open'));}));
+document.getElementById('expandAll').onclick=()=>document.querySelectorAll('.topic,.scenario').forEach(t=>setOpen(t,true));
+document.getElementById('collapseAll').onclick=()=>document.querySelectorAll('.topic,.scenario').forEach(t=>setOpen(t,false));
+index.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{const s=document.getElementById(a.dataset.target);const acc=s&&s.querySelector('.topic,.scenario');if(acc)setOpen(acc,true);}));
+const glossary=document.getElementById('glossary'),gBtn=document.getElementById('glossaryBtn');
+gBtn.onclick=()=>{const o=glossary.classList.toggle('open');gBtn.classList.toggle('active',o);};
+const themeBtn=document.getElementById('themeBtn');
+function applyTheme(m){document.documentElement.setAttribute('data-theme',m);themeBtn.textContent=m==='dark'?'☀ Light':'☾ Dark';}
+themeBtn.onclick=()=>applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
+applyTheme('dark');
+content.addEventListener('input',e=>{const inp=e.target;if(!inp.classList||!inp.classList.contains('ph'))return;inp.size=Math.max(inp.value.length||inp.placeholder.length,2);inp.classList.toggle('filled',inp.value.trim().length>0);inp.closest('.cmd-code').querySelectorAll('.ph').forEach(o=>{if(o!==inp&&o.dataset.ph===inp.dataset.ph){o.value=inp.value;o.size=Math.max(o.value.length||o.placeholder.length,2);o.classList.toggle('filled',o.value.trim().length>0);}});});
+content.addEventListener('click',e=>{if(e.target.classList&&e.target.classList.contains('ph'))e.stopPropagation();});
+const toast=document.getElementById('toast'),toastCmd=document.getElementById('toastCmd'),toastBody=document.getElementById('toastBody');let tt;
+function showToast(cmd,ex){toastCmd.textContent=cmd;toastBody.textContent=ex;toast.classList.remove('show');void toast.offsetWidth;toast.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>toast.classList.remove('show'),7000);}
+document.getElementById('toastClose').onclick=()=>toast.classList.remove('show');
+content.addEventListener('click',e=>{
+  const btn=e.target.closest('.copy');if(btn){const code=btn.parentElement.querySelector('.cmd-code');const text=readCmd(code);navigator.clipboard.writeText(text).then(()=>{btn.textContent='copied';btn.classList.add('done');setTimeout(()=>{btn.textContent='copy';btn.classList.remove('done');},1300);showToast(text,btn.dataset.explain);});return;}
+  const ca=e.target.closest('.copy-all');if(ca){const block=ca.closest('.scn-block');const text=[...block.querySelectorAll('.cmd-code')].map(readCmd).join('\n');navigator.clipboard.writeText(text).then(()=>{ca.textContent='copied all';ca.classList.add('done');setTimeout(()=>{ca.textContent='Copy these steps';ca.classList.remove('done');},1500);showToast(text,'The steps of this recipe in order.');});}
+});
+const search=document.getElementById('search'),noResults=document.getElementById('noResults');
+search.addEventListener('input',()=>{const q=search.value.trim().toLowerCase();document.querySelectorAll('.searchable').forEach(el=>{el.style.display=(!q||el.dataset.search.includes(q))?'':'none';});document.querySelectorAll('.group').forEach(g=>{g.style.display=[...g.querySelectorAll('.searchable')].some(e=>e.style.display!=='none')?'':'none';});let any=false;document.querySelectorAll('main section').forEach(sec=>{const vis=[...sec.querySelectorAll('.searchable')].some(e=>e.style.display!=='none');sec.style.display=vis?'':'none';if(vis){any=true;if(q){sec.querySelectorAll('.topic').forEach(t=>{if([...t.querySelectorAll('.searchable')].some(e=>e.style.display!=='none'))setOpen(t,true);});sec.querySelectorAll('.scenario.searchable').forEach(s=>{if(s.style.display!=='none')setOpen(s,true);});}}});noResults.style.display=any?'none':'block';});
+setOpen(document.querySelector('#scenarios .scenario'),true);
+setOpen(document.querySelector('#cli .topic'),true);
+</script>
+</body>
+</html>

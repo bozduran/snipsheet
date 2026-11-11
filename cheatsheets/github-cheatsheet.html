@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub — Cheat Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eaeef3;
+    --paper:#ffffff;
+    --ink:#1f2328;
+    --ink-soft:#59636e;
+    --line:#d6dde4;
+    --line-strong:#c2ccd6;
+    --accent:#0969da;
+    --accent-soft:#218bff;
+    --green:#1f883d;
+    --code-bg:#0d1117;
+    --code-ink:#e6edf3;
+    --code-dim:#8b949e;
+    --code-blue:#79c0ff;
+    --code-str:#a5d6ff;
+    --code-green:#3fb950;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(var(--line) 0.6px,transparent 0.6px);
+    background-size:22px 22px;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px}
+
+  /* Header */
+  header{padding:64px 0 30px}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(2.5rem,8vw,4.2rem);line-height:.98;letter-spacing:-.025em;margin-bottom:16px}
+  h1 .mark{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:.7em}
+  .lede{font-size:1.05rem;color:var(--ink-soft);max-width:52ch}
+  .hint{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--code-dim);margin-top:14px;border-left:2px solid var(--accent);padding-left:10px}
+
+  /* Controls */
+  .controls{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 70%,transparent);padding:18px 0 14px;margin-bottom:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:200px;position:relative}
+  .search input{width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:12px 14px 12px 40px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+  .search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(9,105,218,.15)}
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.45}
+  .btn{font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.04em;padding:11px 16px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink-soft);cursor:pointer;transition:all .18s;white-space:nowrap}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  /* Glossary */
+  .glossary{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s ease}
+  .glossary.open{grid-template-rows:1fr;margin-bottom:26px}
+  .glossary-inner{overflow:hidden}
+  .glossary-pad{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);padding:20px 22px;margin-top:2px}
+  .glossary-pad h3{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:600;margin-bottom:3px}
+  .glossary-pad .sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);margin-bottom:16px}
+  .gloss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:15px 24px}
+  .gloss dt{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent);margin-bottom:3px}
+  .gloss dd{font-size:.9rem;color:var(--ink-soft);line-height:1.5}
+
+  /* Index */
+  .index{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:34px;padding-bottom:30px;border-bottom:1px solid var(--line)}
+  .index a{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:99px;transition:all .15s}
+  .index a:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .index a.lead{border-color:var(--accent);color:var(--accent)}
+  .index a.lead:hover{background:var(--accent);color:#fff}
+
+  /* Section header */
+  .section-head{display:flex;align-items:baseline;gap:12px;margin:34px 0 16px;flex-wrap:wrap}
+  .section-head h2{font-family:'Space Grotesk',sans-serif;font-size:1.7rem;font-weight:600;letter-spacing:-.02em}
+  .section-head .meta{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim)}
+
+  /* Accordions */
+  section{margin-bottom:14px;scroll-margin-top:90px}
+  .topic{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden}
+  .topic-head{display:flex;align-items:center;gap:14px;width:100%;padding:18px 20px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .topic-head:hover .topic-title{color:var(--accent)}
+  .num{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);border:1px solid var(--line-strong);border-radius:6px;padding:3px 7px;flex-shrink:0}
+  .topic-title{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:600;letter-spacing:-.01em;transition:color .2s;flex:1}
+  .topic-sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);font-weight:400}
+  .chev{flex-shrink:0;transition:transform .3s ease;color:var(--ink-soft)}
+  .topic.open .chev,.scenario.open .chev{transform:rotate(90deg)}
+  .topic-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .topic.open .topic-body{grid-template-rows:1fr}
+  .topic-body-inner{overflow:hidden}
+  .topic-pad{padding:0 20px 22px;border-top:1px solid var(--line)}
+  .group-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-soft);margin:22px 0 10px}
+
+  /* Scenario cards */
+  .scenario{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden;margin-bottom:10px}
+  .scn-head{display:flex;align-items:center;gap:13px;width:100%;padding:16px 18px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .scn-head:hover .scn-q{color:var(--accent)}
+  .scn-icon{flex-shrink:0;width:27px;height:27px;border-radius:7px;display:grid;place-items:center;background:var(--accent);color:#fff;font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:600}
+  .scn-q{flex:1;font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:600;letter-spacing:-.01em;transition:color .2s}
+  .scn-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .scenario.open .scn-body{grid-template-rows:1fr}
+  .scn-inner{overflow:hidden}
+  .scn-pad{padding:2px 18px 18px;border-top:1px solid var(--line)}
+  .scn-when{font-size:.92rem;color:var(--ink-soft);margin:14px 0 2px;font-style:italic}
+  .scn-block{margin-top:14px}
+  .block-label{font-family:'JetBrains Mono',monospace;font-size:.71rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-soft);margin-bottom:10px}
+  .steps{list-style:none}
+  .step{display:flex;gap:11px;margin-bottom:11px}
+  .step-n{flex-shrink:0;width:22px;height:22px;margin-top:7px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--accent)}
+  .step-main{flex:1;min-width:0}
+  .step-note{font-size:.88rem;color:var(--ink-soft);margin:3px 0 0 2px}
+  .copy-all{margin-top:4px;font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:9px 14px;border:1px dashed var(--line-strong);border-radius:8px;background:none;color:var(--ink-soft);cursor:pointer;transition:all .15s}
+  .copy-all:hover{border-color:var(--accent);color:var(--accent)}
+  .copy-all.done{color:var(--green);border-color:var(--green)}
+
+  /* Markdown reference */
+  .types{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:8px;margin:6px 0 20px}
+  .type{display:flex;gap:9px;align-items:baseline;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+  .type b{font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:.78rem;flex-shrink:0;white-space:nowrap}
+  .type span{font-size:.85rem;color:var(--ink-soft)}
+  .conv-rule{font-size:.92rem;color:var(--ink-soft);margin-bottom:6px}
+  .conv-rule code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+
+  /* Command row */
+  .cmd{display:flex;align-items:stretch;gap:0;margin-bottom:8px;border-radius:8px;overflow:hidden;border:1px solid #232a33;background:var(--code-bg)}
+  .cmd-code{flex:1;font-family:'JetBrains Mono',monospace;font-size:.84rem;color:var(--code-ink);padding:9px 14px;overflow-x:auto;white-space:pre;line-height:1.7;display:flex;align-items:center;flex-wrap:wrap}
+  .cmd-code .c-flag{color:var(--code-blue)}
+  .cmd-code .c-str{color:var(--code-str)}
+  .cmd-code .lit{white-space:pre}
+  .ph{font-family:'JetBrains Mono',monospace;font-size:.84rem;background:rgba(121,192,255,.14);color:var(--code-blue);border:none;border-bottom:1px dashed var(--code-blue);padding:1px 2px;margin:0 1px;outline:none;border-radius:3px 3px 0 0;transition:background .15s;min-width:1ch}
+  .ph::placeholder{color:var(--code-blue);opacity:.55;font-style:italic}
+  .ph:focus{background:rgba(121,192,255,.28)}
+  .ph.filled{color:var(--code-green);border-bottom-color:var(--code-green);background:rgba(63,185,80,.16)}
+  .copy{flex-shrink:0;border:none;border-left:1px solid #232a33;background:#161b22;color:var(--code-dim);font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:0 15px;cursor:pointer;transition:all .15s;letter-spacing:.05em;align-self:stretch}
+  .copy:hover{background:#1c232c;color:var(--code-ink)}
+  .copy.done{color:var(--code-green)}
+  .desc{font-size:.92rem;color:var(--ink-soft);margin:1px 0 13px 2px}
+  .desc code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+
+  .no-results{display:none;text-align:center;padding:50px 0;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;font-size:.9rem}
+
+  footer{padding:40px 0 70px;margin-top:30px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--code-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  footer a{color:var(--accent);text-decoration:none}
+
+  /* Toast */
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);width:min(560px,calc(100% - 36px));z-index:60;background:var(--paper);border:1px solid var(--line-strong);border-radius:14px;box-shadow:0 18px 50px -12px rgba(20,30,45,.45);padding:18px 20px 19px;opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.2,.9,.25,1),opacity .35s}
+  .toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+  .toast-top{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+  .toast-badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:#fff;background:var(--green);padding:3px 8px;border-radius:99px}
+  .toast-title{font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);flex:1}
+  .toast-close{border:none;background:none;cursor:pointer;color:var(--ink-soft);font-size:1.2rem;line-height:1;padding:2px 4px;border-radius:6px}
+  .toast-close:hover{color:var(--accent);background:var(--line)}
+  .toast-cmd{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--code-ink);background:var(--code-bg);border-radius:8px;padding:9px 12px;margin-bottom:12px;overflow-x:auto;white-space:pre;max-height:140px}
+  .toast-body{font-size:1rem;color:var(--ink);line-height:1.6}
+  .toast-progress{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);border-radius:0 0 0 14px;width:100%}
+  .toast.show .toast-progress{animation:drain 7s linear forwards}
+  @keyframes drain{from{width:100%}to{width:0%}}
+
+  ::selection{background:var(--accent);color:#fff}
+  @media(max-width:540px){
+    header{padding:42px 0 22px}
+    .topic-sub{display:none}
+    .cmd-code{font-size:.78rem}
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="top">
+
+  <header>
+    <div class="kicker">GitHub CLI · gh · v1</div>
+    <h1><span class="mark">gh&gt;</span> github cheat sheet</h1>
+    <p class="lede">The GitHub CLI and platform workflows — pull requests, issues, releases, Actions, forks — with task-based recipes up top. Fill the blue blanks, copy, and get a plain-English explanation.</p>
+    <p class="hint">⌨ Blue blanks inside commands are editable. ⊕ Copying explains what a command does. ⊞ Hit “Glossary” for the jargon.</p>
+  </header>
+
+  <div class="controls">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="Search…  e.g. pull request, fork, release" autocomplete="off">
+    </label>
+    <button class="btn" id="glossaryBtn">Glossary</button>
+    <button class="btn" id="expandAll">Expand all</button>
+    <button class="btn" id="collapseAll">Collapse all</button>
+  </div>
+
+  <!-- Glossary -->
+  <div class="glossary" id="glossary">
+    <div class="glossary-inner"><div class="glossary-pad">
+      <h3>GitHub glossary</h3>
+      <div class="sub">the platform words people throw around, in plain language</div>
+      <dl class="gloss gloss-grid">
+        <div><dt>gh</dt><dd>GitHub's official command-line tool. Lets you do GitHub things — PRs, issues, releases — without leaving the terminal.</dd></div>
+        <div><dt>repository (repo)</dt><dd>A project hosted on GitHub: its files, history, issues, and pull requests.</dd></div>
+        <div><dt>fork</dt><dd>Your own server-side copy of someone else's repo, so you can change it freely and propose those changes back.</dd></div>
+        <div><dt>origin vs upstream</dt><dd>On a fork, “origin” is your copy and “upstream” is the original project you forked from.</dd></div>
+        <div><dt>pull request (PR)</dt><dd>A proposal to merge your branch's changes into another branch, where others can review and discuss them first.</dd></div>
+        <div><dt>draft PR</dt><dd>A pull request marked “not ready yet,” so reviewers know not to merge or review it formally.</dd></div>
+        <div><dt>merge / squash / rebase</dt><dd>The three ways to land a PR: a merge commit keeps every commit, squash collapses them into one, rebase replays them with no merge commit.</dd></div>
+        <div><dt>review</dt><dd>Feedback on a PR — you can approve it, request changes, or just comment.</dd></div>
+        <div><dt>issue</dt><dd>A tracked note for a bug, task, or idea, with discussion and labels.</dd></div>
+        <div><dt>GitHub Actions</dt><dd>GitHub's built-in automation that runs jobs (tests, builds, deploys) when things happen in your repo.</dd></div>
+        <div><dt>workflow</dt><dd>A YAML file in .github/workflows that defines an automated process for Actions to run.</dd></div>
+        <div><dt>run</dt><dd>One execution of a workflow — what you inspect when checking if CI passed or failed.</dd></div>
+        <div><dt>runner</dt><dd>The machine (GitHub-hosted or your own) that actually executes a workflow's jobs.</dd></div>
+        <div><dt>release</dt><dd>A packaged, named version of your project (tied to a tag), often with notes and downloadable files.</dd></div>
+        <div><dt>asset</dt><dd>A file attached to a release for people to download, like a built binary or zip.</dd></div>
+        <div><dt>gist</dt><dd>A small shareable snippet or set of files, hosted on GitHub like a tiny repo.</dd></div>
+        <div><dt>branch protection</dt><dd>Rules on a branch (e.g. main) that require reviews or passing checks before anything can merge.</dd></div>
+        <div><dt>CODEOWNERS</dt><dd>A file listing who automatically gets asked to review changes to certain paths.</dd></div>
+        <div><dt>PAT (token)</dt><dd>A personal access token — a password-like string used to authenticate to GitHub from scripts or HTTPS.</dd></div>
+      </dl>
+    </div></div>
+  </div>
+
+  <nav class="index" id="index"></nav>
+
+  <main id="content"></main>
+  <div class="no-results" id="noResults">Nothing matches that search.</div>
+
+  <footer>
+    <span>Fill the blanks, copy, learn. Empty blanks copy as &lt;placeholder&gt;.</span>
+    <span><a href="#top">↑ back to top</a></span>
+  </footer>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <div class="toast-top">
+    <span class="toast-badge">copied</span>
+    <span class="toast-title">what this does</span>
+    <button class="toast-close" id="toastClose" aria-label="Dismiss">×</button>
+  </div>
+  <div class="toast-cmd" id="toastCmd"></div>
+  <div class="toast-body" id="toastBody"></div>
+  <div class="toast-progress"></div>
+</div>
+
+<script>
+/* ===================== SCENARIOS / RECIPES ===================== */
+const SCENARIOS = [
+  {
+    q:"Contribute to an open-source project (fork → PR)",
+    when:"You want to propose a change to a repo you don't own. The classic flow: fork it, branch, push, open a PR.",
+    blocks:[
+      { label:"The full flow", steps:[
+        ["gh repo fork <owner>/<repo> --clone","Makes your own copy of the project, clones it locally, and sets the original as the 'upstream' remote."],
+        ["git switch -c <my-feature>","Create a branch for your change so the original stays clean."],
+        ["git push -u origin <my-feature>","After committing your work, push the branch to your fork."],
+        ["gh pr create --fill","Open a pull request back to the original repo, using your commits to fill in the title and body."],
+      ]},
+    ]
+  },
+  {
+    q:"Turn my local folder into a GitHub repo",
+    when:"You have a project on your machine and want it on GitHub, pushed, in one go.",
+    blocks:[
+      { label:"Create and push", steps:[
+        ["gh auth login","Sign in first if you haven't already."],
+        ["git init","Skip this if the folder is already a Git repo."],
+        ["gh repo create <name> --private --source=. --remote=origin --push","Creates the repo on GitHub from your current folder, links it as 'origin', and pushes everything. Use --public for a public repo."],
+      ]},
+    ]
+  },
+  {
+    q:"Open a pull request from my current branch",
+    when:"You've committed work on a branch and want it reviewed.",
+    blocks:[
+      { label:"Push and open", steps:[
+        ["git push -u origin HEAD","Push the current branch to the remote and set it as upstream."],
+        ["gh pr create --fill","Create the PR, auto-filling the title and description from your commits."],
+        ["gh pr view --web","Open the new PR in your browser to add reviewers or labels."],
+      ]},
+    ]
+  },
+  {
+    q:"Check out someone's PR to test it locally",
+    when:"A teammate opened a PR and you want to run it on your own machine before approving.",
+    blocks:[
+      { label:"Fetch, test, return", steps:[
+        ["gh pr checkout <number>","Fetches the PR's branch and switches you onto it locally."],
+        ["gh pr diff <number>","See exactly what the PR changes."],
+        ["git switch -","Jump back to your previous branch when you're done testing."],
+      ]},
+    ]
+  },
+  {
+    q:"Keep my fork up to date with the original",
+    when:"The upstream project moved ahead and your fork is behind.",
+    blocks:[
+      { label:"Easiest — let gh do it", steps:[
+        ["gh repo sync <owner>/<your-fork> -b <branch>","Updates your fork's branch with the latest from the original repository."],
+      ]},
+      { label:"The manual Git way", steps:[
+        ["git fetch upstream","Download the original project's latest commits."],
+        ["git switch <branch>","Go to the branch you want to update."],
+        ["git merge upstream/<branch>","Bring the upstream changes into your branch."],
+        ["git push origin <branch>","Push the updated branch back to your fork."],
+      ]},
+    ]
+  },
+  {
+    q:"Cut a release with auto-generated notes",
+    when:"You're tagging a version and want GitHub to write the changelog from merged PRs.",
+    blocks:[
+      { label:"Create and attach files", steps:[
+        ["gh release create <v1.2.0> --generate-notes","Creates a release for the tag and auto-writes notes from the PRs merged since the last release."],
+        ["gh release upload <v1.2.0> <dist/app.zip>","Attach a build artifact so people can download it from the release page."],
+      ]},
+    ]
+  },
+  {
+    q:"Figure out why CI failed and re-run it",
+    when:"A GitHub Actions check went red and you want to see why, then retry.",
+    blocks:[
+      { label:"Inspect and rerun", steps:[
+        ["gh run list","List recent workflow runs and find the failed one's ID."],
+        ["gh run view <run-id> --log-failed","Show the logs for just the steps that failed."],
+        ["gh run rerun <run-id> --failed","Re-run only the failed jobs, not the whole workflow."],
+      ]},
+    ]
+  },
+  {
+    q:"Set up gh and Git authentication",
+    when:"First-time setup so pushing, cloning, and gh commands all just work.",
+    blocks:[
+      { label:"Sign in and wire up Git", steps:[
+        ["gh auth login","Interactive sign-in — pick HTTPS or SSH and authenticate in the browser."],
+        ["gh auth setup-git","Let gh act as Git's credential helper, so HTTPS push/pull needs no separate token."],
+        ["gh auth status","Confirm you're signed in and see your token's scopes."],
+      ]},
+    ]
+  },
+];
+
+/* ===================== GITHUB MARKDOWN & KEYWORDS ===================== */
+const MD_SYNTAX = [
+  ["Closes #12","auto-closes that issue when the PR merges"],
+  ["@octocat","mentions and notifies a person"],
+  ["#12","links to issue or PR number 12"],
+  ["- [ ] todo","an unchecked task-list item"],
+  ["- [x] done","a checked task-list item"],
+  ["```js","start a fenced code block (close with ```)"],
+  ["> note","a blockquote / callout"],
+  ["**bold** *italic*","bold and italic emphasis"],
+  ["[text](url)","a hyperlink"],
+  ["<details><summary>…</summary>","a collapsible section"],
+];
+const MD_CMDS = [
+  ["Closes #<issue-number>","Auto-close an issue on merge.","Drop this in a pull request description. When the PR merges into the default branch, GitHub closes that issue automatically. 'Fixes' and 'Resolves' behave the same way."],
+  ["@<username>","Mention someone.","Notifies that person and links to their profile. Works in issues, PRs, and comments."],
+  ["- [ ] <task>","Add a task-list item.","Renders as a clickable checkbox in issues and PRs, and GitHub tracks the completed count for you."],
+];
+
+/* ===================== COMMAND REFERENCE ===================== */
+const DATA = [
+  { id:"auth", title:"Auth & Setup", sub:"sign in, configure", groups:[
+    { label:"Sign in", items:[
+      ["gh auth login","Sign in to GitHub.","Starts an interactive login. You choose GitHub.com or an enterprise host, HTTPS or SSH, and authenticate in your browser or with a token."],
+      ["gh auth status","Check who you're signed in as.","Shows which accounts you're logged into, the host, and the permission scopes your token has."],
+      ["gh auth refresh -s <scope>","Add permission scopes.","Re-authenticates to grant extra scopes (like 'workflow' or 'delete_repo') without a full re-login."],
+      ["gh auth setup-git","Use gh for Git auth.","Configures Git to use gh as its credential helper, so HTTPS push and pull just work with no separate token."],
+      ["gh auth logout","Sign out.","Logs you out of a host and forgets the stored credentials."],
+    ]},
+    { label:"Configure", items:[
+      ["gh config set editor \"<code --wait>\"","Set your editor.","Tells gh which editor to open when you write PR or issue bodies."],
+      ["gh config set git_protocol ssh","Default to SSH.","Makes gh clone and add remotes using SSH URLs instead of HTTPS by default."],
+      ["gh config list","Show gh settings.","Lists your current gh configuration values."],
+    ]},
+  ]},
+  { id:"repos", title:"Repositories", sub:"create, clone, fork", groups:[
+    { label:"Create & clone", items:[
+      ["gh repo create <name>","Create a repo.","Creates a new repository on GitHub. Run with no flags for an interactive wizard, or add flags to script it."],
+      ["gh repo create <name> --private --source=. --remote=origin --push","Repo from current folder.","Creates the repo, links your current folder as 'origin', and pushes everything — all at once. Swap --private for --public."],
+      ["gh repo clone <owner>/<repo>","Clone a repo.","Clones a GitHub repo by its owner/name — no full URL needed."],
+      ["gh repo fork <owner>/<repo> --clone","Fork and clone.","Makes your own copy (a fork) of someone's repo and clones it, setting the original as the 'upstream' remote."],
+    ]},
+    { label:"Inspect & manage", items:[
+      ["gh repo view <owner>/<repo> --web","Open repo in browser.","Opens the repository page on github.com. Drop --web to see details in the terminal."],
+      ["gh repo list <owner>","List someone's repos.","Lists repositories owned by a user or organization."],
+      ["gh repo set-default <owner>/<repo>","Set the default repo.","When a folder has several GitHub remotes, tells gh which repo to act on by default."],
+      ["gh repo sync","Sync a fork.","Updates your fork's default branch with the latest changes from the original repository."],
+      ["gh repo delete <owner>/<repo>","Delete a repo. ⚠️","Permanently deletes a repository on GitHub. This can't be undone — gh asks you to confirm."],
+    ]},
+  ]},
+  { id:"prs", title:"Pull Requests", sub:"the heart of GitHub", groups:[
+    { label:"Create", items:[
+      ["gh pr create --fill","Open a PR (auto-filled).","Creates a pull request from your current branch, using your commit messages for the title and description."],
+      ["gh pr create --title \"<title>\" --body \"<description>\"","Open a PR (custom).","Creates a PR with a title and description you write yourself."],
+      ["gh pr create --draft","Open a draft PR.","Creates the PR as a draft, signalling it's not ready for review yet."],
+    ]},
+    { label:"Browse & inspect", items:[
+      ["gh pr list","List open PRs.","Lists the open pull requests. Add --state all to include closed and merged ones."],
+      ["gh pr status","PRs relevant to you.","Shows PRs you opened, ones requesting your review, and the one for your current branch."],
+      ["gh pr view <number> --web","Open a PR in browser.","Opens a pull request on github.com. Drop --web to read it in the terminal."],
+      ["gh pr diff <number>","See a PR's changes.","Shows the code changes a pull request introduces."],
+      ["gh pr checks <number>","See CI status.","Shows the status of the automated checks running on a pull request."],
+    ]},
+    { label:"Act on a PR", items:[
+      ["gh pr checkout <number>","Check out a PR locally.","Fetches a PR's branch and switches to it, so you can test the changes on your machine."],
+      ["gh pr review <number> --approve","Approve a PR.","Submits an approving review. Use --request-changes -b \"<note>\" or --comment -b \"<note>\" to ask for changes or just comment."],
+      ["gh pr merge <number> --squash --delete-branch","Merge a PR (squash).","Merges by squashing the PR's commits into one and deletes its branch after. Swap --squash for --merge or --rebase."],
+      ["gh pr ready <number>","Mark draft as ready.","Takes a draft pull request out of draft so it can be reviewed."],
+      ["gh pr comment <number> --body \"<text>\"","Comment on a PR.","Adds a comment to a pull request."],
+      ["gh pr close <number>","Close a PR.","Closes a pull request without merging. Use gh pr reopen to undo."],
+    ]},
+  ]},
+  { id:"issues", title:"Issues", sub:"bugs, tasks, ideas", groups:[
+    { label:"Create & comment", items:[
+      ["gh issue create --title \"<title>\" --body \"<description>\"","Open an issue.","Creates a new issue. Run with no flags for an interactive prompt."],
+      ["gh issue comment <number> --body \"<text>\"","Comment on an issue.","Adds a comment to an existing issue."],
+    ]},
+    { label:"Browse & manage", items:[
+      ["gh issue list","List open issues.","Lists open issues. Add --label \"<label>\" or --assignee \"<user>\" to filter."],
+      ["gh issue status","Issues relevant to you.","Shows issues assigned to you, opened by you, and ones that mention you."],
+      ["gh issue view <number> --web","Open an issue.","Opens an issue on github.com. Drop --web to read it in the terminal."],
+      ["gh issue edit <number> --add-label \"<label>\"","Label an issue.","Edits an issue — here adding a label. You can also --add-assignee, --milestone, and more."],
+      ["gh issue close <number>","Close an issue.","Closes an issue. Use gh issue reopen to bring it back."],
+    ]},
+  ]},
+  { id:"releases", title:"Releases", sub:"ship versions", groups:[
+    { label:"Create", items:[
+      ["gh release create <tag> --generate-notes","Create a release (auto notes).","Creates a release for a version tag and auto-writes notes from PRs merged since the last release."],
+      ["gh release create <tag> --notes \"<notes>\"","Create a release (own notes).","Creates a release with notes you write yourself."],
+      ["gh release create <tag> <dist/app.zip>","Release with assets.","Creates a release and attaches files for people to download."],
+    ]},
+    { label:"Browse & download", items:[
+      ["gh release list","List releases.","Lists the repo's releases."],
+      ["gh release view <tag>","View a release.","Shows the details and notes of a specific release."],
+      ["gh release download <tag>","Download release assets.","Downloads the files attached to a release."],
+      ["gh release upload <tag> <file>","Add an asset.","Attaches an extra file to an existing release."],
+    ]},
+  ]},
+  { id:"gists", title:"Gists", sub:"shareable snippets", groups:[
+    { label:"Create & manage", items:[
+      ["gh gist create <file> --public","Create a public gist.","Creates a gist from a file. Drop --public to make it secret (unlisted)."],
+      ["gh gist create <file> -d \"<description>\"","Gist with a description.","Creates a gist with a description label."],
+      ["gh gist list","List your gists.","Lists the gists on your account."],
+      ["gh gist view <id>","View a gist.","Shows a gist's contents in the terminal."],
+      ["gh gist edit <id>","Edit a gist.","Opens a gist in your editor to change it."],
+      ["gh gist clone <id>","Clone a gist.","Clones a gist locally, like a tiny repo."],
+    ]},
+  ]},
+  { id:"actions", title:"Actions & Runs", sub:"CI / automation", groups:[
+    { label:"Workflow runs", items:[
+      ["gh run list","List recent runs.","Lists recent GitHub Actions workflow runs and their status."],
+      ["gh run view <run-id>","Inspect a run.","Shows the jobs and steps of a workflow run. Add --log for full logs."],
+      ["gh run view <run-id> --log-failed","See why a run failed.","Shows the logs for only the steps that failed."],
+      ["gh run watch <run-id>","Watch a run live.","Follows a workflow run in real time until it finishes."],
+      ["gh run rerun <run-id> --failed","Re-run failed jobs.","Re-runs only the failed jobs of a run, instead of everything."],
+      ["gh run cancel <run-id>","Cancel a run.","Stops a workflow run that's in progress."],
+    ]},
+    { label:"Workflows", items:[
+      ["gh workflow list","List workflows.","Lists the workflow files defined in the repo."],
+      ["gh workflow run <workflow>","Trigger a workflow.","Manually starts a workflow that supports manual runs. Add -f key=value to pass inputs."],
+      ["gh workflow enable <workflow>","Enable a workflow.","Turns a disabled workflow back on. Use gh workflow disable to turn it off."],
+    ]},
+  ]},
+  { id:"search", title:"Browse & Search", sub:"find things fast", groups:[
+    { label:"Open & search", items:[
+      ["gh browse","Open this repo in browser.","Opens the current repository's page on github.com."],
+      ["gh browse <number>","Open an issue/PR.","Opens that issue or PR number directly in the browser."],
+      ["gh search repos \"<query>\"","Search repositories.","Searches GitHub for repositories matching your query."],
+      ["gh search issues \"<query>\"","Search issues.","Searches issues across GitHub. Use qualifiers like author: or label: in the query."],
+      ["gh search prs \"<query>\"","Search pull requests.","Searches pull requests across GitHub."],
+      ["gh search code \"<query>\"","Search code.","Searches source code across GitHub for a string."],
+    ]},
+  ]},
+  { id:"remotes", title:"GitHub Remotes & SSH", sub:"connect local to GitHub", groups:[
+    { label:"Wire up a remote", items:[
+      ["git remote add origin git@github.com:<owner>/<repo>.git","Add an SSH remote.","Links your local repo to GitHub over SSH. Requires an SSH key added to your GitHub account."],
+      ["git remote add origin https://github.com/<owner>/<repo>.git","Add an HTTPS remote.","Links your local repo to GitHub over HTTPS. Auth is handled by a token or gh's credential helper."],
+      ["git remote set-url origin <url>","Switch SSH/HTTPS.","Changes an existing remote's URL — e.g. to swap from HTTPS to SSH."],
+      ["git remote add upstream <url>","Track the original (forks).","For a fork, adds the original project as 'upstream' so you can pull its updates."],
+      ["ssh -T git@github.com","Test your SSH key.","Checks your SSH key works with GitHub. A success greeting means you're set."],
+    ]},
+  ]},
+  { id:"api", title:"API & Extensions", sub:"go beyond the basics", groups:[
+    { label:"Raw API", items:[
+      ["gh api <endpoint>","Call the REST API.","Makes an authenticated request to the GitHub API (e.g. repos/<owner>/<repo>). Great for things the CLI doesn't cover directly."],
+      ["gh api -X POST <endpoint> -f key=value","Send a write request.","Makes a POST (or other) call with fields, for creating or updating via the API."],
+      ["gh api graphql -f query='<query>'","Query the GraphQL API.","Runs a GraphQL query for precise, custom data fetching."],
+    ]},
+    { label:"Extensions", items:[
+      ["gh extension install <owner>/<repo>","Install an extension.","Adds a community gh extension that gives you extra commands."],
+      ["gh extension list","List extensions.","Shows the gh extensions you've installed."],
+      ["gh extension upgrade --all","Update extensions.","Updates all your installed extensions to their latest versions."],
+    ]},
+  ]},
+  { id:"ghaliases", title:"Aliases", sub:"speed it up", groups:[
+    { label:"gh shortcuts", items:[
+      ["gh alias set <co> \"pr checkout\"","Make a gh shortcut.","Creates a shortcut so 'gh co' runs 'gh pr checkout'. Saves typing on commands you use a lot."],
+      ["gh alias set <bugs> \"issue list --label bug\"","Alias with arguments.","Bakes flags into a shortcut — here, listing only bug-labelled issues."],
+      ["gh alias list","List your aliases.","Shows all the gh aliases you've defined."],
+    ]},
+  ]},
+];
+
+/* ===================== HELPERS ===================== */
+const escAttr = s => s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function highlightLit(text){
+  let s = escHtml(text);
+  s = s.replace(/("[^"]*")/g,'<span class="c-str">$1</span>');
+  s = s.replace(/(^|\s)(--?[a-zA-Z][\w-]*)/g,'$1<span class="c-flag">$2</span>');
+  return s;
+}
+function buildCommandHTML(cmd){
+  return cmd.split(/(<[^>]+>)/g).map(p=>{
+    const m = p.match(/^<([^>]+)>$/);
+    if(m){
+      const name = m[1];
+      return `<input class="ph" data-ph="${escAttr(name)}" placeholder="${escAttr(name)}" size="${Math.max(name.length,3)}" spellcheck="false" autocomplete="off">`;
+    }
+    return p ? `<span class="lit">${highlightLit(p)}</span>` : '';
+  }).join('');
+}
+function readCommand(codeEl){
+  let out='';
+  codeEl.childNodes.forEach(node=>{
+    if(node.nodeType===1 && node.classList.contains('ph')){
+      const v = node.value.trim();
+      out += v ? v : '<'+node.dataset.ph+'>';
+    } else { out += node.textContent; }
+  });
+  return out;
+}
+function cmdRow(cmd, explain){
+  return `<div class="cmd"><code class="cmd-code">${buildCommandHTML(cmd)}</code><button class="copy" data-explain="${escAttr(explain)}" aria-label="Copy command">copy</button></div>`;
+}
+
+/* ===================== RENDER ===================== */
+const content = document.getElementById('content');
+const index = document.getElementById('index');
+
+function addChip(label, target, lead){
+  const a = document.createElement('a');
+  a.href = '#'+target; a.textContent = label; a.dataset.target = target;
+  if(lead) a.classList.add('lead');
+  index.appendChild(a);
+}
+addChip('★ Scenarios','scenarios',true);
+addChip('★ Markdown','markdown',true);
+DATA.forEach(t=>addChip(t.title.split('(')[0].trim(), t.id));
+
+/* Scenarios */
+const scnSection = document.createElement('section');
+scnSection.id = 'scenarios';
+let scnHtml = `<div class="section-head"><h2>Scenarios &amp; Recipes</h2><span class="meta">"how do I…" → exact steps</span></div>`;
+SCENARIOS.forEach((s,i)=>{
+  let body = '';
+  if(s.when) body += `<p class="scn-when">${s.when}</p>`;
+  let searchBits = s.q;
+  s.blocks.forEach(b=>{
+    body += `<div class="scn-block">`;
+    if(b.label) body += `<div class="block-label">${b.label}</div>`;
+    body += `<ol class="steps">`;
+    b.steps.forEach(([cmd,note])=>{
+      searchBits += ' '+cmd+' '+note;
+      body += `<li class="step"><span class="step-n">•</span><div class="step-main">${cmdRow(cmd,note)}<div class="step-note">${note}</div></div></li>`;
+    });
+    body += `</ol>`;
+    if(b.steps.length>1) body += `<button class="copy-all">Copy these steps</button>`;
+    body += `</div>`;
+  });
+  scnHtml += `
+    <div class="scenario searchable" data-search="${escAttr(searchBits.toLowerCase())}">
+      <button class="scn-head" aria-expanded="false">
+        <span class="scn-icon">${i+1}</span>
+        <span class="scn-q">${s.q}</span>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+      <div class="scn-body"><div class="scn-inner"><div class="scn-pad">${body}</div></div></div>
+    </div>`;
+});
+scnSection.innerHTML = scnHtml;
+content.appendChild(scnSection);
+document.querySelectorAll('.scn-block .steps').forEach(ol=>{
+  ol.querySelectorAll('.step-n').forEach((n,idx)=>n.textContent = idx+1);
+});
+
+/* Markdown & keywords */
+const mdSection = document.createElement('section');
+mdSection.id = 'markdown';
+let typesHtml = MD_SYNTAX.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('');
+let mdCmdHtml = MD_CMDS.map(([cmd,desc,explain])=>{
+  const search = (cmd+' '+desc+' '+explain+' github markdown keyword').toLowerCase();
+  return `<div class="cmd-block searchable" data-search="${escAttr(search)}">${cmdRow(cmd,explain)}<div class="desc">${desc}</div></div>`;
+}).join('');
+mdSection.innerHTML = `
+  <div class="section-head"><h2>Markdown &amp; Keywords</h2><span class="meta">for PRs, issues &amp; READMEs</span></div>
+  <div class="topic">
+    <button class="topic-head" aria-expanded="false">
+      <span class="num">★</span>
+      <span class="topic-title">GitHub-Flavored Markdown</span>
+      <span class="topic-sub">mentions, refs, task lists</span>
+      <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+    </button>
+    <div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">
+      <div class="group-label">Quick syntax</div>
+      <p class="conv-rule">These work in issue/PR descriptions, comments, and README files. Closing keywords like <code>Closes #12</code> only fire from a PR's description or commits.</p>
+      <div class="types">${typesHtml}</div>
+      <div class="group-label">Copy a template</div>
+      ${mdCmdHtml}
+    </div></div></div>
+  </div>`;
+content.appendChild(mdSection);
+
+/* Command reference */
+DATA.forEach((topic,i)=>{
+  const section = document.createElement('section');
+  section.id = topic.id;
+  let groupsHtml = '';
+  topic.groups.forEach(g=>{
+    groupsHtml += `<div class="group"><div class="group-label">${g.label}</div>`;
+    g.items.forEach(([cmd,desc,explain])=>{
+      const search = (cmd+' '+desc+' '+(explain||'')).toLowerCase();
+      groupsHtml += `<div class="cmd-block searchable" data-search="${escAttr(search)}">${cmdRow(cmd,explain||desc)}<div class="desc">${desc}</div></div>`;
+    });
+    groupsHtml += `</div>`;
+  });
+  section.innerHTML = `
+    <div class="topic">
+      <button class="topic-head" aria-expanded="false">
+        <span class="num">${String(i+1).padStart(2,'0')}</span>
+        <span class="topic-title">${topic.title}</span>
+        <span class="topic-sub">${topic.sub}</span>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+      <div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">${groupsHtml}</div></div></div>
+    </div>`;
+  content.appendChild(section);
+});
+
+/* ===================== ACCORDION ===================== */
+function setOpen(el, open){
+  el.classList.toggle('open', open);
+  const head = el.querySelector('[aria-expanded]');
+  if(head) head.setAttribute('aria-expanded', open);
+}
+document.querySelectorAll('.topic-head, .scn-head').forEach(head=>{
+  head.addEventListener('click', ()=>{
+    const t = head.closest('.topic, .scenario');
+    setOpen(t, !t.classList.contains('open'));
+  });
+});
+document.getElementById('expandAll').onclick  = ()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,true));
+document.getElementById('collapseAll').onclick= ()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,false));
+index.querySelectorAll('a').forEach(a=>{
+  a.addEventListener('click', ()=>{
+    const sec = document.getElementById(a.dataset.target);
+    const acc = sec.querySelector('.topic, .scenario');
+    if(acc) setOpen(acc, true);
+  });
+});
+
+/* ===================== GLOSSARY TOGGLE ===================== */
+const glossary = document.getElementById('glossary');
+const glossaryBtn = document.getElementById('glossaryBtn');
+glossaryBtn.onclick = ()=>{
+  const open = glossary.classList.toggle('open');
+  glossaryBtn.classList.toggle('active', open);
+};
+
+/* ===================== PLACEHOLDER INPUTS ===================== */
+content.addEventListener('input', e=>{
+  const inp = e.target;
+  if(!inp.classList || !inp.classList.contains('ph')) return;
+  inp.size = Math.max(inp.value.length || inp.placeholder.length, 3);
+  inp.classList.toggle('filled', inp.value.trim().length>0);
+  const code = inp.closest('.cmd-code');
+  code.querySelectorAll('.ph').forEach(other=>{
+    if(other!==inp && other.dataset.ph===inp.dataset.ph){
+      other.value = inp.value;
+      other.size = Math.max(other.value.length || other.placeholder.length, 3);
+      other.classList.toggle('filled', other.value.trim().length>0);
+    }
+  });
+});
+content.addEventListener('click', e=>{
+  if(e.target.classList && e.target.classList.contains('ph')) e.stopPropagation();
+});
+
+/* ===================== TOAST ===================== */
+const toast = document.getElementById('toast');
+const toastCmd = document.getElementById('toastCmd');
+const toastBody = document.getElementById('toastBody');
+let toastTimer;
+function showToast(cmd, explanation){
+  toastCmd.textContent = cmd;
+  toastBody.textContent = explanation;
+  toast.classList.remove('show'); void toast.offsetWidth; toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toast.classList.remove('show'), 7000);
+}
+document.getElementById('toastClose').onclick = ()=>toast.classList.remove('show');
+
+/* ===================== COPY ===================== */
+content.addEventListener('click', e=>{
+  const btn = e.target.closest('.copy');
+  if(btn){
+    const code = btn.parentElement.querySelector('.cmd-code');
+    const text = readCommand(code);
+    navigator.clipboard.writeText(text).then(()=>{
+      btn.textContent='copied'; btn.classList.add('done');
+      setTimeout(()=>{ btn.textContent='copy'; btn.classList.remove('done'); },1300);
+      showToast(text, btn.dataset.explain);
+    });
+    return;
+  }
+  const ca = e.target.closest('.copy-all');
+  if(ca){
+    const block = ca.closest('.scn-block');
+    const text = [...block.querySelectorAll('.cmd-code')].map(readCommand).join('\n');
+    navigator.clipboard.writeText(text).then(()=>{
+      ca.textContent='copied all'; ca.classList.add('done');
+      setTimeout(()=>{ ca.textContent='Copy these steps'; ca.classList.remove('done'); },1500);
+      showToast(text, 'Run these commands in order in your terminal. Replace anything still shown as <…> with your own value first.');
+    });
+  }
+});
+
+/* ===================== SEARCH ===================== */
+const search = document.getElementById('search');
+const noResults = document.getElementById('noResults');
+search.addEventListener('input', ()=>{
+  const q = search.value.trim().toLowerCase();
+  document.querySelectorAll('.searchable').forEach(el=>{
+    el.style.display = (!q || el.dataset.search.includes(q)) ? '' : 'none';
+  });
+  document.querySelectorAll('.group').forEach(g=>{
+    const vis = [...g.querySelectorAll('.searchable')].some(e=>e.style.display!=='none');
+    g.style.display = vis ? '' : 'none';
+  });
+  let any = false;
+  document.querySelectorAll('main section').forEach(sec=>{
+    const vis = [...sec.querySelectorAll('.searchable')].some(e=>e.style.display!=='none');
+    sec.style.display = vis ? '' : 'none';
+    if(vis){
+      any = true;
+      if(q){
+        sec.querySelectorAll('.topic').forEach(t=>{
+          if([...t.querySelectorAll('.searchable')].some(e=>e.style.display!=='none')) setOpen(t,true);
+        });
+        sec.querySelectorAll('.scenario.searchable').forEach(s=>{
+          if(s.style.display!=='none') setOpen(s,true);
+        });
+      }
+    }
+  });
+  noResults.style.display = any ? 'none' : 'block';
+});
+
+/* ===================== INITIAL STATE ===================== */
+setOpen(document.querySelector('#scenarios .scenario'), true);
+setOpen(document.querySelector('#auth .topic'), true);
+</script>
+</body>
+</html>

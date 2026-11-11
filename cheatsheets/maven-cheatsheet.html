@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maven — Cheat Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Sora:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#e7eef0;
+    --paper:#ffffff;
+    --ink:#16242b;
+    --ink-soft:#516671;
+    --line:#d2dde0;
+    --line-strong:#bdccd1;
+    --accent:#0e7c86;
+    --accent-soft:#11a0ac;
+    --green:#0f9d58;
+    --code-bg:#0c1620;
+    --code-ink:#e3ecef;
+    --code-dim:#7e95a1;
+    --code-blue:#5ad1d8;
+    --code-str:#9fe8c3;
+    --code-green:#56d364;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--ink);
+    font-family:'IBM Plex Sans',system-ui,sans-serif;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(var(--line) 0.6px,transparent 0.6px);
+    background-size:22px 22px;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px}
+
+  /* Header */
+  header{padding:64px 0 30px}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  h1{font-family:'Sora',sans-serif;font-weight:700;font-size:clamp(2.5rem,8vw,4.2rem);line-height:.98;letter-spacing:-.025em;margin-bottom:16px}
+  h1 .mark{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:.68em}
+  .lede{font-size:1.05rem;color:var(--ink-soft);max-width:52ch}
+  .hint{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--code-dim);margin-top:14px;border-left:2px solid var(--accent);padding-left:10px}
+
+  /* Controls */
+  .controls{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 70%,transparent);padding:18px 0 14px;margin-bottom:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:200px;position:relative}
+  .search input{width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:12px 14px 12px 40px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+  .search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,124,134,.16)}
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.45}
+  .btn{font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.04em;padding:11px 16px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink-soft);cursor:pointer;transition:all .18s;white-space:nowrap}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  /* Glossary */
+  .glossary{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s ease}
+  .glossary.open{grid-template-rows:1fr;margin-bottom:26px}
+  .glossary-inner{overflow:hidden}
+  .glossary-pad{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);padding:20px 22px;margin-top:2px}
+  .glossary-pad h3{font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:600;margin-bottom:3px}
+  .glossary-pad .sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);margin-bottom:16px}
+  .gloss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:15px 24px}
+  .gloss dt{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent);margin-bottom:3px}
+  .gloss dd{font-size:.9rem;color:var(--ink-soft);line-height:1.5}
+
+  /* Index */
+  .index{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:34px;padding-bottom:30px;border-bottom:1px solid var(--line)}
+  .index a{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:99px;transition:all .15s}
+  .index a:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .index a.lead{border-color:var(--accent);color:var(--accent)}
+  .index a.lead:hover{background:var(--accent);color:#fff}
+
+  /* Section header */
+  .section-head{display:flex;align-items:baseline;gap:12px;margin:34px 0 16px;flex-wrap:wrap}
+  .section-head h2{font-family:'Sora',sans-serif;font-size:1.7rem;font-weight:600;letter-spacing:-.02em}
+  .section-head .meta{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim)}
+
+  /* Accordions */
+  section{margin-bottom:14px;scroll-margin-top:90px}
+  .topic{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden}
+  .topic-head{display:flex;align-items:center;gap:14px;width:100%;padding:18px 20px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .topic-head:hover .topic-title{color:var(--accent)}
+  .num{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);border:1px solid var(--line-strong);border-radius:6px;padding:3px 7px;flex-shrink:0}
+  .topic-title{font-family:'Sora',sans-serif;font-size:1.3rem;font-weight:600;letter-spacing:-.01em;transition:color .2s;flex:1}
+  .topic-sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);font-weight:400}
+  .chev{flex-shrink:0;transition:transform .3s ease;color:var(--ink-soft)}
+  .topic.open .chev,.scenario.open .chev{transform:rotate(90deg)}
+  .topic-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .topic.open .topic-body{grid-template-rows:1fr}
+  .topic-body-inner{overflow:hidden}
+  .topic-pad{padding:0 20px 22px;border-top:1px solid var(--line)}
+  .group-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-soft);margin:22px 0 10px}
+
+  /* Scenario cards */
+  .scenario{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden;margin-bottom:10px}
+  .scn-head{display:flex;align-items:center;gap:13px;width:100%;padding:16px 18px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .scn-head:hover .scn-q{color:var(--accent)}
+  .scn-icon{flex-shrink:0;width:27px;height:27px;border-radius:7px;display:grid;place-items:center;background:var(--accent);color:#fff;font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:600}
+  .scn-q{flex:1;font-family:'Sora',sans-serif;font-size:1.05rem;font-weight:600;letter-spacing:-.01em;transition:color .2s}
+  .scn-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .scenario.open .scn-body{grid-template-rows:1fr}
+  .scn-inner{overflow:hidden}
+  .scn-pad{padding:2px 18px 18px;border-top:1px solid var(--line)}
+  .scn-when{font-size:.92rem;color:var(--ink-soft);margin:14px 0 2px;font-style:italic}
+  .scn-block{margin-top:14px}
+  .block-label{font-family:'JetBrains Mono',monospace;font-size:.71rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-soft);margin-bottom:10px}
+  .steps{list-style:none}
+  .step{display:flex;gap:11px;margin-bottom:11px}
+  .step-n{flex-shrink:0;width:22px;height:22px;margin-top:7px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--accent)}
+  .step-main{flex:1;min-width:0}
+  .step-note{font-size:.88rem;color:var(--ink-soft);margin:3px 0 0 2px}
+  .copy-all{margin-top:4px;font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:9px 14px;border:1px dashed var(--line-strong);border-radius:8px;background:none;color:var(--ink-soft);cursor:pointer;transition:all .15s}
+  .copy-all:hover{border-color:var(--accent);color:var(--accent)}
+  .copy-all.done{color:var(--green);border-color:var(--green)}
+
+  /* Reference grids */
+  .types{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:8px;margin:6px 0 18px}
+  .type{display:flex;gap:9px;align-items:baseline;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+  .type b{font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:.78rem;flex-shrink:0;white-space:nowrap}
+  .type span{font-size:.84rem;color:var(--ink-soft)}
+  .conv-rule{font-size:.92rem;color:var(--ink-soft);margin-bottom:8px}
+  .conv-rule code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+
+  /* Command row */
+  .cmd{display:flex;align-items:stretch;gap:0;margin-bottom:8px;border-radius:8px;overflow:hidden;border:1px solid #1d2b36;background:var(--code-bg)}
+  .cmd-code{flex:1;font-family:'JetBrains Mono',monospace;font-size:.84rem;color:var(--code-ink);padding:9px 14px;overflow-x:auto;white-space:pre;line-height:1.7;display:flex;align-items:center;flex-wrap:wrap}
+  .cmd-code .c-flag{color:var(--code-blue)}
+  .cmd-code .c-str{color:var(--code-str)}
+  .cmd-code .lit{white-space:pre}
+  .ph{font-family:'JetBrains Mono',monospace;font-size:.84rem;background:rgba(90,209,216,.14);color:var(--code-blue);border:none;border-bottom:1px dashed var(--code-blue);padding:1px 2px;margin:0 1px;outline:none;border-radius:3px 3px 0 0;transition:background .15s;min-width:1ch}
+  .ph::placeholder{color:var(--code-blue);opacity:.55;font-style:italic}
+  .ph:focus{background:rgba(90,209,216,.28)}
+  .ph.filled{color:var(--code-green);border-bottom-color:var(--code-green);background:rgba(86,211,100,.16)}
+  .copy{flex-shrink:0;border:none;border-left:1px solid #1d2b36;background:#15212c;color:var(--code-dim);font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:0 15px;cursor:pointer;transition:all .15s;letter-spacing:.05em;align-self:stretch}
+  .copy:hover{background:#1b2a36;color:var(--code-ink)}
+  .copy.done{color:var(--code-green)}
+  .desc{font-size:.92rem;color:var(--ink-soft);margin:1px 0 13px 2px}
+  .desc code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+
+  .no-results{display:none;text-align:center;padding:50px 0;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;font-size:.9rem}
+
+  footer{padding:40px 0 70px;margin-top:30px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--code-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  footer a{color:var(--accent);text-decoration:none}
+
+  /* Toast */
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);width:min(560px,calc(100% - 36px));z-index:60;background:var(--paper);border:1px solid var(--line-strong);border-radius:14px;box-shadow:0 18px 50px -12px rgba(12,30,40,.45);padding:18px 20px 19px;opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.2,.9,.25,1),opacity .35s}
+  .toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+  .toast-top{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+  .toast-badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:#fff;background:var(--green);padding:3px 8px;border-radius:99px}
+  .toast-title{font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);flex:1}
+  .toast-close{border:none;background:none;cursor:pointer;color:var(--ink-soft);font-size:1.2rem;line-height:1;padding:2px 4px;border-radius:6px}
+  .toast-close:hover{color:var(--accent);background:var(--line)}
+  .toast-cmd{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--code-ink);background:var(--code-bg);border-radius:8px;padding:9px 12px;margin-bottom:12px;overflow-x:auto;white-space:pre;max-height:140px}
+  .toast-body{font-size:1rem;color:var(--ink);line-height:1.6}
+  .toast-progress{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);border-radius:0 0 0 14px;width:100%}
+  .toast.show .toast-progress{animation:drain 7s linear forwards}
+  @keyframes drain{from{width:100%}to{width:0%}}
+
+  ::selection{background:var(--accent);color:#fff}
+  @media(max-width:540px){
+    header{padding:42px 0 22px}
+    .topic-sub{display:none}
+    .cmd-code{font-size:.78rem}
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="top">
+
+  <header>
+    <div class="kicker">Apache Maven · mvn · v1</div>
+    <h1><span class="mark">mvn&gt;</span> maven cheat sheet</h1>
+    <p class="lede">The build lifecycle, dependencies, multi-module reactors, and the everyday <code>mvn</code> commands — with task-based recipes up top. Fill the teal blanks, copy, and get a plain-English explanation.</p>
+    <p class="hint">⌨ Teal blanks inside commands are editable. ⊕ Copying explains what a command does. ⊞ Hit “Glossary” for the jargon.</p>
+  </header>
+
+  <div class="controls">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="Search…  e.g. skip tests, dependency tree, version" autocomplete="off">
+    </label>
+    <button class="btn" id="glossaryBtn">Glossary</button>
+    <button class="btn" id="expandAll">Expand all</button>
+    <button class="btn" id="collapseAll">Collapse all</button>
+  </div>
+
+  <!-- Glossary -->
+  <div class="glossary" id="glossary">
+    <div class="glossary-inner"><div class="glossary-pad">
+      <h3>Maven glossary</h3>
+      <div class="sub">the build-tool words people throw around, in plain language</div>
+      <dl class="gloss gloss-grid">
+        <div><dt>POM (pom.xml)</dt><dd>The Project Object Model — the XML file that describes your project: its coordinates, dependencies, plugins, and build config.</dd></div>
+        <div><dt>coordinates (GAV)</dt><dd>The groupId, artifactId, and version that uniquely identify an artifact, e.g. com.example:my-app:1.0.0.</dd></div>
+        <div><dt>groupId</dt><dd>Your organization namespace, usually a reverse domain like com.example.</dd></div>
+        <div><dt>artifactId</dt><dd>The project's own name within the group, like my-app.</dd></div>
+        <div><dt>packaging</dt><dd>What the build produces: jar (default), war, pom (for aggregator/parent projects), and more.</dd></div>
+        <div><dt>lifecycle</dt><dd>An ordered series of build phases. The default one runs validate → compile → test → package → verify → install → deploy.</dd></div>
+        <div><dt>phase</dt><dd>One step in a lifecycle. Asking for a phase runs it and every phase before it.</dd></div>
+        <div><dt>goal</dt><dd>A specific task a plugin performs, like compiler:compile. Phases are made of bound goals.</dd></div>
+        <div><dt>plugin</dt><dd>A bundle of goals. Almost everything Maven does is actually a plugin doing the work.</dd></div>
+        <div><dt>dependency</dt><dd>Another artifact your project needs, declared by its coordinates in the POM.</dd></div>
+        <div><dt>scope</dt><dd>When a dependency is available: compile, provided, runtime, test, system, or import.</dd></div>
+        <div><dt>transitive dependency</dt><dd>A dependency pulled in indirectly — your dependency's own dependencies.</dd></div>
+        <div><dt>SNAPSHOT</dt><dd>An in-development version (e.g. 1.0.0-SNAPSHOT). Maven may re-fetch it for the latest build.</dd></div>
+        <div><dt>local repository</dt><dd>The ~/.m2/repository cache on your machine where downloaded and installed artifacts live.</dd></div>
+        <div><dt>central / remote repo</dt><dd>Maven Central and other servers Maven downloads dependencies from and deploys to.</dd></div>
+        <div><dt>archetype</dt><dd>A project template used by archetype:generate to scaffold a new project.</dd></div>
+        <div><dt>BOM</dt><dd>A “bill of materials” POM you import to manage a set of dependency versions consistently.</dd></div>
+        <div><dt>profile</dt><dd>A named set of build settings you switch on/off, e.g. for dev vs prod, activated with -P.</dd></div>
+        <div><dt>effective POM</dt><dd>Your POM after inheritance, defaults, and profiles are merged in — what Maven really uses.</dd></div>
+        <div><dt>reactor</dt><dd>Maven's engine for multi-module builds; it works out the right order to build modules.</dd></div>
+        <div><dt>wrapper (mvnw)</dt><dd>Scripts checked into the project that run a pinned Maven version, so everyone builds the same way.</dd></div>
+        <div><dt>settings.xml</dt><dd>Your personal Maven config (in ~/.m2) for things like mirrors, proxies, and server credentials.</dd></div>
+      </dl>
+    </div></div>
+  </div>
+
+  <nav class="index" id="index"></nav>
+
+  <main id="content"></main>
+  <div class="no-results" id="noResults">Nothing matches that search.</div>
+
+  <footer>
+    <span>Fill the blanks, copy, learn. Empty blanks copy as &lt;placeholder&gt;.</span>
+    <span><a href="#top">↑ back to top</a></span>
+  </footer>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <div class="toast-top">
+    <span class="toast-badge">copied</span>
+    <span class="toast-title">what this does</span>
+    <button class="toast-close" id="toastClose" aria-label="Dismiss">×</button>
+  </div>
+  <div class="toast-cmd" id="toastCmd"></div>
+  <div class="toast-body" id="toastBody"></div>
+  <div class="toast-progress"></div>
+</div>
+
+<script>
+/* ===================== SCENARIOS / RECIPES ===================== */
+const SCENARIOS = [
+  {
+    q:"Build my project and install it to the local repo",
+    when:"The everyday build: wipe old output, compile, test, and make the artifact available to your other local projects.",
+    blocks:[
+      { label:"Standard build", steps:[
+        ["mvn clean install","Deletes target/, then compiles, runs tests, packages, and copies the artifact into your local ~/.m2 repository."],
+      ]},
+      { label:"Faster, skipping tests", steps:[
+        ["mvn clean install -DskipTests","Same build but doesn't run the tests (it still compiles them). Handy when you just need the artifact quickly."],
+      ]},
+    ]
+  },
+  {
+    q:"Run just one test class or method",
+    when:"You don't want to wait for the whole suite while iterating on a single test.",
+    blocks:[
+      { label:"One class, or one method", steps:[
+        ["mvn test -Dtest=<MyServiceTest>","Runs only the named test class."],
+        ["mvn test -Dtest=<MyServiceTest>#<shouldDoThing>","Runs a single method. Wildcards work too, e.g. MyServiceTest#should*."],
+      ]},
+    ]
+  },
+  {
+    q:"Figure out where a dependency comes from / fix a conflict",
+    when:"Two libraries pull in different versions of the same thing and you need to see who wins and why.",
+    blocks:[
+      { label:"Inspect the tree", steps:[
+        ["mvn dependency:tree -Dverbose -Dincludes=<group>:<artifact>","Shows every path that brings in that dependency and which versions were considered, so you can spot the conflict."],
+        ["mvn dependency:analyze","Flags dependencies you use but didn't declare, and ones you declared but don't use."],
+      ]},
+    ]
+  },
+  {
+    q:"Create a brand-new project from scratch",
+    when:"You want a standard Maven project layout without writing the POM by hand.",
+    blocks:[
+      { label:"Scaffold non-interactively", steps:[
+        ["mvn archetype:generate -DgroupId=<com.example> -DartifactId=<my-app> -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false","Generates a basic Java project with the standard folder layout and a starter POM."],
+      ]},
+    ]
+  },
+  {
+    q:"Make a local build as fast as possible",
+    when:"You're iterating locally and want the quickest possible turnaround.",
+    blocks:[
+      { label:"Skip tests, go parallel, stay offline", steps:[
+        ["mvn clean install -DskipTests -T 1C -o","Skips running tests, builds modules in parallel (one thread per core), and works offline using only what's already cached. Drop -o if something still needs downloading."],
+      ]},
+    ]
+  },
+  {
+    q:"Change the project version everywhere",
+    when:"You're releasing or bumping a multi-module project and want every POM updated consistently.",
+    blocks:[
+      { label:"Set, then keep or undo", steps:[
+        ["mvn versions:set -DnewVersion=<2.0.0>","Updates the version in the parent and all child modules, saving backups first."],
+        ["mvn versions:commit","Happy with it? This deletes the backups and makes the change permanent."],
+        ["mvn versions:revert","Changed your mind? This restores the backups, undoing the change."],
+      ]},
+    ]
+  },
+  {
+    q:"Build only one module in a multi-module project",
+    when:"You don't want to rebuild the whole reactor just to test one module.",
+    blocks:[
+      { label:"Target a module (and its dependencies)", steps:[
+        ["mvn -pl <module-name> -am install","Builds just that module, plus the other modules it depends on ('also make')."],
+        ["mvn install -rf :<module-name>","If a full build failed partway, this resumes it from the given module."],
+      ]},
+    ]
+  },
+  {
+    q:"Use a jar that isn't in any repository",
+    when:"You have a vendor jar on disk and need your project to depend on it.",
+    blocks:[
+      { label:"Install it into your local repo", steps:[
+        ["mvn install:install-file -Dfile=<vendor.jar> -DgroupId=<com.vendor> -DartifactId=<their-lib> -Dversion=<1.0.0> -Dpackaging=jar","Adds the jar to ~/.m2 under coordinates you choose, so you can declare it as a normal dependency in your POM."],
+      ]},
+    ]
+  },
+  {
+    q:"My SNAPSHOT dependencies are stale",
+    when:"A teammate pushed a new SNAPSHOT but your build keeps using the old cached one.",
+    blocks:[
+      { label:"Force an update", steps:[
+        ["mvn -U clean install","The -U flag forces Maven to re-check the remote repositories for newer SNAPSHOT versions instead of trusting the cache."],
+      ]},
+    ]
+  },
+];
+
+/* ===================== REFERENCE: LIFECYCLE / SCOPES / GAV ===================== */
+const LIFECYCLE = [
+  ["validate","check the project is correct and all needed info is available"],
+  ["compile","compile the main source code"],
+  ["test","run unit tests (no packaging required)"],
+  ["package","bundle compiled code into a JAR or WAR"],
+  ["verify","run checks on the package, e.g. integration tests"],
+  ["install","copy the artifact into your local ~/.m2 repository"],
+  ["deploy","upload the artifact to a remote repository for others"],
+];
+const SCOPES = [
+  ["compile","default — on every classpath and bundled (your main libraries)"],
+  ["provided","needed to compile, but supplied at runtime by the container (e.g. servlet-api)"],
+  ["runtime","not needed to compile but needed to run (e.g. a JDBC driver)"],
+  ["test","only on the test classpath (e.g. JUnit)"],
+  ["system","like provided, but you point to a jar on disk (rarely used)"],
+  ["import","only in <dependencyManagement>, to pull in a BOM's versions"],
+];
+const COORD_CMDS = [
+  ["-DgroupId=<com.example> -DartifactId=<my-app> -Dversion=<1.0.0>","Coordinate flags.","The three values that identify a project, passed as -D properties to many goals: groupId (reverse-domain org), artifactId (project name), and version."],
+  ["<groupId>:<artifactId>:<version>","GAV string.","The compact 'GAV' form used by goals like dependency:get. You can extend it to groupId:artifactId:version:packaging:classifier when needed."],
+];
+
+/* ===================== COMMAND REFERENCE ===================== */
+const DATA = [
+  { id:"build", title:"Core Build Commands", sub:"clean → install → deploy", groups:[
+    { label:"The lifecycle, on the command line", items:[
+      ["mvn clean","Delete the target/ folder.","Runs the clean lifecycle, removing target/ and previous build output so you start fresh."],
+      ["mvn compile","Compile main sources.","Compiles your main source code into target/classes."],
+      ["mvn test","Run unit tests.","Compiles the code and runs your unit tests (via Surefire). Doesn't package anything."],
+      ["mvn package","Build the JAR/WAR.","Compiles, tests, and bundles the result into a distributable JAR or WAR in target/."],
+      ["mvn verify","Run integration checks.","Does everything package does, then runs integration tests and any quality checks."],
+      ["mvn install","Install to local ~/.m2.","Builds the project and copies the artifact into your local repository so other local projects can use it."],
+      ["mvn deploy","Publish to a remote repo.","Builds and uploads the artifact to a remote repository so other people and machines can use it."],
+    ]},
+    { label:"Common combinations", items:[
+      ["mvn clean install","Fresh build + local install.","The everyday workhorse: wipe target/, then build, test, and install to ~/.m2 from scratch."],
+      ["mvn clean package","Fresh build + package.","Clean, then produce the JAR/WAR without installing it to your local repository."],
+      ["mvn clean verify","Fresh build + full checks.","Clean, then build and run both unit and integration tests — common in CI pipelines."],
+    ]},
+  ]},
+  { id:"runskip", title:"Running, Skipping & Tuning", sub:"tests, threads, output", groups:[
+    { label:"Tests", items:[
+      ["mvn test -Dtest=<ClassName>","Run one test class.","Runs only the named test class instead of the whole suite."],
+      ["mvn test -Dtest=<ClassName>#<methodName>","Run one test method.","Runs a single test method. Wildcards work too, like MyTest#should*."],
+      ["mvn install -DskipTests","Skip running tests.","Compiles the tests but skips running them — faster, while still catching test compile errors."],
+      ["mvn install -Dmaven.test.skip=true","Skip compiling + running tests.","Skips compiling AND running tests entirely. Fastest, but won't notice broken test code."],
+      ["mvn verify -DskipITs","Skip integration tests.","Skips integration tests (Failsafe) while still running unit tests."],
+    ]},
+    { label:"Build behavior", items:[
+      ["mvn install -o","Build offline.","Runs without contacting any remote repository — only what's already in ~/.m2. Fails if something is missing."],
+      ["mvn install -U","Force-update snapshots.","Forces a re-check of remote repositories for newer SNAPSHOT versions and metadata."],
+      ["mvn install -T 1C","Parallel build.","Builds modules in parallel — '1C' means one thread per CPU core. Use -T 4 for a fixed count."],
+      ["mvn install -q","Quiet output.","Shows only warnings and errors. Add -e for stack traces or -X for full debug logging."],
+    ]},
+    { label:"Multi-module (reactor)", items:[
+      ["mvn -pl <module> install","Build one module.","Builds just the named module instead of the whole project."],
+      ["mvn -pl <module> -am install","Module + its dependencies.","Builds the module 'and also make' the other modules it depends on."],
+      ["mvn install -rf :<artifactId>","Resume from a module.","Resumes a multi-module build from the given module — handy after a failure partway through."],
+      ["mvn -f <path/pom.xml> install","Point at a specific POM.","Runs Maven against a pom.xml in another location."],
+    ]},
+  ]},
+  { id:"deps", title:"Dependencies", sub:"inspect & resolve", groups:[
+    { label:"Inspect", items:[
+      ["mvn dependency:tree","Show the dependency tree.","Prints the full tree of direct and transitive dependencies with their versions."],
+      ["mvn dependency:tree -Dverbose -Dincludes=<group>:<artifact>","Trace one dependency.","Shows where a specific dependency comes from and which versions were considered, revealing conflicts."],
+      ["mvn dependency:analyze","Find unused/undeclared deps.","Reports dependencies you declare but don't use, and ones you use but didn't declare."],
+      ["mvn dependency:list","List resolved dependencies.","Lists all dependencies resolved for the build."],
+    ]},
+    { label:"Resolve & download", items:[
+      ["mvn dependency:go-offline","Pre-download everything.","Downloads all dependencies and plugins needed to build offline later."],
+      ["mvn dependency:get -Dartifact=<g>:<a>:<v>","Download one artifact.","Fetches a single artifact (by its GAV) into your local repository."],
+      ["mvn dependency:purge-local-repository","Re-download project deps.","Removes this project's dependencies from ~/.m2 and fetches them fresh — useful for corrupted downloads."],
+      ["mvn versions:display-dependency-updates","Check for newer versions.","Lists dependencies that have newer versions available (Versions plugin)."],
+    ]},
+  ]},
+  { id:"create", title:"Create a Project", sub:"archetypes", groups:[
+    { label:"Scaffold", items:[
+      ["mvn archetype:generate","New project (interactive).","Starts an interactive wizard to scaffold a new project from a template (archetype)."],
+      ["mvn archetype:generate -DgroupId=<com.example> -DartifactId=<my-app> -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false","New project (scripted).","Scaffolds a basic Java project non-interactively using the standard quickstart archetype."],
+      ["mvn archetype:generate -Dfilter=<spring>","Find an archetype.","Lists available archetypes matching a keyword so you can choose one."],
+    ]},
+  ]},
+  { id:"plugins", title:"Plugins & Goals", sub:"run, inspect, help", groups:[
+    { label:"Run things", items:[
+      ["mvn exec:java -Dexec.mainClass=<com.example.Main>","Run a main class.","Runs a Java main method directly through Maven (Exec plugin), using the project's classpath."],
+      ["mvn spring-boot:run","Run a Spring Boot app.","Starts a Spring Boot application from source without packaging it first."],
+      ["mvn compiler:compile","Invoke a goal directly.","Runs a single plugin goal on its own — here compiling sources — bypassing the lifecycle."],
+    ]},
+    { label:"Inspect & help", items:[
+      ["mvn help:effective-pom","See the merged POM.","Shows the final POM after inheritance, defaults, and profiles are merged — what Maven actually uses."],
+      ["mvn help:active-profiles","See active profiles.","Lists which build profiles are currently active and why."],
+      ["mvn help:describe -Dplugin=<compiler>","Describe a plugin.","Shows a plugin's available goals and parameters."],
+      ["mvn -version","Maven & Java versions.","Prints the Maven version, Java version, and OS — the first thing to check when debugging."],
+    ]},
+  ]},
+  { id:"repos", title:"Repositories & Installing Jars", sub:"local, remote, manual", groups:[
+    { label:"Manual install/deploy", items:[
+      ["mvn install:install-file -Dfile=<lib.jar> -DgroupId=<com.example> -DartifactId=<lib> -Dversion=<1.0.0> -Dpackaging=jar","Install a local jar.","Adds a jar that isn't in any repository into your local ~/.m2 so your project can depend on it."],
+      ["mvn deploy:deploy-file -Dfile=<lib.jar> -Durl=<repo-url> -DrepositoryId=<server-id> -DgroupId=<com.example> -DartifactId=<lib> -Dversion=<1.0.0>","Deploy a jar to a remote.","Uploads a standalone jar to a remote repository (credentials come from settings.xml)."],
+      ["mvn dependency:purge-local-repository","Re-fetch project deps.","Clears this project's cached dependencies and downloads them again."],
+    ]},
+  ]},
+  { id:"versions", title:"Versioning", sub:"set, update, SNAPSHOT", groups:[
+    { label:"Versions plugin", items:[
+      ["mvn versions:set -DnewVersion=<2.0.0>","Set the project version.","Changes the version in the POM and child modules, saving backups first."],
+      ["mvn versions:commit","Keep the version change.","Deletes the backup POMs, making the version change permanent."],
+      ["mvn versions:revert","Undo the version change.","Restores the backup POMs, undoing a versions:set."],
+      ["mvn versions:use-latest-versions","Bump deps to latest.","Updates your dependencies to their newest available versions."],
+    ]},
+  ]},
+  { id:"profiles", title:"Profiles & Properties", sub:"-P and -D", groups:[
+    { label:"Switch behavior at build time", items:[
+      ["mvn install -P <profile>","Activate a profile.","Builds with the named profile active, switching on its extra config (e.g. a 'prod' profile)."],
+      ["mvn install -P <profile1>,<profile2>","Activate several profiles.","Activates multiple profiles at once, comma-separated."],
+      ["mvn install -P -<profile>","Disable a profile.","The leading minus turns OFF a profile that would otherwise be active by default."],
+      ["mvn install -D<property>=<value>","Set a property.","Passes a property into the build, overriding POM properties or feeding plugin configuration."],
+    ]},
+  ]},
+  { id:"wrapper", title:"Maven Wrapper (mvnw)", sub:"pin a version per project", groups:[
+    { label:"Use & generate", items:[
+      ["./mvnw clean install","Run via the wrapper.","Uses the project's bundled Maven version (downloading it if needed), so everyone builds the same — no global install required."],
+      ["mvn wrapper:wrapper","Add the wrapper.","Generates the mvnw / mvnw.cmd scripts and config, pinning the current Maven version to the project."],
+      ["mvn wrapper:wrapper -Dmaven=<3.9.6>","Pin a specific version.","Adds the wrapper set to a specific Maven version."],
+    ]},
+  ]},
+  { id:"info", title:"Troubleshooting", sub:"debug a build", groups:[
+    { label:"Get more information", items:[
+      ["mvn -X install","Full debug logging.","Runs with verbose debug output — plugin config, classpaths, and why things happen. Noisy but thorough."],
+      ["mvn -e install","Show stack traces.","Prints full stack traces on errors, without the full debug firehose of -X."],
+      ["mvn dependency:tree -Dverbose","Reveal version conflicts.","Shows omitted and conflicting dependency versions so you can see why a particular version won."],
+      ["mvn install -fae","Fail at end.","Keeps building the remaining modules after one fails, then reports all failures together."],
+      ["mvn help:system","Dump system properties.","Prints all Java system properties and environment variables Maven sees."],
+    ]},
+  ]},
+];
+
+/* ===================== HELPERS ===================== */
+const escAttr = s => s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function highlightLit(text){
+  let s = escHtml(text);
+  s = s.replace(/("[^"]*")/g,'<span class="c-str">$1</span>');
+  s = s.replace(/(^|\s)(--?[a-zA-Z][\w-]*)/g,'$1<span class="c-flag">$2</span>');
+  return s;
+}
+function buildCommandHTML(cmd){
+  return cmd.split(/(<[^>]+>)/g).map(p=>{
+    const m = p.match(/^<([^>]+)>$/);
+    if(m){
+      const name = m[1];
+      return `<input class="ph" data-ph="${escAttr(name)}" placeholder="${escAttr(name)}" size="${Math.max(name.length,3)}" spellcheck="false" autocomplete="off">`;
+    }
+    return p ? `<span class="lit">${highlightLit(p)}</span>` : '';
+  }).join('');
+}
+function readCommand(codeEl){
+  let out='';
+  codeEl.childNodes.forEach(node=>{
+    if(node.nodeType===1 && node.classList.contains('ph')){
+      const v = node.value.trim();
+      out += v ? v : '<'+node.dataset.ph+'>';
+    } else { out += node.textContent; }
+  });
+  return out;
+}
+function cmdRow(cmd, explain){
+  return `<div class="cmd"><code class="cmd-code">${buildCommandHTML(cmd)}</code><button class="copy" data-explain="${escAttr(explain)}" aria-label="Copy command">copy</button></div>`;
+}
+
+/* ===================== RENDER ===================== */
+const content = document.getElementById('content');
+const index = document.getElementById('index');
+
+function addChip(label, target, lead){
+  const a = document.createElement('a');
+  a.href = '#'+target; a.textContent = label; a.dataset.target = target;
+  if(lead) a.classList.add('lead');
+  index.appendChild(a);
+}
+addChip('★ Scenarios','scenarios',true);
+addChip('★ Lifecycle','reference',true);
+DATA.forEach(t=>addChip(t.title.split('(')[0].trim(), t.id));
+
+/* Scenarios */
+const scnSection = document.createElement('section');
+scnSection.id = 'scenarios';
+let scnHtml = `<div class="section-head"><h2>Scenarios &amp; Recipes</h2><span class="meta">"how do I…" → exact steps</span></div>`;
+SCENARIOS.forEach((s,i)=>{
+  let body = '';
+  if(s.when) body += `<p class="scn-when">${s.when}</p>`;
+  let searchBits = s.q;
+  s.blocks.forEach(b=>{
+    body += `<div class="scn-block">`;
+    if(b.label) body += `<div class="block-label">${b.label}</div>`;
+    body += `<ol class="steps">`;
+    b.steps.forEach(([cmd,note])=>{
+      searchBits += ' '+cmd+' '+note;
+      body += `<li class="step"><span class="step-n">•</span><div class="step-main">${cmdRow(cmd,note)}<div class="step-note">${note}</div></div></li>`;
+    });
+    body += `</ol>`;
+    if(b.steps.length>1) body += `<button class="copy-all">Copy these steps</button>`;
+    body += `</div>`;
+  });
+  scnHtml += `
+    <div class="scenario searchable" data-search="${escAttr(searchBits.toLowerCase())}">
+      <button class="scn-head" aria-expanded="false">
+        <span class="scn-icon">${i+1}</span>
+        <span class="scn-q">${s.q}</span>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+      <div class="scn-body"><div class="scn-inner"><div class="scn-pad">${body}</div></div></div>
+    </div>`;
+});
+scnSection.innerHTML = scnHtml;
+content.appendChild(scnSection);
+document.querySelectorAll('.scn-block .steps').forEach(ol=>{
+  ol.querySelectorAll('.step-n').forEach((n,idx)=>n.textContent = idx+1);
+});
+
+/* Reference: lifecycle, scopes, coordinates */
+const refSection = document.createElement('section');
+refSection.id = 'reference';
+const lifeHtml = LIFECYCLE.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('');
+const scopeHtml = SCOPES.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('');
+const coordHtml = COORD_CMDS.map(([cmd,desc,explain])=>{
+  const search = (cmd+' '+desc+' '+explain+' coordinates gav groupid artifactid version').toLowerCase();
+  return `<div class="cmd-block searchable" data-search="${escAttr(search)}">${cmdRow(cmd,explain)}<div class="desc">${desc}</div></div>`;
+}).join('');
+refSection.innerHTML = `
+  <div class="section-head"><h2>Lifecycle, Scopes &amp; Coordinates</h2><span class="meta">the mental model</span></div>
+  <div class="topic">
+    <button class="topic-head" aria-expanded="false">
+      <span class="num">★</span>
+      <span class="topic-title">How Maven Thinks</span>
+      <span class="topic-sub">phases · scopes · GAV</span>
+      <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+    </button>
+    <div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">
+      <div class="group-label">Default lifecycle — asking for a phase runs every phase before it too</div>
+      <p class="conv-rule">So <code>mvn package</code> also runs validate, compile, and test. Two other lifecycles exist: <code>clean</code> (pre-build cleanup) and <code>site</code> (documentation).</p>
+      <div class="types">${lifeHtml}</div>
+      <div class="group-label">Dependency scopes</div>
+      <div class="types">${scopeHtml}</div>
+      <div class="group-label">Coordinates (GAV)</div>
+      <p class="conv-rule">Every artifact is identified by <code>groupId:artifactId:version</code>. A version ending in <code>-SNAPSHOT</code> marks in-development code that Maven may re-fetch.</p>
+      ${coordHtml}
+    </div></div></div>
+  </div>`;
+content.appendChild(refSection);
+
+/* Command reference */
+DATA.forEach((topic,i)=>{
+  const section = document.createElement('section');
+  section.id = topic.id;
+  let groupsHtml = '';
+  topic.groups.forEach(g=>{
+    groupsHtml += `<div class="group"><div class="group-label">${g.label}</div>`;
+    g.items.forEach(([cmd,desc,explain])=>{
+      const search = (cmd+' '+desc+' '+(explain||'')).toLowerCase();
+      groupsHtml += `<div class="cmd-block searchable" data-search="${escAttr(search)}">${cmdRow(cmd,explain||desc)}<div class="desc">${desc}</div></div>`;
+    });
+    groupsHtml += `</div>`;
+  });
+  section.innerHTML = `
+    <div class="topic">
+      <button class="topic-head" aria-expanded="false">
+        <span class="num">${String(i+1).padStart(2,'0')}</span>
+        <span class="topic-title">${topic.title}</span>
+        <span class="topic-sub">${topic.sub}</span>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+      <div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">${groupsHtml}</div></div></div>
+    </div>`;
+  content.appendChild(section);
+});
+
+/* ===================== ACCORDION ===================== */
+function setOpen(el, open){
+  el.classList.toggle('open', open);
+  const head = el.querySelector('[aria-expanded]');
+  if(head) head.setAttribute('aria-expanded', open);
+}
+document.querySelectorAll('.topic-head, .scn-head').forEach(head=>{
+  head.addEventListener('click', ()=>{
+    const t = head.closest('.topic, .scenario');
+    setOpen(t, !t.classList.contains('open'));
+  });
+});
+document.getElementById('expandAll').onclick  = ()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,true));
+document.getElementById('collapseAll').onclick= ()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,false));
+index.querySelectorAll('a').forEach(a=>{
+  a.addEventListener('click', ()=>{
+    const sec = document.getElementById(a.dataset.target);
+    const acc = sec.querySelector('.topic, .scenario');
+    if(acc) setOpen(acc, true);
+  });
+});
+
+/* ===================== GLOSSARY TOGGLE ===================== */
+const glossary = document.getElementById('glossary');
+const glossaryBtn = document.getElementById('glossaryBtn');
+glossaryBtn.onclick = ()=>{
+  const open = glossary.classList.toggle('open');
+  glossaryBtn.classList.toggle('active', open);
+};
+
+/* ===================== PLACEHOLDER INPUTS ===================== */
+content.addEventListener('input', e=>{
+  const inp = e.target;
+  if(!inp.classList || !inp.classList.contains('ph')) return;
+  inp.size = Math.max(inp.value.length || inp.placeholder.length, 3);
+  inp.classList.toggle('filled', inp.value.trim().length>0);
+  const code = inp.closest('.cmd-code');
+  code.querySelectorAll('.ph').forEach(other=>{
+    if(other!==inp && other.dataset.ph===inp.dataset.ph){
+      other.value = inp.value;
+      other.size = Math.max(other.value.length || other.placeholder.length, 3);
+      other.classList.toggle('filled', other.value.trim().length>0);
+    }
+  });
+});
+content.addEventListener('click', e=>{
+  if(e.target.classList && e.target.classList.contains('ph')) e.stopPropagation();
+});
+
+/* ===================== TOAST ===================== */
+const toast = document.getElementById('toast');
+const toastCmd = document.getElementById('toastCmd');
+const toastBody = document.getElementById('toastBody');
+let toastTimer;
+function showToast(cmd, explanation){
+  toastCmd.textContent = cmd;
+  toastBody.textContent = explanation;
+  toast.classList.remove('show'); void toast.offsetWidth; toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toast.classList.remove('show'), 7000);
+}
+document.getElementById('toastClose').onclick = ()=>toast.classList.remove('show');
+
+/* ===================== COPY ===================== */
+content.addEventListener('click', e=>{
+  const btn = e.target.closest('.copy');
+  if(btn){
+    const code = btn.parentElement.querySelector('.cmd-code');
+    const text = readCommand(code);
+    navigator.clipboard.writeText(text).then(()=>{
+      btn.textContent='copied'; btn.classList.add('done');
+      setTimeout(()=>{ btn.textContent='copy'; btn.classList.remove('done'); },1300);
+      showToast(text, btn.dataset.explain);
+    });
+    return;
+  }
+  const ca = e.target.closest('.copy-all');
+  if(ca){
+    const block = ca.closest('.scn-block');
+    const text = [...block.querySelectorAll('.cmd-code')].map(readCommand).join('\n');
+    navigator.clipboard.writeText(text).then(()=>{
+      ca.textContent='copied all'; ca.classList.add('done');
+      setTimeout(()=>{ ca.textContent='Copy these steps'; ca.classList.remove('done'); },1500);
+      showToast(text, 'Run these commands in order in your terminal. Replace anything still shown as <…> with your own value first.');
+    });
+  }
+});
+
+/* ===================== SEARCH ===================== */
+const search = document.getElementById('search');
+const noResults = document.getElementById('noResults');
+search.addEventListener('input', ()=>{
+  const q = search.value.trim().toLowerCase();
+  document.querySelectorAll('.searchable').forEach(el=>{
+    el.style.display = (!q || el.dataset.search.includes(q)) ? '' : 'none';
+  });
+  document.querySelectorAll('.group').forEach(g=>{
+    const vis = [...g.querySelectorAll('.searchable')].some(e=>e.style.display!=='none');
+    g.style.display = vis ? '' : 'none';
+  });
+  let any = false;
+  document.querySelectorAll('main section').forEach(sec=>{
+    const vis = [...sec.querySelectorAll('.searchable')].some(e=>e.style.display!=='none');
+    sec.style.display = vis ? '' : 'none';
+    if(vis){
+      any = true;
+      if(q){
+        sec.querySelectorAll('.topic').forEach(t=>{
+          if([...t.querySelectorAll('.searchable')].some(e=>e.style.display!=='none')) setOpen(t,true);
+        });
+        sec.querySelectorAll('.scenario.searchable').forEach(s=>{
+          if(s.style.display!=='none') setOpen(s,true);
+        });
+      }
+    }
+  });
+  noResults.style.display = any ? 'none' : 'block';
+});
+
+/* ===================== INITIAL STATE ===================== */
+setOpen(document.querySelector('#scenarios .scenario'), true);
+setOpen(document.querySelector('#build .topic'), true);
+</script>
+</body>
+</html>

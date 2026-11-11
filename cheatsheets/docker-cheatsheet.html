@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Docker — Cheat Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Mulish:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root,[data-theme="dark"]{--bg:#151210;--paper:#1d1814;--ink:#f0ece6;--ink-soft:#a89880;--line:#2a2218;--line-strong:#3d3224;--accent:#f97316;--accent-soft:#fb923c;--green:#5fd38a;--code-bg:#0d0b08;--code-ink:#ede8e0;--code-dim:#7a6a58;--code-ph:#fcd34d;--code-green:#5fd38a;--on-accent:#0d0800;--radius:10px;--dot:.7px;}
+  [data-theme="light"]{--bg:#fdf5ec;--paper:#ffffff;--ink:#1a1208;--ink-soft:#6b5040;--line:#f0e0cc;--line-strong:#ddc8b0;--accent:#c2410c;--accent-soft:#ea580c;--green:#15803d;--code-bg:#0d0b08;--code-ink:#ede8e0;--code-dim:#7a6a58;--code-ph:#fcd34d;--code-green:#5fd38a;--on-accent:#ffffff;--dot:.6px;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;transition:background-color .3s ease}
+  body,.topic,.scenario,.panel-pad,.btn,.search input,.toast,.cmd,.type{transition:background-color .3s ease,border-color .3s ease,color .3s ease}
+  body{background:var(--bg);color:var(--ink);font-family:'Mulish',system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;background-image:radial-gradient(var(--line) var(--dot),transparent var(--dot));background-size:22px 22px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px}
+  header{padding:64px 0 26px}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2.4rem,8vw,4.1rem);line-height:.98;letter-spacing:-.03em;margin-bottom:16px}
+  h1 .mark{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:.58em;font-weight:700}
+  .lede{font-size:1.05rem;color:var(--ink-soft);max-width:57ch}
+  .lede code{font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--accent-soft)}
+  .hint{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);margin-top:14px;border-left:2px solid var(--accent);padding-left:10px}
+  .controls{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 70%,transparent);padding:18px 0 14px;margin-bottom:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:200px;position:relative}
+  .search input{width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:12px 14px 12px 40px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+  .search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent)}
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.45}
+  .btn{font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.04em;padding:11px 16px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink-soft);cursor:pointer;transition:all .18s;white-space:nowrap}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+  .panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s ease}
+  .panel.open{grid-template-rows:1fr;margin-bottom:26px}
+  .panel-inner{overflow:hidden}
+  .panel-pad{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);padding:20px 22px;margin-top:2px}
+  .panel-pad h3{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:3px}
+  .panel-pad .sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);margin-bottom:16px}
+  .gloss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:15px 24px}
+  .gloss dt{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent-soft);margin-bottom:3px}
+  .gloss dd{font-size:.9rem;color:var(--ink-soft);line-height:1.5}
+  .index{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:34px;padding-bottom:30px;border-bottom:1px solid var(--line)}
+  .index a{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:99px;transition:all .15s}
+  .index a:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .index a.lead{border-color:var(--accent);color:var(--accent)}
+  .index a.lead:hover{background:var(--accent);color:var(--on-accent)}
+  .section-head{display:flex;align-items:baseline;gap:12px;margin:34px 0 16px;flex-wrap:wrap}
+  .section-head h2{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;letter-spacing:-.02em}
+  .section-head .meta{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim)}
+  section{margin-bottom:14px;scroll-margin-top:90px}
+  .topic{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden}
+  .topic-head{display:flex;align-items:center;gap:14px;width:100%;padding:18px 20px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .topic-head:hover .topic-title{color:var(--accent)}
+  .num{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);border:1px solid var(--line-strong);border-radius:6px;padding:3px 7px;flex-shrink:0}
+  .topic-title{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:-.01em;transition:color .2s;flex:1}
+  .topic-sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);font-weight:400}
+  .chev{flex-shrink:0;transition:transform .3s ease;color:var(--ink-soft)}
+  .topic.open .chev,.scenario.open .chev{transform:rotate(90deg)}
+  .topic-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .topic.open .topic-body{grid-template-rows:1fr}
+  .topic-body-inner{overflow:hidden}
+  .topic-pad{padding:0 20px 22px;border-top:1px solid var(--line)}
+  .group-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-soft);margin:22px 0 10px}
+  .scenario{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden;margin-bottom:10px}
+  .scn-head{display:flex;align-items:center;gap:13px;width:100%;padding:16px 18px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .scn-head:hover .scn-q{color:var(--accent)}
+  .scn-icon{flex-shrink:0;width:27px;height:27px;border-radius:7px;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:700}
+  .scn-q{flex:1;font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:-.01em;transition:color .2s}
+  .scn-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .scenario.open .scn-body{grid-template-rows:1fr}
+  .scn-inner{overflow:hidden}
+  .scn-pad{padding:2px 18px 18px;border-top:1px solid var(--line)}
+  .scn-when{font-size:.92rem;color:var(--ink-soft);margin:14px 0 2px;font-style:italic}
+  .scn-block{margin-top:14px}
+  .block-label{font-family:'JetBrains Mono',monospace;font-size:.71rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-soft);margin-bottom:10px}
+  .steps{list-style:none}
+  .step{display:flex;gap:11px;margin-bottom:11px}
+  .step-n{flex-shrink:0;width:22px;height:22px;margin-top:7px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--accent)}
+  .step-main{flex:1;min-width:0}
+  .step-note{font-size:.88rem;color:var(--ink-soft);margin:3px 0 0 2px}
+  .copy-all{margin-top:4px;font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:9px 14px;border:1px dashed var(--line-strong);border-radius:8px;background:none;color:var(--ink-soft);cursor:pointer;transition:all .15s}
+  .copy-all:hover{border-color:var(--accent);color:var(--accent)}
+  .copy-all.done{color:var(--green);border-color:var(--green)}
+  .types{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:8px;margin:6px 0 18px}
+  .type{display:flex;gap:9px;align-items:baseline;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--code-bg)}
+  .type b{font-family:'JetBrains Mono',monospace;color:var(--code-ph);font-size:.78rem;flex-shrink:0;white-space:nowrap}
+  .type span{font-size:.84rem;color:var(--code-dim)}
+  .conv-rule{font-size:.92rem;color:var(--ink-soft);margin-bottom:8px}
+  .conv-rule code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+  .cmd{display:flex;align-items:stretch;gap:0;margin-bottom:8px;border-radius:8px;overflow:hidden;border:1px solid #1a1208;background:var(--code-bg)}
+  .cmd-code{flex:1;font-family:'JetBrains Mono',monospace;font-size:.84rem;color:var(--code-ink);padding:9px 14px;overflow-x:auto;white-space:pre;line-height:1.7;display:flex;align-items:center;flex-wrap:wrap}
+  .cmd-code .lit{white-space:pre}
+  .ph{font-family:'JetBrains Mono',monospace;font-size:.84rem;background:rgba(252,211,77,.16);color:var(--code-ph);border:none;border-bottom:1px dashed var(--code-ph);padding:1px 2px;margin:0 1px;outline:none;border-radius:3px 3px 0 0;transition:background .15s;min-width:1ch}
+  .ph::placeholder{color:var(--code-ph);opacity:.6;font-style:italic}
+  .ph:focus{background:rgba(252,211,77,.3)}
+  .ph.filled{color:var(--code-green);border-bottom-color:var(--code-green);background:rgba(95,211,138,.15)}
+  .copy{flex-shrink:0;border:none;border-left:1px solid #1a1208;background:#110e08;color:var(--code-dim);font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:0 15px;cursor:pointer;transition:all .15s;letter-spacing:.05em;align-self:stretch}
+  .copy:hover{background:#1d180f;color:var(--code-ink)}
+  .copy.done{color:var(--code-green)}
+  .desc{font-size:.92rem;color:var(--ink-soft);margin:1px 0 13px 2px;line-height:1.6}
+  .desc code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+  .no-results{display:none;text-align:center;padding:50px 0;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;font-size:.9rem}
+  footer{padding:40px 0 70px;margin-top:30px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--code-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  footer a{color:var(--accent-soft);text-decoration:none}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);width:min(560px,calc(100% - 36px));z-index:60;background:var(--paper);border:1px solid var(--line-strong);border-radius:14px;box-shadow:0 18px 50px -12px rgba(0,0,0,.6);padding:18px 20px 19px;opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.2,.9,.25,1),opacity .35s}
+  .toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+  .toast-top{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+  .toast-badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--on-accent);background:var(--green);padding:3px 8px;border-radius:99px}
+  .toast-title{font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);flex:1}
+  .toast-close{border:none;background:none;cursor:pointer;color:var(--ink-soft);font-size:1.2rem;line-height:1;padding:2px 4px;border-radius:6px}
+  .toast-close:hover{color:var(--accent);background:var(--line)}
+  .toast-cmd{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--code-ink);background:var(--code-bg);border-radius:8px;padding:9px 12px;margin-bottom:12px;overflow-x:auto;white-space:pre;max-height:150px}
+  .toast-body{font-size:1rem;color:var(--ink);line-height:1.6}
+  .toast-progress{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);border-radius:0 0 0 14px;width:100%}
+  .toast.show .toast-progress{animation:drain 7s linear forwards}
+  @keyframes drain{from{width:100%}to{width:0%}}
+  ::selection{background:var(--accent);color:var(--on-accent)}
+  @media(max-width:540px){header{padding:42px 0 22px}.topic-sub{display:none}.cmd-code{font-size:.79rem}}
+</style>
+</head>
+<body>
+<div class="wrap" id="top">
+  <header>
+    <div class="kicker">Docker · CLI · images · containers · v1</div>
+    <h1><span class="mark">docker</span> cheat sheet</h1>
+    <p class="lede">Build images, run containers, manage volumes and networks, inspect what's running, and clean up. The Docker CLI commands you reach for every day — copy any to see what each flag does.</p>
+    <p class="hint">⌨ Gold blanks like &lt;image&gt; are editable. ⊕ Copying explains the flag. ☀/☾ toggles light &amp; dark. ⚠️ marks destructive commands.</p>
+  </header>
+  <div class="controls">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="Search…  e.g. volume, exec, logs, build, prune" autocomplete="off">
+    </label>
+    <button class="btn" id="themeBtn">☀ Light</button>
+    <button class="btn" id="glossaryBtn">Glossary</button>
+    <button class="btn" id="expandAll">Expand all</button>
+    <button class="btn" id="collapseAll">Collapse all</button>
+  </div>
+  <div class="panel glossary" id="glossary"><div class="panel-inner"><div class="panel-pad">
+    <h3>Docker glossary</h3><div class="sub">container words in plain language</div>
+    <dl class="gloss gloss-grid" id="glossList"></dl>
+  </div></div></div>
+  <nav class="index" id="index"></nav>
+  <main id="content"></main>
+  <div class="no-results" id="noResults">Nothing matches that search.</div>
+  <footer><span>Copy a command to learn it. Empty blanks copy as &lt;placeholder&gt;.</span><span><a href="#top">↑ back to top</a></span></footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <div class="toast-top"><span class="toast-badge">copied</span><span class="toast-title">what this does</span><button class="toast-close" id="toastClose">×</button></div>
+  <div class="toast-cmd" id="toastCmd"></div><div class="toast-body" id="toastBody"></div>
+  <div class="toast-progress"></div>
+</div>
+<script>
+const SCENARIOS=[
+  {q:"Build an image and run a container",when:"The full cycle from Dockerfile to a running container.",blocks:[{label:"Build → run → verify",steps:[
+    ["docker build -t <myapp>:<1.0> .","Build from the Dockerfile in the current directory. -t tags it with a name and version. The dot is the build context — everything in it may be sent to the daemon, so use .dockerignore to exclude large files."],
+    ["docker run -d -p <8080>:<3000> --name <myapp> <myapp>:<1.0>","-d runs it in the background (detached). -p maps host port 8080 to container port 3000. --name gives it a memorable handle instead of a random ID."],
+    ["docker ps","Verify it's running — lists running containers with IDs, names, ports, and uptime."],
+    ["docker logs -f <myapp>","Follow the container's stdout/stderr in real time. Ctrl+C detaches without stopping the container."],
+  ]}]},
+  {q:"Open a shell inside a running container",when:"Debug a running container by jumping inside it.",blocks:[{label:"exec into the container",steps:[
+    ["docker exec -it <container> sh","Open an interactive shell. -it = interactive + pseudo-TTY. Use bash instead of sh if the image has it. The container keeps running when you exit."],
+  ]}]},
+  {q:"Push an image to Docker Hub",when:"Share your image or deploy it via a registry.",blocks:[{label:"Tag → login → push",steps:[
+    ["docker tag <myapp>:<1.0> <username>/<myapp>:<1.0>","Re-tag with your Docker Hub username prefix — required before pushing to Docker Hub."],
+    ["docker login","Authenticate with Docker Hub. Credentials are cached so you only need this once per machine."],
+    ["docker push <username>/<myapp>:<1.0>","Upload the image layers. Only changed layers are pushed — subsequent pushes of the same image are fast."],
+  ]}]},
+  {q:"Mount a local folder into a container",when:"Develop locally with live reloads — the container sees your files as you edit them.",blocks:[{label:"Bind mount at run time",steps:[
+    ["docker run -v <$(pwd)>:/app -p <3000>:<3000> <myapp>","Mounts the current directory into /app inside the container. Any file you edit locally is immediately visible inside — no rebuild needed."],
+  ]}]},
+  {q:"Stop and clean up everything",when:"After development, wipe containers, images, and volumes to reclaim disk space.",blocks:[{label:"Stop → remove → prune",steps:[
+    ["docker stop <container>","Graceful stop: sends SIGTERM, waits 10s, then SIGKILL. The container still exists — just stopped."],
+    ["docker rm <container>","Remove the stopped container and its writable layer. Add -f to force-remove a running one ⚠️."],
+    ["docker system prune -a --volumes","⚠️ Removes ALL stopped containers, unused images, networks, and volumes. The nuclear option. Omit --volumes to keep named volumes."],
+  ]}]},
+  {q:"Copy files between host and container",when:"Extract a log or build artifact without mounting a volume.",blocks:[{label:"docker cp both ways",steps:[
+    ["docker cp <container>:/app/<output.tar> .","Copy a file FROM the container to your current directory."],
+    ["docker cp <./config.json> <container>:/app/","Copy a file TO the container. Works on running or stopped containers."],
+  ]}]},
+  {q:"Inspect a container or image",when:"Debug port mappings, env vars, mounts, or the image's layer history.",blocks:[{label:"inspect + history",steps:[
+    ["docker inspect <container>","Dumps full JSON metadata — IP, mounts, env vars, restart policy, everything."],
+    ["docker inspect -f '{{.NetworkSettings.IPAddress}}' <container>","Use a Go template to extract just one field — here the container's internal IP address."],
+    ["docker history <image>","Shows the layers that make up an image, their sizes, and the commands that created them. Great for auditing Dockerfile efficiency."],
+  ]}]},
+];
+
+const TOKENS=[
+  ["-d","detached — run in background"],
+  ["-it","interactive + pseudo-TTY (for shells)"],
+  ["-p host:container","publish a port"],
+  ["-v src:dst","bind mount or named volume"],
+  ["-e KEY=val","set an environment variable"],
+  ["--name","give the container a name"],
+  ["--rm","auto-remove when it exits"],
+  ["--network","attach to a network"],
+  ["--restart unless-stopped","auto-restart policy"],
+  ["--env-file .env","load env vars from a file"],
+];
+
+const DATA=[
+  {id:"images",title:"Images",sub:"build · pull · tag · push · save",groups:[
+    {label:"Fetch",items:[
+      ["docker pull <image>:<tag>","Download an image.","Pulls from the registry (Docker Hub by default). Always pin the tag — 'latest' changes unexpectedly in production."],
+      ["docker pull <registry.example.com>/<image>:<tag>","Pull from a private registry.","Prefix with the registry hostname. You may need to docker login first."],
+    ]},
+    {label:"Build",items:[
+      ["docker build -t <name>:<tag> .","Build from the current directory.","Reads the Dockerfile and builds an image. The dot is the build context. Use .dockerignore to exclude node_modules, .git, etc."],
+      ["docker build -f <Dockerfile.prod> -t <name>:<tag> .","Build from a specific Dockerfile.","-f points at a non-default Dockerfile — useful for separate dev and production configs."],
+      ["docker build --no-cache -t <name>:<tag> .","Build without the layer cache.","Forces every layer to rebuild. Useful when a RUN step fetches remote data that may have changed."],
+      ["docker buildx build --platform linux/amd64,linux/arm64 -t <name>:<tag> --push .","Multi-platform build.","Builds and pushes images for multiple CPU architectures in one command. Requires buildx (built into Docker Desktop)."],
+    ]},
+    {label:"Manage",items:[
+      ["docker images","List local images.","Shows all images with tags, IDs, creation date, and size."],
+      ["docker tag <source>:<tag> <target>:<tag>","Re-tag an image.","Creates an alias for the same image layers — commonly used to add a registry prefix before pushing."],
+      ["docker rmi <image>","Remove an image.","Deletes the image. Fails if a container still references it — remove the container first, or use -f ⚠️."],
+      ["docker image prune -a","Remove unused images.","⚠️ Removes images not referenced by any container. Without -a, only dangling (untagged) images are removed."],
+    ]},
+    {label:"Save and load",items:[
+      ["docker save <image> | gzip > <image.tar.gz>","Export an image to a file.","Serializes the image to a tar archive for transfer without a registry."],
+      ["docker load < <image.tar.gz>","Import an image from a file.","Loads an image from a tar archive produced by docker save."],
+    ]},
+  ]},
+  {id:"containers",title:"Containers",sub:"run · exec · logs · stop · remove",groups:[
+    {label:"Run",items:[
+      ["docker run <image>","Run a container in the foreground.","Creates and starts a container. Output goes to your terminal; Ctrl+C stops it."],
+      ["docker run -d --name <name> <image>","Run detached with a name.","Starts in the background and gives it a memorable name. Returns the container ID."],
+      ["docker run --rm -it <image> sh","Run, open a shell, auto-remove.","--rm deletes the container when you exit. Great for one-off debugging sessions."],
+      ["docker run -e <KEY>=<value> --env-file <.env> <image>","Pass environment variables.","-e sets one variable; --env-file loads a whole file. Use this for secrets and config instead of baking them into the image."],
+      ["docker run --restart unless-stopped <image>","Auto-restart policy.","Restarts the container if it exits, surviving host reboots. Other policies: no, on-failure, always."],
+      ["docker run --memory=<512m> --cpus=<1.0> <image>","Resource limits.","Cap memory and CPU so one container can't starve others on the host."],
+    ]},
+    {label:"Inspect and debug",items:[
+      ["docker ps","List running containers.","Shows ID, name, image, status, and ports. Add -a to include stopped containers."],
+      ["docker logs -f --tail <100> <container>","Follow logs.","Streams stdout/stderr. --tail limits how far back to start; -f follows live output."],
+      ["docker exec -it <container> sh","Shell into a running container.","Opens an interactive shell without stopping the container. Use bash if available."],
+      ["docker top <container>","List processes inside.","Like ps aux from inside the container."],
+      ["docker stats","Live resource usage.","Streams CPU, memory, and I/O for all running containers. Ctrl+C to stop."],
+      ["docker inspect -f '{{<.NetworkSettings.IPAddress>}}' <container>","Extract one field from metadata.","Use a Go template to pull just the value you need from the full JSON metadata."],
+    ]},
+    {label:"Lifecycle",items:[
+      ["docker stop <container>","Graceful stop.","Sends SIGTERM then SIGKILL after 10s. The container and its filesystem still exist."],
+      ["docker kill <container>","Immediate stop.","⚠️ Sends SIGKILL immediately — no graceful shutdown. Use when stop hangs."],
+      ["docker start <container>","Restart a stopped container.","Re-starts using its existing configuration."],
+      ["docker restart <container>","Stop then start.","Combines stop and start in one command."],
+      ["docker rm <container>","Remove a stopped container.","Deletes the container and its writable layer. Add -f to force-remove a running one ⚠️."],
+    ]},
+  ]},
+  {id:"volumes",title:"Volumes",sub:"named · bind mounts · inspect",groups:[
+    {label:"Named volumes (Docker-managed)",items:[
+      ["docker volume create <vol-name>","Create a named volume.","Docker manages the storage path. Named volumes persist after containers are removed — they must be explicitly deleted."],
+      ["docker run -v <vol-name>:/data <image>","Mount a named volume.","Attaches the volume to /data inside the container. Docker creates the volume if it doesn't exist."],
+      ["docker volume ls","List volumes.","Shows all named volumes on the host."],
+      ["docker volume inspect <vol-name>","Inspect a volume.","Shows the host path where Docker stores the data and which containers use it."],
+      ["docker volume rm <vol-name>","Remove a volume.","⚠️ Permanently deletes the volume and all its data. Fails if a container still references it."],
+      ["docker volume prune","Remove unused volumes.","⚠️ Deletes all volumes not mounted by any container."],
+    ]},
+    {label:"Bind mounts (you control the path)",items:[
+      ["docker run -v <$(pwd)>:/app <image>","Mount the current directory.","Changes on either side are immediately visible on the other — live reload without rebuilding."],
+      ["docker run -v <$(pwd)>:/app:ro <image>","Read-only bind mount.",":ro makes the mount read-only inside the container so it can't write to your local files."],
+    ]},
+  ]},
+  {id:"networks",title:"Networks",sub:"bridge · host · custom",groups:[
+    {label:"Manage",items:[
+      ["docker network create <net-name>","Create a custom network.","Containers on the same custom network reach each other by container name — DNS is built in. The default bridge network doesn't have this."],
+      ["docker network ls","List networks.","Shows the default bridge, host, and none, plus any custom ones."],
+      ["docker network connect <net-name> <container>","Add a container to a network.","Attaches a running container to another network without stopping it."],
+      ["docker network inspect <net-name>","Inspect a network.","Shows all connected containers, their IPs, and the network's subnet."],
+      ["docker network rm <net-name>","Remove a network.","Fails if any container is still connected."],
+    ]},
+    {label:"Run with networking",items:[
+      ["docker run --network <net-name> <image>","Join a custom network.","The container starts on the named network and can reach others by name."],
+      ["docker run --network host <image>","Use the host network.","Shares the host's network stack — no port mapping needed, but loses container isolation."],
+      ["docker run -p <127.0.0.1>:<8080>:<3000> <image>","Bind to a specific host interface.","Without the IP prefix Docker binds to all interfaces (0.0.0.0). Specify the IP to restrict access."],
+    ]},
+  ]},
+  {id:"cleanup",title:"Cleanup",sub:"prune · system df",groups:[
+    {label:"Targeted",items:[
+      ["docker container prune","Remove stopped containers.","Deletes all exited containers. Prompts for confirmation."],
+      ["docker image prune -a","Remove unused images.","⚠️ Removes images not referenced by any container — including tagged ones you haven't used recently."],
+      ["docker volume prune","Remove unused volumes.","⚠️ Deletes all volumes not mounted by any container."],
+      ["docker network prune","Remove unused networks.","Removes networks not used by any container."],
+      ["docker builder prune -a","Clear all build cache.","Frees space used by BuildKit layer cache. -a removes everything, not just dangling entries."],
+      ["docker system df","Show disk usage breakdown.","Displays how much space images, containers, volumes, and build cache are each consuming."],
+    ]},
+    {label:"Everything at once",items:[
+      ["docker system prune","Remove everything unused.","Stopped containers, dangling images, unused networks, and build cache in one shot."],
+      ["docker system prune -a --volumes","⚠️ Maximum cleanup.","Like the above but also removes ALL unused images and volumes. You'll need to re-pull or rebuild afterwards."],
+    ]},
+  ]},
+  {id:"dockerfile",title:"Dockerfile Tips",sub:"layers · cache · best practices",groups:[
+    {label:"Key instructions",items:[
+      ["FROM <base-image>:<tag>","Base image.","Always pin the tag — FROM node:20-alpine not FROM node:latest. alpine variants are much smaller."],
+      ["WORKDIR /app","Set working directory.","All subsequent RUN, COPY, CMD instructions operate here. Creates the directory if needed."],
+      ["COPY package*.json ./ && RUN npm ci && COPY . .","Cache dependencies separately.","Copy and install dependencies before copying source code. If package.json hasn't changed, Docker skips the install on the next build."],
+      ["RUN apt-get update && apt-get install -y <pkg> && rm -rf /var/lib/apt/lists/*","Clean up in the same RUN.","Removing package lists in a separate RUN instruction doesn't reduce image size — it must be in the same layer."],
+      ["ENV <KEY>=<value>","Environment variable.","Available at build time and runtime. Use ARG for build-only variables (not exposed in the final image)."],
+      ["EXPOSE <port>","Document the port.","Informational only — tells humans and tools which port the app listens on. Publishing (-p) still happens at docker run."],
+      ["CMD [\"<node>\",\"<server.js>\"]","Default command.","Use the JSON array (exec) form — the shell form wraps in /bin/sh -c which swallows signals and prevents clean shutdowns."],
+    ]},
+    {label:"Multi-stage builds",items:[
+      ["FROM <node>:<20> AS builder","Name a build stage.","Use AS to name a stage so you can copy its output into a later, smaller stage."],
+      ["COPY --from=builder /app/dist ./dist","Copy from a prior stage.","The final image only contains what you explicitly copy — build tools, test dependencies, and source stay in intermediate stages."],
+    ]},
+  ]},
+  {id:"registry",title:"Registry",sub:"login · push · pull",groups:[
+    {label:"Authentication",items:[
+      ["docker login","Log in to Docker Hub.","Caches credentials in your system keychain or ~/.docker/config.json."],
+      ["docker login <registry.example.com>","Log in to a private registry.","Specify the hostname for self-hosted or cloud registries (e.g. AWS ECR, GCR, GHCR)."],
+      ["docker logout","Log out.","Removes stored credentials for the default registry."],
+    ]},
+    {label:"Share",items:[
+      ["docker push <username>/<image>:<tag>","Push to Docker Hub.","Only changed layers are uploaded — subsequent pushes of the same image are fast."],
+      ["docker search <term>","Search Docker Hub.","Finds public images by name. Use hub.docker.com for richer filtering."],
+    ]},
+  ]},
+];
+
+const GLOSSARY=[
+  ["image","A read-only blueprint of layered filesystem snapshots. The template for containers."],
+  ["container","A running (or stopped) instance of an image — lightweight, isolated, with its own filesystem and processes."],
+  ["layer","One step in an image's filesystem history. Each Dockerfile instruction creates a layer. Layers are cached and shared."],
+  ["Dockerfile","A text file of build instructions Docker reads to create an image."],
+  ["build context","The files sent to the Docker daemon when you run 'docker build'. Keep it small with .dockerignore."],
+  ["registry","A server that stores and distributes images. Docker Hub is the default public registry."],
+  ["tag","A label on an image version, e.g. node:20-alpine. The implicit default is 'latest' — always pin in production."],
+  ["volume","Persistent storage outside the container's writable layer. Named volumes are Docker-managed; bind mounts point to host paths."],
+  ["bind mount","A host path mounted directly into a container. Changes are immediately visible on both sides."],
+  ["network","A virtual network connecting containers. Custom bridge networks enable container-name DNS resolution."],
+  ["bridge network","The default Docker network type. Containers get private IPs but can't reach each other by name unless on a custom bridge."],
+  ["-d / detached","Running a container in the background — keeps running after your terminal closes."],
+  ["exec","Running a command inside an already-running container."],
+  ["dangling image","An untagged image layer not referenced by any other image — the main target of 'docker image prune'."],
+  ["BuildKit","The modern Docker build engine (default since v23). Enables parallel builds, better caching, and multi-platform support."],
+  ["multi-stage build","Using multiple FROM instructions in one Dockerfile to produce a minimal final image without shipping build tools."],
+  ["ENTRYPOINT","The fixed executable a container always runs. CMD provides its default arguments."],
+  ["CMD","The default command run when no command is given at 'docker run'. Overridable at runtime."],
+];
+
+const escA=s=>String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const escH=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const PH_SPLIT=/(<[A-Za-z][\w.\-/:@#]*>)/g;
+const PH_MATCH=/^<([A-Za-z][\w.\-/:@#]*)>$/;
+function buildCmdHTML(cmd){return cmd.split(PH_SPLIT).map(p=>{const m=p.match(PH_MATCH);if(m){const n=m[1];return `<input class="ph" data-ph="${escA(n)}" placeholder="${escA(n)}" size="${Math.max(n.length,2)}" spellcheck="false" autocomplete="off">`;}return p?`<span class="lit">${escH(p)}</span>`:''}).join('');}
+function readCmd(el){let o='';el.childNodes.forEach(n=>{if(n.nodeType===1&&n.classList.contains('ph')){const v=n.value.trim();o+=v?v:'<'+n.dataset.ph+'>';}else o+=n.textContent;});return o;}
+const cmdRow=(c,ex)=>`<div class="cmd"><code class="cmd-code">${buildCmdHTML(c)}</code><button class="copy" data-explain="${escA(ex)}">copy</button></div>`;
+const content=document.getElementById('content'),index=document.getElementById('index');
+function addChip(l,t,lead){const a=document.createElement('a');a.href='#'+t;a.textContent=l;a.dataset.target=t;if(lead)a.classList.add('lead');index.appendChild(a);}
+addChip('★ Scenarios','scenarios',true);addChip('★ Flags','reference',true);
+DATA.forEach(t=>addChip(t.title,t.id));
+document.getElementById('glossList').innerHTML=GLOSSARY.map(([t,d])=>`<div><dt>${escH(t)}</dt><dd>${escH(d)}</dd></div>`).join('');
+const scn=document.createElement('section');scn.id='scenarios';
+let sH=`<div class="section-head"><h2>Scenarios &amp; Recipes</h2><span class="meta">"how do I…" → exact commands</span></div>`;
+SCENARIOS.forEach((s,i)=>{
+  let body='';if(s.when)body+=`<p class="scn-when">${escH(s.when)}</p>`;let sb=s.q;
+  s.blocks.forEach(b=>{body+=`<div class="scn-block">`;if(b.label)body+=`<div class="block-label">${escH(b.label)}</div>`;body+=`<ol class="steps">`;
+    b.steps.forEach(([c,n])=>{sb+=' '+c+' '+n;body+=`<li class="step"><span class="step-n">•</span><div class="step-main">${cmdRow(c,n)}<div class="step-note">${escH(n)}</div></div></li>`;});
+    body+=`</ol>`;if(b.steps.length>1)body+=`<button class="copy-all">Copy these steps</button>`;body+=`</div>`;
+  });
+  sH+=`<div class="scenario searchable" data-search="${escA(sb.toLowerCase())}"><button class="scn-head" aria-expanded="false"><span class="scn-icon">${i+1}</span><span class="scn-q">${escH(s.q)}</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="scn-body"><div class="scn-inner"><div class="scn-pad">${body}</div></div></div></div>`;
+});
+scn.innerHTML=sH;content.appendChild(scn);
+document.querySelectorAll('.scn-block .steps').forEach(ol=>ol.querySelectorAll('.step-n').forEach((n,i)=>n.textContent=i+1));
+const ref=document.createElement('section');ref.id='reference';
+const tokHtml=TOKENS.map(([t,d])=>`<div class="type"><b>${escH(t)}</b><span>${escH(d)}</span></div>`).join('');
+ref.innerHTML=`<div class="section-head"><h2>Key Flags</h2><span class="meta">docker run at a glance</span></div><div class="topic"><button class="topic-head" aria-expanded="false"><span class="num">★</span><span class="topic-title">docker run flags</span><span class="topic-sub">the ones you use every time</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="topic-body"><div class="topic-body-inner"><div class="topic-pad"><p class="conv-rule">A container is just a process. Everything about how it runs — ports, volumes, env, network, restart — is set at <code>docker run</code> time via flags. Nothing is baked in after the image is built.</p><div class="types">${tokHtml}</div></div></div></div></div>`;
+content.appendChild(ref);
+DATA.forEach((topic,i)=>{
+  const sec=document.createElement('section');sec.id=topic.id;let gh='';
+  topic.groups.forEach(g=>{gh+=`<div class="group"><div class="group-label">${escH(g.label)}</div>`;
+    g.items.forEach(([c,desc,ex])=>{gh+=`<div class="cmd-block searchable" data-search="${escA((c+' '+desc+' '+(ex||'')).toLowerCase())}">${cmdRow(c,ex||desc)}<div class="desc">${escH(desc)}</div></div>`;});
+    gh+=`</div>`;
+  });
+  sec.innerHTML=`<div class="topic"><button class="topic-head" aria-expanded="false"><span class="num">${String(i+1).padStart(2,'0')}</span><span class="topic-title">${escH(topic.title)}</span><span class="topic-sub">${escH(topic.sub)}</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">${gh}</div></div></div></div>`;
+  content.appendChild(sec);
+});
+function setOpen(el,open){el.classList.toggle('open',open);const h=el.querySelector('[aria-expanded]');if(h)h.setAttribute('aria-expanded',open);}
+document.querySelectorAll('.topic-head,.scn-head').forEach(h=>h.addEventListener('click',()=>{const t=h.closest('.topic,.scenario');setOpen(t,!t.classList.contains('open'));}));
+document.getElementById('expandAll').onclick=()=>document.querySelectorAll('.topic,.scenario').forEach(t=>setOpen(t,true));
+document.getElementById('collapseAll').onclick=()=>document.querySelectorAll('.topic,.scenario').forEach(t=>setOpen(t,false));
+index.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{const s=document.getElementById(a.dataset.target);const acc=s&&s.querySelector('.topic,.scenario');if(acc)setOpen(acc,true);}));
+const glossary=document.getElementById('glossary'),gBtn=document.getElementById('glossaryBtn');
+gBtn.onclick=()=>{const o=glossary.classList.toggle('open');gBtn.classList.toggle('active',o);};
+const themeBtn=document.getElementById('themeBtn');
+function applyTheme(m){document.documentElement.setAttribute('data-theme',m);themeBtn.textContent=m==='dark'?'☀ Light':'☾ Dark';}
+themeBtn.onclick=()=>applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
+applyTheme('dark');
+content.addEventListener('input',e=>{const inp=e.target;if(!inp.classList||!inp.classList.contains('ph'))return;inp.size=Math.max(inp.value.length||inp.placeholder.length,2);inp.classList.toggle('filled',inp.value.trim().length>0);inp.closest('.cmd-code').querySelectorAll('.ph').forEach(o=>{if(o!==inp&&o.dataset.ph===inp.dataset.ph){o.value=inp.value;o.size=Math.max(o.value.length||o.placeholder.length,2);o.classList.toggle('filled',o.value.trim().length>0);}});});
+content.addEventListener('click',e=>{if(e.target.classList&&e.target.classList.contains('ph'))e.stopPropagation();});
+const toast=document.getElementById('toast'),toastCmd=document.getElementById('toastCmd'),toastBody=document.getElementById('toastBody');let tt;
+function showToast(cmd,ex){toastCmd.textContent=cmd;toastBody.textContent=ex;toast.classList.remove('show');void toast.offsetWidth;toast.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>toast.classList.remove('show'),7000);}
+document.getElementById('toastClose').onclick=()=>toast.classList.remove('show');
+content.addEventListener('click',e=>{
+  const btn=e.target.closest('.copy');if(btn){const code=btn.parentElement.querySelector('.cmd-code');const text=readCmd(code);navigator.clipboard.writeText(text).then(()=>{btn.textContent='copied';btn.classList.add('done');setTimeout(()=>{btn.textContent='copy';btn.classList.remove('done');},1300);showToast(text,btn.dataset.explain);});return;}
+  const ca=e.target.closest('.copy-all');if(ca){const block=ca.closest('.scn-block');const text=[...block.querySelectorAll('.cmd-code')].map(readCmd).join('\n');navigator.clipboard.writeText(text).then(()=>{ca.textContent='copied all';ca.classList.add('done');setTimeout(()=>{ca.textContent='Copy these steps';ca.classList.remove('done');},1500);showToast(text,'The steps of this recipe in order — fill any blanks and run them one by one.');});}
+});
+const search=document.getElementById('search'),noResults=document.getElementById('noResults');
+search.addEventListener('input',()=>{const q=search.value.trim().toLowerCase();document.querySelectorAll('.searchable').forEach(el=>{el.style.display=(!q||el.dataset.search.includes(q))?'':'none';});document.querySelectorAll('.group').forEach(g=>{g.style.display=[...g.querySelectorAll('.searchable')].some(e=>e.style.display!=='none')?'':'none';});let any=false;document.querySelectorAll('main section').forEach(sec=>{const vis=[...sec.querySelectorAll('.searchable')].some(e=>e.style.display!=='none');sec.style.display=vis?'':'none';if(vis){any=true;if(q){sec.querySelectorAll('.topic').forEach(t=>{if([...t.querySelectorAll('.searchable')].some(e=>e.style.display!=='none'))setOpen(t,true);});sec.querySelectorAll('.scenario.searchable').forEach(s=>{if(s.style.display!=='none')setOpen(s,true);});}}});noResults.style.display=any?'none':'block';});
+setOpen(document.querySelector('#scenarios .scenario'),true);
+setOpen(document.querySelector('#images .topic'),true);
+</script>
+</body>
+</html>

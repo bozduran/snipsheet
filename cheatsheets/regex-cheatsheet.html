@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regex — Cheat Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#efecf6;
+    --paper:#ffffff;
+    --ink:#221b2e;
+    --ink-soft:#5d5470;
+    --line:#e2ddee;
+    --line-strong:#cfc7df;
+    --accent:#7c3aed;
+    --accent-soft:#9560f0;
+    --green:#16a34a;
+    --code-bg:#1e1830;
+    --code-ink:#ece8f5;
+    --code-dim:#9b91b0;
+    --code-blue:#c4b5fd;
+    --code-green:#86efac;
+    --on-accent:#ffffff;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--ink);
+    font-family:'Figtree',system-ui,sans-serif;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(var(--line) 0.6px,transparent 0.6px);
+    background-size:22px 22px;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px}
+
+  /* Header */
+  header{padding:64px 0 26px}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:clamp(2.5rem,8vw,4.2rem);line-height:.98;letter-spacing:-.02em;margin-bottom:16px}
+  h1 .mark{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:.62em}
+  .lede{font-size:1.05rem;color:var(--ink-soft);max-width:54ch}
+  .lede code{font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--accent)}
+  .hint{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);margin-top:14px;border-left:2px solid var(--accent);padding-left:10px}
+
+  /* Controls */
+  .controls{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 70%,transparent);padding:18px 0 14px;margin-bottom:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:200px;position:relative}
+  .search input{width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:12px 14px 12px 40px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+  .search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,58,237,.16)}
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.45}
+  .btn{font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.04em;padding:11px 16px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink-soft);cursor:pointer;transition:all .18s;white-space:nowrap}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+
+  /* Toggle panels (tester + glossary) */
+  .panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s ease}
+  .panel.open{grid-template-rows:1fr}
+  .panel.open.tester{margin-bottom:16px}
+  .panel.open.glossary{margin-bottom:26px}
+  .panel-inner{overflow:hidden}
+  .panel-pad{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);padding:20px 22px;margin-top:2px}
+  .panel-pad h3{font-family:'Bricolage Grotesque',sans-serif;font-size:1.2rem;font-weight:600;margin-bottom:3px}
+  .panel-pad .sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);margin-bottom:16px}
+
+  /* Live tester */
+  .re-line{display:flex;align-items:center;gap:6px;background:var(--code-bg);border-radius:10px;padding:9px 13px;margin-bottom:10px}
+  .re-line .slash{color:var(--accent-soft);font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:600}
+  #rePattern{flex:1;background:none;border:none;outline:none;color:var(--code-ink);font-family:'JetBrains Mono',monospace;font-size:.92rem;min-width:0}
+  #reFlags{width:54px;background:none;border:none;border-bottom:1px dashed var(--code-dim);color:var(--code-blue);font-family:'JetBrains Mono',monospace;font-size:.92rem;outline:none;text-align:center}
+  #reFlags::placeholder{color:var(--code-dim)}
+  .re-error{color:#dc2660;font-family:'JetBrains Mono',monospace;font-size:.78rem;min-height:1.1em;margin-bottom:6px}
+  .re-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-soft);margin:6px 0 6px}
+  #reText{width:100%;min-height:74px;resize:vertical;border:1px solid var(--line-strong);border-radius:8px;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--ink);background:var(--paper);outline:none;line-height:1.6}
+  #reText:focus{border-color:var(--accent)}
+  .re-out{margin-top:10px;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:.85rem;line-height:1.7;background:var(--bg);white-space:pre-wrap;word-break:break-word;min-height:1.2em;color:var(--ink-soft)}
+  .re-out mark{background:#fde68a;color:#3b2f00;border-radius:3px;padding:0 1px;box-shadow:0 0 0 1px #f3c84e}
+  .re-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:11px}
+  .re-count{font-family:'JetBrains Mono',monospace;font-size:.73rem;color:var(--accent);background:rgba(124,58,237,.1);padding:3px 10px;border-radius:99px}
+  .grp{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--ink-soft);background:var(--line);padding:3px 9px;border-radius:6px}
+
+  /* Glossary */
+  .gloss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:15px 24px}
+  .gloss dt{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent);margin-bottom:3px}
+  .gloss dd{font-size:.9rem;color:var(--ink-soft);line-height:1.5}
+
+  /* Index */
+  .index{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:34px;padding-bottom:30px;border-bottom:1px solid var(--line)}
+  .index a{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:99px;transition:all .15s}
+  .index a:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .index a.lead{border-color:var(--accent);color:var(--accent)}
+  .index a.lead:hover{background:var(--accent);color:var(--on-accent)}
+
+  /* Section header */
+  .section-head{display:flex;align-items:baseline;gap:12px;margin:34px 0 16px;flex-wrap:wrap}
+  .section-head h2{font-family:'Bricolage Grotesque',sans-serif;font-size:1.7rem;font-weight:600;letter-spacing:-.01em}
+  .section-head .meta{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim)}
+
+  /* Accordions */
+  section{margin-bottom:14px;scroll-margin-top:90px}
+  .topic{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden}
+  .topic-head{display:flex;align-items:center;gap:14px;width:100%;padding:18px 20px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .topic-head:hover .topic-title{color:var(--accent)}
+  .num{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);border:1px solid var(--line-strong);border-radius:6px;padding:3px 7px;flex-shrink:0}
+  .topic-title{font-family:'Bricolage Grotesque',sans-serif;font-size:1.3rem;font-weight:600;letter-spacing:-.01em;transition:color .2s;flex:1}
+  .topic-sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);font-weight:400}
+  .chev{flex-shrink:0;transition:transform .3s ease;color:var(--ink-soft)}
+  .topic.open .chev,.scenario.open .chev{transform:rotate(90deg)}
+  .topic-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .topic.open .topic-body{grid-template-rows:1fr}
+  .topic-body-inner{overflow:hidden}
+  .topic-pad{padding:0 20px 22px;border-top:1px solid var(--line)}
+  .group-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-soft);margin:22px 0 10px}
+
+  /* Scenario cards */
+  .scenario{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden;margin-bottom:10px}
+  .scn-head{display:flex;align-items:center;gap:13px;width:100%;padding:16px 18px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .scn-head:hover .scn-q{color:var(--accent)}
+  .scn-icon{flex-shrink:0;width:27px;height:27px;border-radius:7px;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:600}
+  .scn-q{flex:1;font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;font-weight:600;letter-spacing:-.01em;transition:color .2s}
+  .scn-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .scenario.open .scn-body{grid-template-rows:1fr}
+  .scn-inner{overflow:hidden}
+  .scn-pad{padding:2px 18px 18px;border-top:1px solid var(--line)}
+  .scn-when{font-size:.92rem;color:var(--ink-soft);margin:14px 0 2px;font-style:italic}
+  .scn-block{margin-top:14px}
+  .block-label{font-family:'JetBrains Mono',monospace;font-size:.71rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-soft);margin-bottom:10px}
+  .steps{list-style:none}
+  .step{display:flex;gap:11px;margin-bottom:11px}
+  .step-n{flex-shrink:0;width:22px;height:22px;margin-top:7px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--accent)}
+  .step-main{flex:1;min-width:0}
+  .step-note{font-size:.88rem;color:var(--ink-soft);margin:3px 0 0 2px}
+
+  /* Reference grids */
+  .types{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:8px;margin:6px 0 18px}
+  .type{display:flex;gap:9px;align-items:baseline;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--code-bg)}
+  .type b{font-family:'JetBrains Mono',monospace;color:var(--code-blue);font-size:.8rem;flex-shrink:0;white-space:nowrap}
+  .type span{font-size:.84rem;color:var(--code-dim)}
+  .conv-rule{font-size:.92rem;color:var(--ink-soft);margin-bottom:8px}
+  .conv-rule code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+
+  /* Token row */
+  .cmd{display:flex;align-items:stretch;gap:0;margin-bottom:8px;border-radius:8px;overflow:hidden;border:1px solid #2a2240;background:var(--code-bg)}
+  .cmd-code{flex:1;font-family:'JetBrains Mono',monospace;font-size:.86rem;color:var(--code-ink);padding:9px 14px;overflow-x:auto;white-space:pre;line-height:1.7;display:flex;align-items:center;flex-wrap:wrap}
+  .cmd-code .lit{white-space:pre}
+  .ph{font-family:'JetBrains Mono',monospace;font-size:.86rem;background:rgba(196,181,253,.16);color:var(--code-blue);border:none;border-bottom:1px dashed var(--code-blue);padding:1px 2px;margin:0 1px;outline:none;border-radius:3px 3px 0 0;transition:background .15s;min-width:1ch}
+  .ph::placeholder{color:var(--code-blue);opacity:.55;font-style:italic}
+  .ph:focus{background:rgba(196,181,253,.3)}
+  .ph.filled{color:var(--code-green);border-bottom-color:var(--code-green);background:rgba(134,239,172,.15)}
+  .copy{flex-shrink:0;border:none;border-left:1px solid #2a2240;background:#251d3a;color:var(--code-dim);font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:0 15px;cursor:pointer;transition:all .15s;letter-spacing:.05em;align-self:stretch}
+  .copy:hover{background:#2e2547;color:var(--code-ink)}
+  .copy.done{color:var(--code-green)}
+  .desc{font-size:.92rem;color:var(--ink-soft);margin:1px 0 13px 2px}
+  .desc code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+
+  .no-results{display:none;text-align:center;padding:50px 0;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;font-size:.9rem}
+
+  footer{padding:40px 0 70px;margin-top:30px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--code-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  footer a{color:var(--accent);text-decoration:none}
+
+  /* Toast */
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);width:min(560px,calc(100% - 36px));z-index:60;background:var(--paper);border:1px solid var(--line-strong);border-radius:14px;box-shadow:0 18px 50px -12px rgba(40,20,70,.4);padding:18px 20px 19px;opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.2,.9,.25,1),opacity .35s}
+  .toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+  .toast-top{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+  .toast-badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--on-accent);background:var(--green);padding:3px 8px;border-radius:99px}
+  .toast-title{font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);flex:1}
+  .toast-close{border:none;background:none;cursor:pointer;color:var(--ink-soft);font-size:1.2rem;line-height:1;padding:2px 4px;border-radius:6px}
+  .toast-close:hover{color:var(--accent);background:var(--line)}
+  .toast-cmd{font-family:'JetBrains Mono',monospace;font-size:.84rem;color:var(--code-ink);background:var(--code-bg);border-radius:8px;padding:9px 12px;margin-bottom:12px;overflow-x:auto;white-space:pre;max-height:140px}
+  .toast-body{font-size:1rem;color:var(--ink);line-height:1.6}
+  .toast-progress{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);border-radius:0 0 0 14px;width:100%}
+  .toast.show .toast-progress{animation:drain 7s linear forwards}
+  @keyframes drain{from{width:100%}to{width:0%}}
+
+  ::selection{background:var(--accent);color:var(--on-accent)}
+  @media(max-width:540px){
+    header{padding:42px 0 22px}
+    .topic-sub{display:none}
+    .cmd-code{font-size:.8rem}
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="top">
+
+  <header>
+    <div class="kicker">Regular Expressions · regex · v1</div>
+    <h1><span class="mark">/.*/</span> regex cheat sheet</h1>
+    <p class="lede">Every token, anchor, group, and quantifier — plus a <strong>live tester</strong> and ready-made patterns. Copy any token to see what it does in plain English.</p>
+    <p class="hint">⚡ The Tester (open below) highlights matches as you type. ⌨ Purple blanks like ‹n› are editable. ⊕ Copying explains the token.</p>
+  </header>
+
+  <div class="controls">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="Search…  e.g. lookahead, word boundary, email" autocomplete="off">
+    </label>
+    <button class="btn active" id="testerBtn">Tester</button>
+    <button class="btn" id="glossaryBtn">Glossary</button>
+    <button class="btn" id="expandAll">Expand all</button>
+    <button class="btn" id="collapseAll">Collapse all</button>
+  </div>
+
+  <!-- Live tester -->
+  <div class="panel tester open" id="tester">
+    <div class="panel-inner"><div class="panel-pad">
+      <h3>Live tester</h3>
+      <div class="sub">edit the pattern, flags, and text — matches highlight instantly (JavaScript engine)</div>
+      <div class="re-line">
+        <span class="slash">/</span>
+        <input id="rePattern" spellcheck="false" autocomplete="off" value="(\w+)@(\w+)\.(\w+)">
+        <span class="slash">/</span>
+        <input id="reFlags" spellcheck="false" autocomplete="off" value="g" placeholder="flags">
+      </div>
+      <div class="re-error" id="reError"></div>
+      <div class="re-label">Test text</div>
+      <textarea id="reText" spellcheck="false">Reach ada@example.com or grace@navy.mil for details.</textarea>
+      <div class="re-label">Result</div>
+      <div class="re-out" id="reOut"></div>
+      <div class="re-meta"><span class="re-count" id="reCount"></span><span id="reGroups"></span></div>
+    </div></div>
+  </div>
+
+  <!-- Glossary -->
+  <div class="panel glossary" id="glossary">
+    <div class="panel-inner"><div class="panel-pad">
+      <h3>Regex glossary</h3>
+      <div class="sub">the words people throw around, in plain language</div>
+      <dl class="gloss gloss-grid">
+        <div><dt>literal</dt><dd>A character that matches itself — most letters and digits. The letter a matches an a.</dd></div>
+        <div><dt>metacharacter</dt><dd>A character with special meaning rather than its literal one: <code>. * + ? ^ $ ( ) [ ] { } | \\</code>.</dd></div>
+        <div><dt>character class</dt><dd>A set of characters that may appear in one position, like <code>[a-z]</code> or the shorthand <code>\\d</code>.</dd></div>
+        <div><dt>quantifier</dt><dd>How many times the preceding item repeats: <code>* + ?</code> or <code>{n,m}</code>.</dd></div>
+        <div><dt>greedy vs lazy</dt><dd>Greedy quantifiers grab as much as possible; adding <code>?</code> makes them lazy, grabbing as little as possible.</dd></div>
+        <div><dt>anchor</dt><dd>Matches a position, not a character — <code>^</code>, <code>$</code>, <code>\\b</code>. Consumes nothing.</dd></div>
+        <div><dt>assertion</dt><dd>A zero-width test that something is (or isn't) true at this spot. Anchors and lookarounds are assertions.</dd></div>
+        <div><dt>group</dt><dd>Parentheses that bundle part of a pattern, optionally capturing what it matched.</dd></div>
+        <div><dt>capturing group</dt><dd>A group whose match is saved and numbered, reusable as <code>\\1</code> / <code>$1</code>.</dd></div>
+        <div><dt>non-capturing group</dt><dd><code>(?:…)</code> — groups without saving the match.</dd></div>
+        <div><dt>backreference</dt><dd><code>\\1</code> or <code>\\k&lt;name&gt;</code> — match the same text a previous group captured.</dd></div>
+        <div><dt>alternation</dt><dd>The <code>|</code> operator, meaning “either this or that”.</dd></div>
+        <div><dt>lookahead / lookbehind</dt><dd>Assert what does (or doesn't) come after / before, without consuming it.</dd></div>
+        <div><dt>flag / modifier</dt><dd>Options that change matching: <code>i</code> ignore case, <code>g</code> global, <code>m</code> multiline, <code>s</code> dotall.</dd></div>
+        <div><dt>escape</dt><dd>A backslash that strips a metacharacter's power so it matches literally: <code>\\.</code> matches a real dot.</dd></div>
+        <div><dt>word boundary</dt><dd><code>\\b</code> — the edge between a word character and a non-word character.</dd></div>
+        <div><dt>dotall (single-line)</dt><dd>The <code>s</code> flag: <code>.</code> also matches newline characters.</dd></div>
+        <div><dt>multiline</dt><dd>The <code>m</code> flag: <code>^</code> and <code>$</code> match at every line break, not just the ends.</dd></div>
+        <div><dt>named group</dt><dd>A capturing group given a name instead of (or as well as) a number.</dd></div>
+        <div><dt>catastrophic backtracking</dt><dd>A pattern with nested, overlapping quantifiers that can take exponential time on some inputs. Avoid <code>(a+)+</code>-style nesting.</dd></div>
+      </dl>
+    </div></div>
+  </div>
+
+  <nav class="index" id="index"></nav>
+
+  <main id="content"></main>
+  <div class="no-results" id="noResults">Nothing matches that search.</div>
+
+  <footer>
+    <span>Copy a token to learn it. Empty blanks copy as ‹placeholder›.</span>
+    <span><a href="#top">↑ back to top</a></span>
+  </footer>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <div class="toast-top">
+    <span class="toast-badge">copied</span>
+    <span class="toast-title">what this does</span>
+    <button class="toast-close" id="toastClose" aria-label="Dismiss">×</button>
+  </div>
+  <div class="toast-cmd" id="toastCmd"></div>
+  <div class="toast-body" id="toastBody"></div>
+  <div class="toast-progress"></div>
+</div>
+
+<script>
+/* ===================== SCENARIOS / READY PATTERNS ===================== */
+const SCENARIOS = [
+  {
+    q:"Match an email address",
+    when:"Pragmatic, good enough for finding emails in text. A fully RFC-correct email regex is famously enormous.",
+    blocks:[ { label:"Pattern", steps:[
+      ["[\\w.+-]+@[\\w-]+\\.[\\w.-]+","One or more word chars, dots, plus, or hyphens; an @; a domain; a dot; then the rest of the domain. Loose but practical."],
+    ]}]
+  },
+  {
+    q:"Match a URL",
+    when:"Grabs http/https links out of plain text.",
+    blocks:[ { label:"Pattern", steps:[
+      ["https?://[^\\s]+","'http' then an optional 's', then ://, then everything up to the next whitespace."],
+    ]}]
+  },
+  {
+    q:"Match a date like 2025-01-31",
+    when:"ISO-style YYYY-MM-DD, bounded so it isn't part of a longer number.",
+    blocks:[ { label:"Pattern", steps:[
+      ["\\b\\d{4}-\\d{2}-\\d{2}\\b","Four digits, hyphen, two digits, hyphen, two digits, with word boundaries on each end."],
+    ]}]
+  },
+  {
+    q:"Capture the text inside quotes",
+    when:"Pulls out what's between double quotes as group 1.",
+    blocks:[ { label:"Pattern", steps:[
+      ["\"([^\"]*)\"","A quote, then a captured run of anything that isn't a quote, then the closing quote. The lazy form \"(.*?)\" also works."],
+    ]}]
+  },
+  {
+    q:"Match a hex colour",
+    when:"Six-digit hex colours like #1a2b3c.",
+    blocks:[ { label:"Pattern", steps:[
+      ["#[0-9a-fA-F]{6}\\b","A # then exactly six hex digits. Use {3} instead for shorthand colours like #fff."],
+    ]}]
+  },
+  {
+    q:"Match an IPv4 address (loose)",
+    when:"Good for extraction — it also accepts impossible values like 999, but rarely matters in practice.",
+    blocks:[ { label:"Pattern", steps:[
+      ["\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b","Three groups of 1–3 digits each followed by a dot, then a final group of 1–3 digits."],
+    ]}]
+  },
+  {
+    q:"Find a word, ignoring case",
+    when:"Match a whole word regardless of capitalisation — turn on the i flag.",
+    blocks:[ { label:"Pattern (with the i flag)", steps:[
+      ["\\b‹word›\\b","Word boundaries keep it whole; the i flag (set separately) makes case not matter."],
+    ]}]
+  },
+  {
+    q:"Require a strong-ish password",
+    when:"Stacked lookaheads enforce several rules at once on the same text.",
+    blocks:[ { label:"Pattern", steps:[
+      ["(?=.*[A-Z])(?=.*\\d).{8,}","Each (?=…) checks a rule without consuming input: at least one uppercase letter, at least one digit, then .{8,} demands 8+ characters total."],
+    ]}]
+  },
+  {
+    q:"Collapse runs of whitespace",
+    when:"A find-and-replace recipe: match the runs, replace with one space.",
+    blocks:[ { label:"Find this (replace with a single space)", steps:[
+      ["\\s+","One or more whitespace characters. With the g flag, replace every match with a single space to tidy text."],
+    ]}]
+  },
+];
+
+/* ===================== REFERENCE: SURVIVAL KIT ===================== */
+const FLAGS = [
+  ["g","global — find all matches, not just the first"],
+  ["i","ignore case"],
+  ["m","multiline — ^ and $ match at each line break"],
+  ["s","dotall — . also matches newlines"],
+  ["u","unicode — handle code points and \\p{…}"],
+  ["x","extended — ignore whitespace, allow comments (PCRE/Python)"],
+  ["y","sticky — match only at the current position (JS)"],
+];
+const ESSENTIALS = [
+  [".","any character"],
+  ["\\d","a digit"],
+  ["\\w","a word char"],
+  ["\\s","whitespace"],
+  ["^ $","start / end"],
+  ["\\b","word boundary"],
+  ["*","0 or more"],
+  ["+","1 or more"],
+  ["?","optional"],
+  ["|","or"],
+  ["( )","group"],
+  ["[ ]","char set"],
+];
+const KIT_CMDS = [
+  ["[‹set›]","A character set.","Matches any ONE of the characters listed inside. Ranges like a-z and 0-9 work; a leading ^ negates the set."],
+  ["(‹pattern›)","A capturing group.","Groups part of the pattern and saves what it matched as a numbered group for reuse or replacement."],
+  ["‹a›|‹b›","Alternation.","Matches either side. Wrap it in a group — (‹a›|‹b›) — to control how far the choice reaches."],
+];
+
+/* ===================== TOKEN REFERENCE ===================== */
+const DATA = [
+  { id:"classes", title:"Character Classes", sub:"what one character can be", groups:[
+    { label:"Shorthand classes", items:[
+      [".","Any character.","Matches any single character except a line break — unless the s (dotall) flag is on."],
+      ["\\d","A digit.","Matches one digit 0–9. \\D matches anything that is NOT a digit."],
+      ["\\w","A word character.","Matches a letter, digit, or underscore. \\W matches any non-word character."],
+      ["\\s","Whitespace.","Matches a space, tab, or line break. \\S matches any non-whitespace character."],
+    ]},
+    { label:"Custom sets", items:[
+      ["[abc]","A set of characters.","Matches any ONE of the characters between the brackets — here a, b, or c."],
+      ["[^abc]","A negated set.","A leading ^ flips it: matches any one character that is NOT listed."],
+      ["[a-z]","A range.","A hyphen makes a range — here any lowercase letter. Combine them, e.g. [a-zA-Z0-9]."],
+      ["[\\d\\s]","Classes inside a set.","Shorthand classes work inside brackets too; this matches a digit or whitespace."],
+    ]},
+  ]},
+  { id:"anchors", title:"Anchors & Boundaries", sub:"match a position, not a character", groups:[
+    { label:"Positions", items:[
+      ["^","Start.","Matches the start of the string — or the start of each line with the m flag. Consumes no characters."],
+      ["$","End.","Matches the end of the string — or the end of each line with the m flag."],
+      ["\\b","Word boundary.","Matches the edge between a word character and a non-word character. Wrap a word in \\b…\\b to match it whole."],
+      ["\\B","Not a word boundary.","Matches any position that is NOT a word boundary."],
+      ["\\A","Start of string.","Always the very start of the input, regardless of multiline. PCRE/Python/Java — not JavaScript."],
+      ["\\z","End of string.","The very end of the input. PCRE/Python/Java; JavaScript uses $ instead."],
+    ]},
+  ]},
+  { id:"quant", title:"Quantifiers", sub:"how many times", groups:[
+    { label:"How many", items:[
+      ["*","Zero or more.","Matches the preceding item any number of times, including none."],
+      ["+","One or more.","Matches the preceding item at least once."],
+      ["?","Optional.","Matches the preceding item zero or one time — makes it optional."],
+      ["{‹n›}","Exactly n.","Matches the preceding item exactly n times."],
+      ["{‹n›,}","n or more.","Matches the preceding item at least n times."],
+      ["{‹n›,‹m›}","Between n and m.","Matches the preceding item from n to m times (inclusive)."],
+    ]},
+    { label:"Greedy, lazy, possessive", items:[
+      ["*?","Lazy (non-greedy).","Like *, but matches as FEW characters as possible. Add ? to any quantifier (+?, ??, {n,m}?) to make it lazy."],
+      ["*+","Possessive.","Like *, but never gives characters back during backtracking — faster and avoids some traps. PCRE/Java; not JS or Python re."],
+    ]},
+  ]},
+  { id:"groups", title:"Groups & Alternation", sub:"capture, group, choose", groups:[
+    { label:"Grouping", items:[
+      ["(‹pattern›)","Capturing group.","Groups part of the pattern and SAVES the match as a numbered group (1, 2, 3…) for backreferences or replacement."],
+      ["(?:‹pattern›)","Non-capturing group.","Groups without saving — use it when you only need grouping (say, for a quantifier), not capture."],
+      ["(?<‹name›>‹pattern›)","Named group.","A capturing group with a name. JS and PCRE use (?<name>…); Python uses (?P<name>…)."],
+    ]},
+    { label:"Choosing & reusing", items:[
+      ["‹a›|‹b›","Alternation.","Matches either the left or the right side. Group it — (?:a|b) — to limit how far the choice extends."],
+      ["\\‹n›","Backreference.","Matches the same text a previous capturing group matched. \\1 is group 1, \\2 is group 2, and so on."],
+      ["\\k<‹name›>","Named backreference.","Matches the same text that a named group captured earlier in the pattern."],
+    ]},
+  ]},
+  { id:"look", title:"Lookaround", sub:"assert without consuming", groups:[
+    { label:"Ahead & behind", items:[
+      ["(?=‹pattern›)","Positive lookahead.","Asserts that what FOLLOWS matches, without consuming it. e.g. \\d(?=px) matches a digit only when 'px' comes next."],
+      ["(?!‹pattern›)","Negative lookahead.","Asserts that what follows does NOT match."],
+      ["(?<=‹pattern›)","Positive lookbehind.","Asserts that what PRECEDES matches, without consuming it. Modern JS, PCRE, Python 3."],
+      ["(?<!‹pattern›)","Negative lookbehind.","Asserts that what precedes does NOT match."],
+    ]},
+  ]},
+  { id:"escapes", title:"Escapes & Literals", sub:"match special characters", groups:[
+    { label:"Escaping", items:[
+      ["\\.","Literal dot.","A backslash before a metacharacter matches it literally. \\. matches a real period, not 'any character'."],
+      ["\\\\","Literal backslash.","Two backslashes match one literal backslash."],
+      ["\\. \\* \\+ \\? \\( \\) \\[ \\] \\{ \\} \\| \\^ \\$","Characters that need escaping.","These metacharacters must be preceded by a backslash to match them literally. Inside a [ ] set, far fewer need escaping."],
+    ]},
+    { label:"Special characters", items:[
+      ["\\n","Newline.","Matches a line-feed. \\t is a tab and \\r a carriage return."],
+      ["\\t","Tab.","Matches a tab character."],
+      ["\\x41","Hex character.","Matches the character with that hex code — \\x41 is 'A'."],
+      ["\\u00e9","Unicode character.","Matches a character by Unicode code point (é here). With the u flag, use \\u{1F600} for astral code points."],
+    ]},
+  ]},
+  { id:"replace", title:"Replacement & Substitution", sub:"use captures in the output", groups:[
+    { label:"In the replacement text", items:[
+      ["$‹n›","Insert a captured group.","In the REPLACEMENT, $1 inserts what group 1 captured, $2 group 2, and so on (most engines)."],
+      ["$&","Insert the whole match.","Inserts the entire matched text into the replacement."],
+      ["${‹name›}","Insert a named group.","Inserts a named capture group, e.g. ${year}, into the replacement."],
+      ["\\‹n›","Group in replacement (Python).","Python's re.sub and many CLI tools use \\1, \\2 in the replacement instead of $1."],
+      ["$$","A literal dollar sign.","Use $$ in a JavaScript replacement to output one literal $."],
+    ]},
+  ]},
+  { id:"unicode", title:"Unicode & POSIX Classes", sub:"match by category", groups:[
+    { label:"Unicode properties", items:[
+      ["\\p{‹L›}","Unicode property.","Matches any character in a category: \\p{L} = any letter, \\p{N} = number, \\p{P} = punctuation. Needs the u flag in JS."],
+      ["\\p{‹Lu›}","Specific category.","More precise: Lu = uppercase letter, Ll = lowercase, Nd = decimal digit."],
+      ["\\P{‹L›}","Negated property.","A capital P negates — matches any character NOT in that category."],
+    ]},
+    { label:"POSIX classes (PCRE/grep)", items:[
+      ["[[:alpha:]]","POSIX class.","Letters. Others: [[:digit:]], [[:space:]], [[:alnum:]], [[:punct:]]. PCRE and grep — not JavaScript."],
+    ]},
+  ]},
+  { id:"inline", title:"Inline Modifiers", sub:"flags inside the pattern", groups:[
+    { label:"Set flags within the regex", items:[
+      ["(?i)","Turn a flag on inline.","Switches a flag on from here forward: (?i) ignore case, (?s) dotall, (?m) multiline. PCRE/Python; limited in JS."],
+      ["(?i:‹pattern›)","Scoped flag.","Applies a flag only to the group's contents — (?i:abc) matches abc case-insensitively while the rest stays as-is."],
+      ["(?-i)","Turn a flag off.","A minus disables a flag for the rest of the pattern, or scoped with (?-i:…)."],
+      ["(?#‹comment›)","Inline comment.","Text inside (?#…) is ignored — a way to annotate a pattern. PCRE/Python."],
+    ]},
+  ]},
+];
+
+/* ===================== HELPERS ===================== */
+const escAttr = s => s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+/* placeholders use guillemets ‹…› so regex < > ( ) [ ] are never mistaken for blanks */
+const PH_SPLIT = /(‹[^›]+›)/g;
+const PH_MATCH = /^‹([^›]+)›$/;
+
+function buildCommandHTML(cmd){
+  return cmd.split(PH_SPLIT).map(p=>{
+    const m = p.match(PH_MATCH);
+    if(m){
+      const name = m[1];
+      return `<input class="ph" data-ph="${escAttr(name)}" placeholder="${escAttr(name)}" size="${Math.max(name.length,2)}" spellcheck="false" autocomplete="off">`;
+    }
+    return p ? `<span class="lit">${escHtml(p)}</span>` : '';
+  }).join('');
+}
+function readCommand(codeEl){
+  let out='';
+  codeEl.childNodes.forEach(node=>{
+    if(node.nodeType===1 && node.classList.contains('ph')){
+      const v = node.value.trim();
+      out += v ? v : '‹'+node.dataset.ph+'›';
+    } else { out += node.textContent; }
+  });
+  return out;
+}
+function cmdRow(cmd, explain){
+  return `<div class="cmd"><code class="cmd-code">${buildCommandHTML(cmd)}</code><button class="copy" data-explain="${escAttr(explain)}" aria-label="Copy token">copy</button></div>`;
+}
+
+/* ===================== RENDER ===================== */
+const content = document.getElementById('content');
+const index = document.getElementById('index');
+
+function addChip(label, target, lead){
+  const a = document.createElement('a');
+  a.href = '#'+target; a.textContent = label; a.dataset.target = target;
+  if(lead) a.classList.add('lead');
+  index.appendChild(a);
+}
+addChip('★ Patterns','scenarios',true);
+addChip('★ Survival Kit','reference',true);
+DATA.forEach(t=>addChip(t.title.split('(')[0].trim(), t.id));
+
+/* Scenarios */
+const scnSection = document.createElement('section');
+scnSection.id = 'scenarios';
+let scnHtml = `<div class="section-head"><h2>Ready-Made Patterns</h2><span class="meta">"match a…" → copy &amp; tweak</span></div>`;
+SCENARIOS.forEach((s,i)=>{
+  let body = '';
+  if(s.when) body += `<p class="scn-when">${s.when}</p>`;
+  let searchBits = s.q;
+  s.blocks.forEach(b=>{
+    body += `<div class="scn-block">`;
+    if(b.label) body += `<div class="block-label">${b.label}</div>`;
+    body += `<ol class="steps">`;
+    b.steps.forEach(([cmd,note])=>{
+      searchBits += ' '+cmd+' '+note;
+      body += `<li class="step"><span class="step-n">•</span><div class="step-main">${cmdRow(cmd,note)}<div class="step-note">${note}</div></div></li>`;
+    });
+    body += `</ol></div>`;
+  });
+  scnHtml += `
+    <div class="scenario searchable" data-search="${escAttr(searchBits.toLowerCase())}">
+      <button class="scn-head" aria-expanded="false">
+        <span class="scn-icon">${i+1}</span>
+        <span class="scn-q">${s.q}</span>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+      <div class="scn-body"><div class="scn-inner"><div class="scn-pad">${body}</div></div></div>
+    </div>`;
+});
+scnSection.innerHTML = scnHtml;
+content.appendChild(scnSection);
+document.querySelectorAll('.scn-block .steps').forEach(ol=>{
+  ol.querySelectorAll('.step-n').forEach((n,idx)=>n.textContent = idx+1);
+});
+
+/* Reference: survival kit */
+const refSection = document.createElement('section');
+refSection.id = 'reference';
+const flagsHtml = FLAGS.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('');
+const essHtml = ESSENTIALS.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('');
+const kitHtml = KIT_CMDS.map(([cmd,desc,explain])=>{
+  const search = (cmd+' '+desc+' '+explain+' set group alternation').toLowerCase();
+  return `<div class="cmd-block searchable" data-search="${escAttr(search)}">${cmdRow(cmd,explain)}<div class="desc">${desc}</div></div>`;
+}).join('');
+refSection.innerHTML = `
+  <div class="section-head"><h2>The Survival Kit</h2><span class="meta">flags + essentials</span></div>
+  <div class="topic">
+    <button class="topic-head" aria-expanded="false">
+      <span class="num">★</span>
+      <span class="topic-title">Flags &amp; Essentials</span>
+      <span class="topic-sub">the 80% you reach for</span>
+      <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+    </button>
+    <div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">
+      <div class="group-label">Flags (e.g. /pattern/gi in JS, or re.I in Python)</div>
+      <div class="types">${flagsHtml}</div>
+      <div class="group-label">Essentials at a glance</div>
+      <div class="types">${essHtml}</div>
+      <div class="group-label">Build a piece</div>
+      ${kitHtml}
+    </div></div></div>
+  </div>`;
+content.appendChild(refSection);
+
+/* Token reference */
+DATA.forEach((topic,i)=>{
+  const section = document.createElement('section');
+  section.id = topic.id;
+  let groupsHtml = '';
+  topic.groups.forEach(g=>{
+    groupsHtml += `<div class="group"><div class="group-label">${g.label}</div>`;
+    g.items.forEach(([cmd,desc,explain])=>{
+      const search = (cmd+' '+desc+' '+(explain||'')).toLowerCase();
+      groupsHtml += `<div class="cmd-block searchable" data-search="${escAttr(search)}">${cmdRow(cmd,explain||desc)}<div class="desc">${desc}</div></div>`;
+    });
+    groupsHtml += `</div>`;
+  });
+  section.innerHTML = `
+    <div class="topic">
+      <button class="topic-head" aria-expanded="false">
+        <span class="num">${String(i+1).padStart(2,'0')}</span>
+        <span class="topic-title">${topic.title}</span>
+        <span class="topic-sub">${topic.sub}</span>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+      <div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">${groupsHtml}</div></div></div>
+    </div>`;
+  content.appendChild(section);
+});
+
+/* ===================== ACCORDION ===================== */
+function setOpen(el, open){
+  el.classList.toggle('open', open);
+  const head = el.querySelector('[aria-expanded]');
+  if(head) head.setAttribute('aria-expanded', open);
+}
+document.querySelectorAll('.topic-head, .scn-head').forEach(head=>{
+  head.addEventListener('click', ()=>{
+    const t = head.closest('.topic, .scenario');
+    setOpen(t, !t.classList.contains('open'));
+  });
+});
+document.getElementById('expandAll').onclick  = ()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,true));
+document.getElementById('collapseAll').onclick= ()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,false));
+index.querySelectorAll('a').forEach(a=>{
+  a.addEventListener('click', ()=>{
+    const sec = document.getElementById(a.dataset.target);
+    const acc = sec.querySelector('.topic, .scenario');
+    if(acc) setOpen(acc, true);
+  });
+});
+
+/* ===================== PANEL TOGGLES ===================== */
+function wireToggle(btnId, panelId, openByDefault){
+  const panel = document.getElementById(panelId);
+  const btn = document.getElementById(btnId);
+  btn.onclick = ()=>{
+    const open = panel.classList.toggle('open');
+    btn.classList.toggle('active', open);
+  };
+}
+wireToggle('testerBtn','tester');
+wireToggle('glossaryBtn','glossary');
+
+/* ===================== PLACEHOLDER INPUTS ===================== */
+content.addEventListener('input', e=>{
+  const inp = e.target;
+  if(!inp.classList || !inp.classList.contains('ph')) return;
+  inp.size = Math.max(inp.value.length || inp.placeholder.length, 2);
+  inp.classList.toggle('filled', inp.value.trim().length>0);
+  const code = inp.closest('.cmd-code');
+  code.querySelectorAll('.ph').forEach(other=>{
+    if(other!==inp && other.dataset.ph===inp.dataset.ph){
+      other.value = inp.value;
+      other.size = Math.max(other.value.length || other.placeholder.length, 2);
+      other.classList.toggle('filled', other.value.trim().length>0);
+    }
+  });
+});
+content.addEventListener('click', e=>{
+  if(e.target.classList && e.target.classList.contains('ph')) e.stopPropagation();
+});
+
+/* ===================== TOAST ===================== */
+const toast = document.getElementById('toast');
+const toastCmd = document.getElementById('toastCmd');
+const toastBody = document.getElementById('toastBody');
+let toastTimer;
+function showToast(cmd, explanation){
+  toastCmd.textContent = cmd;
+  toastBody.textContent = explanation;
+  toast.classList.remove('show'); void toast.offsetWidth; toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toast.classList.remove('show'), 7000);
+}
+document.getElementById('toastClose').onclick = ()=>toast.classList.remove('show');
+
+/* ===================== COPY ===================== */
+content.addEventListener('click', e=>{
+  const btn = e.target.closest('.copy');
+  if(!btn) return;
+  const code = btn.parentElement.querySelector('.cmd-code');
+  const text = readCommand(code);
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='copied'; btn.classList.add('done');
+    setTimeout(()=>{ btn.textContent='copy'; btn.classList.remove('done'); },1300);
+    showToast(text, btn.dataset.explain);
+  });
+});
+
+/* ===================== LIVE TESTER ===================== */
+const rePattern = document.getElementById('rePattern');
+const reFlags = document.getElementById('reFlags');
+const reText = document.getElementById('reText');
+const reOut = document.getElementById('reOut');
+const reError = document.getElementById('reError');
+const reCount = document.getElementById('reCount');
+const reGroups = document.getElementById('reGroups');
+
+function highlightRanges(text, ranges){
+  if(!ranges.length) return escHtml(text);
+  ranges.sort((a,b)=>a[0]-b[0]);
+  let out='', pos=0;
+  ranges.forEach(([s,en])=>{
+    if(s<pos) return;
+    out += escHtml(text.slice(pos,s)) + '<mark>' + escHtml(text.slice(s,en)) + '</mark>';
+    pos = en;
+  });
+  return out + escHtml(text.slice(pos));
+}
+function runTester(){
+  const pattern = rePattern.value;
+  const flags = reFlags.value;
+  const text = reText.value;
+  reError.textContent=''; reGroups.innerHTML=''; reCount.textContent='';
+  if(!pattern){ reOut.textContent = text; return; }
+  let re;
+  try{ re = new RegExp(pattern, flags); }
+  catch(err){ reError.textContent = '⚠ ' + err.message; reOut.textContent = text; return; }
+  const ranges=[]; let first=null; let count=0;
+  if(flags.includes('g')){
+    let m, guard=0;
+    re.lastIndex = 0;
+    while((m = re.exec(text)) !== null){
+      if(!first) first = m;
+      if(m[0].length>0) ranges.push([m.index, m.index+m[0].length]);
+      count++;
+      if(m.index === re.lastIndex) re.lastIndex++;
+      if(++guard > 100000) break;
+    }
+  } else {
+    const m = re.exec(text);
+    if(m){ first=m; count=1; if(m[0].length>0) ranges.push([m.index, m.index+m[0].length]); }
+  }
+  reOut.innerHTML = highlightRanges(text, ranges);
+  reCount.textContent = count===0 ? 'no matches' : count + (count===1 ? ' match' : ' matches');
+  if(first && (first.length>1 || first.groups)){
+    let g='';
+    for(let i=1;i<first.length;i++){
+      g += `<span class="grp">$${i} = ${first[i]===undefined ? '—' : escHtml(first[i])}</span>`;
+    }
+    if(first.groups){
+      for(const k in first.groups){
+        g += `<span class="grp">${escHtml(k)} = ${first.groups[k]===undefined ? '—' : escHtml(first.groups[k])}</span>`;
+      }
+    }
+    reGroups.innerHTML = g;
+  }
+}
+[rePattern, reFlags, reText].forEach(el=> el.addEventListener('input', runTester));
+runTester();
+
+/* ===================== SEARCH ===================== */
+const search = document.getElementById('search');
+const noResults = document.getElementById('noResults');
+search.addEventListener('input', ()=>{
+  const q = search.value.trim().toLowerCase();
+  document.querySelectorAll('.searchable').forEach(el=>{
+    el.style.display = (!q || el.dataset.search.includes(q)) ? '' : 'none';
+  });
+  document.querySelectorAll('.group').forEach(g=>{
+    const vis = [...g.querySelectorAll('.searchable')].some(e=>e.style.display!=='none');
+    g.style.display = vis ? '' : 'none';
+  });
+  let any = false;
+  document.querySelectorAll('main section').forEach(sec=>{
+    const vis = [...sec.querySelectorAll('.searchable')].some(e=>e.style.display!=='none');
+    sec.style.display = vis ? '' : 'none';
+    if(vis){
+      any = true;
+      if(q){
+        sec.querySelectorAll('.topic').forEach(t=>{
+          if([...t.querySelectorAll('.searchable')].some(e=>e.style.display!=='none')) setOpen(t,true);
+        });
+        sec.querySelectorAll('.scenario.searchable').forEach(s=>{
+          if(s.style.display!=='none') setOpen(s,true);
+        });
+      }
+    }
+  });
+  noResults.style.display = any ? 'none' : 'block';
+});
+
+/* ===================== INITIAL STATE ===================== */
+setOpen(document.querySelector('#scenarios .scenario'), true);
+setOpen(document.querySelector('#classes .topic'), true);
+</script>
+</body>
+</html>

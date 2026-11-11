@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jaspersoft Advanced — Cheat Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@600;700&family=Mulish:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1a160e;
+    --paper:#241d12;
+    --ink:#f2ecdd;
+    --ink-soft:#b3a585;
+    --line:#322a1b;
+    --line-strong:#453827;
+    --accent:#f59e0b;
+    --accent-soft:#fbbf24;
+    --green:#4ade80;
+    --code-bg:#120f08;
+    --code-ink:#f0e8d6;
+    --code-dim:#8a7c63;
+    --code-ph:#fcd34d;
+    --code-green:#4ade80;
+    --on-accent:#1a160e;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:'Mulish',system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;background-image:radial-gradient(var(--line) .7px,transparent .7px);background-size:22px 22px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px}
+  header{padding:64px 0 26px}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  h1{font-family:'Lexend',sans-serif;font-weight:700;font-size:clamp(2.3rem,8vw,4rem);line-height:.98;letter-spacing:-.03em;margin-bottom:16px}
+  h1 .mark{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:.5em;font-weight:600}
+  .lede{font-size:1.05rem;color:var(--ink-soft);max-width:56ch}
+  .lede code{font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--accent-soft)}
+  .hint{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);margin-top:14px;border-left:2px solid var(--accent);padding-left:10px}
+  .controls{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 70%,transparent);padding:18px 0 14px;margin-bottom:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:200px;position:relative}
+  .search input{width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:12px 14px 12px 40px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+  .search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(245,158,11,.22)}
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.5}
+  .btn{font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.04em;padding:11px 16px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink-soft);cursor:pointer;transition:all .18s;white-space:nowrap}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+  .panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s ease}
+  .panel.open{grid-template-rows:1fr;margin-bottom:26px}
+  .panel-inner{overflow:hidden}
+  .panel-pad{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);padding:20px 22px;margin-top:2px}
+  .panel-pad h3{font-family:'Lexend',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:3px}
+  .panel-pad .sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);margin-bottom:16px}
+  .gloss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:15px 24px}
+  .gloss dt{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent);margin-bottom:3px}
+  .gloss dd{font-size:.9rem;color:var(--ink-soft);line-height:1.5}
+  .index{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:34px;padding-bottom:30px;border-bottom:1px solid var(--line)}
+  .index a{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:99px;transition:all .15s}
+  .index a:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .index a.lead{border-color:var(--accent);color:var(--accent)}
+  .index a.lead:hover{background:var(--accent);color:var(--on-accent)}
+  .section-head{display:flex;align-items:baseline;gap:12px;margin:34px 0 16px;flex-wrap:wrap}
+  .section-head h2{font-family:'Lexend',sans-serif;font-size:1.7rem;font-weight:700;letter-spacing:-.02em}
+  .section-head .meta{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim)}
+  section{margin-bottom:14px;scroll-margin-top:90px}
+  .topic{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden}
+  .topic-head{display:flex;align-items:center;gap:14px;width:100%;padding:18px 20px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .topic-head:hover .topic-title{color:var(--accent)}
+  .num{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);border:1px solid var(--line-strong);border-radius:6px;padding:3px 7px;flex-shrink:0}
+  .topic-title{font-family:'Lexend',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:-.01em;transition:color .2s;flex:1}
+  .topic-sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);font-weight:400}
+  .chev{flex-shrink:0;transition:transform .3s ease;color:var(--ink-soft)}
+  .topic.open .chev,.scenario.open .chev{transform:rotate(90deg)}
+  .topic-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .topic.open .topic-body{grid-template-rows:1fr}
+  .topic-body-inner{overflow:hidden}
+  .topic-pad{padding:0 20px 22px;border-top:1px solid var(--line)}
+  .group-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-soft);margin:22px 0 10px}
+  .scenario{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden;margin-bottom:10px}
+  .scn-head{display:flex;align-items:center;gap:13px;width:100%;padding:16px 18px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .scn-head:hover .scn-q{color:var(--accent)}
+  .scn-icon{flex-shrink:0;width:27px;height:27px;border-radius:7px;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:600}
+  .scn-q{flex:1;font-family:'Lexend',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:-.01em;transition:color .2s}
+  .scn-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .scenario.open .scn-body{grid-template-rows:1fr}
+  .scn-inner{overflow:hidden}
+  .scn-pad{padding:2px 18px 18px;border-top:1px solid var(--line)}
+  .scn-when{font-size:.92rem;color:var(--ink-soft);margin:14px 0 2px;font-style:italic}
+  .scn-block{margin-top:14px}
+  .block-label{font-family:'JetBrains Mono',monospace;font-size:.71rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-soft);margin-bottom:10px}
+  .steps{list-style:none}
+  .step{display:flex;gap:11px;margin-bottom:11px}
+  .step-n{flex-shrink:0;width:22px;height:22px;margin-top:7px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--accent)}
+  .step-main{flex:1;min-width:0}
+  .step-note{font-size:.88rem;color:var(--ink-soft);margin:3px 0 0 2px}
+  .copy-all{margin-top:4px;font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:9px 14px;border:1px dashed var(--line-strong);border-radius:8px;background:none;color:var(--ink-soft);cursor:pointer;transition:all .15s}
+  .copy-all:hover{border-color:var(--accent);color:var(--accent)}
+  .copy-all.done{color:var(--green);border-color:var(--green)}
+  .types{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:8px;margin:6px 0 18px}
+  .type{display:flex;gap:9px;align-items:baseline;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--code-bg)}
+  .type b{font-family:'JetBrains Mono',monospace;color:var(--code-ph);font-size:.78rem;flex-shrink:0;white-space:nowrap}
+  .type span{font-size:.84rem;color:var(--code-dim)}
+  .conv-rule{font-size:.92rem;color:var(--ink-soft);margin-bottom:8px}
+  .conv-rule code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+  .cmd{display:flex;align-items:stretch;gap:0;margin-bottom:8px;border-radius:8px;overflow:hidden;border:1px solid #2a2114;background:var(--code-bg)}
+  .cmd-code{flex:1;font-family:'JetBrains Mono',monospace;font-size:.84rem;color:var(--code-ink);padding:9px 14px;overflow-x:auto;white-space:pre;line-height:1.7;display:flex;align-items:center;flex-wrap:wrap}
+  .cmd-code .lit{white-space:pre}
+  .ph{font-family:'JetBrains Mono',monospace;font-size:.84rem;background:rgba(252,211,77,.16);color:var(--code-ph);border:none;border-bottom:1px dashed var(--code-ph);padding:1px 2px;margin:0 1px;outline:none;border-radius:3px 3px 0 0;transition:background .15s;min-width:1ch}
+  .ph::placeholder{color:var(--code-ph);opacity:.6;font-style:italic}
+  .ph:focus{background:rgba(252,211,77,.3)}
+  .ph.filled{color:var(--code-green);border-bottom-color:var(--code-green);background:rgba(74,222,128,.15)}
+  .copy{flex-shrink:0;border:none;border-left:1px solid #2a2114;background:#1c160c;color:var(--code-dim);font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:0 15px;cursor:pointer;transition:all .15s;letter-spacing:.05em;align-self:stretch}
+  .copy:hover{background:#261d10;color:var(--code-ink)}
+  .copy.done{color:var(--code-green)}
+  .desc{font-size:.92rem;color:var(--ink-soft);margin:1px 0 13px 2px}
+  .desc code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+  .no-results{display:none;text-align:center;padding:50px 0;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;font-size:.9rem}
+  footer{padding:40px 0 70px;margin-top:30px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--code-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  footer a{color:var(--accent);text-decoration:none}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);width:min(560px,calc(100% - 36px));z-index:60;background:var(--paper);border:1px solid var(--line-strong);border-radius:14px;box-shadow:0 18px 50px -12px rgba(0,0,0,.6);padding:18px 20px 19px;opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.2,.9,.25,1),opacity .35s}
+  .toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+  .toast-top{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+  .toast-badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--on-accent);background:var(--green);padding:3px 8px;border-radius:99px}
+  .toast-title{font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);flex:1}
+  .toast-close{border:none;background:none;cursor:pointer;color:var(--ink-soft);font-size:1.2rem;line-height:1;padding:2px 4px;border-radius:6px}
+  .toast-close:hover{color:var(--accent);background:var(--line)}
+  .toast-cmd{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--code-ink);background:var(--code-bg);border-radius:8px;padding:9px 12px;margin-bottom:12px;overflow-x:auto;white-space:pre;max-height:150px}
+  .toast-body{font-size:1rem;color:var(--ink);line-height:1.6}
+  .toast-progress{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);border-radius:0 0 0 14px;width:100%}
+  .toast.show .toast-progress{animation:drain 7s linear forwards}
+  @keyframes drain{from{width:100%}to{width:0%}}
+  ::selection{background:var(--accent);color:var(--on-accent)}
+  @media(max-width:540px){header{padding:42px 0 22px}.topic-sub{display:none}.cmd-code{font-size:.79rem}}
+</style>
+</head>
+<body>
+<div class="wrap" id="top">
+  <header>
+    <div class="kicker">Jaspersoft · Advanced · v2</div>
+    <h1><span class="mark">$P{»}</span> jaspersoft — advanced</h1>
+    <p class="lede">Past the basics: subreports, sub-datasets, crosstabs, variable calculation &amp; evaluation, conditional printing, the Java fill API, performance and dynamic queries. Copy any snippet to see what it does.</p>
+    <p class="hint">⌨ Gold blanks like &lt;name&gt; are editable. ⊕ Copying explains it. Some items are JRXML attributes or element properties — the explanation says where each goes.</p>
+  </header>
+
+  <div class="controls">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="Search…  e.g. subreport, crosstab, virtualizer, $X{IN}" autocomplete="off">
+    </label>
+    <button class="btn" id="glossaryBtn">Glossary</button>
+    <button class="btn" id="expandAll">Expand all</button>
+    <button class="btn" id="collapseAll">Collapse all</button>
+  </div>
+
+  <div class="panel glossary" id="glossary">
+    <div class="panel-inner"><div class="panel-pad">
+      <h3>Advanced glossary</h3>
+      <div class="sub">the deeper-end terms, in plain language</div>
+      <dl class="gloss gloss-grid" id="glossList"></dl>
+    </div></div>
+  </div>
+
+  <nav class="index" id="index"></nav>
+  <main id="content"></main>
+  <div class="no-results" id="noResults">Nothing matches that search.</div>
+
+  <footer>
+    <span>Copy a snippet to learn it. Empty blanks copy as &lt;placeholder&gt;.</span>
+    <span><a href="#top">↑ back to top</a></span>
+  </footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <div class="toast-top"><span class="toast-badge">copied</span><span class="toast-title">what this does</span><button class="toast-close" id="toastClose" aria-label="Dismiss">×</button></div>
+  <div class="toast-cmd" id="toastCmd"></div>
+  <div class="toast-body" id="toastBody"></div>
+  <div class="toast-progress"></div>
+</div>
+
+<script>
+/* ===================== SCENARIOS ===================== */
+const SCENARIOS = [
+  {
+    q:"Pass a parameter to a subreport",
+    when:"The classic master-detail: a parent row drives a child report.",
+    blocks:[ { label:"On the subreport element", steps:[
+      ["$P{SUBREPORT_DIR} + \"<Orders.jasper>\"","Set the Subreport Expression to the compiled child (built from a SUBREPORT_DIR parameter so paths stay portable)."],
+      ["$F{<customerId>}","Add a Subreport Parameter whose expression sends the value the child's parameter expects."],
+      ["$P{REPORT_CONNECTION}","Set the Connection Expression so the child queries the same database."],
+    ]}]
+  },
+  {
+    q:"Return a subreport total back to the parent",
+    when:"Roll a child report's computed value up into the master.",
+    blocks:[ { label:"Add a Return Value to the subreport", steps:[
+      ["<returnValue subreportVariable=\"<ChildTotal>\" toVariable=\"<ParentTotal>\" calculation=\"Sum\"/>","Copies the child variable into a parent variable; calculation=\"Sum\" accumulates it across every subreport run."],
+    ]}]
+  },
+  {
+    q:"Run a report from Java code",
+    when:"Generate reports outside Studio — in a service, batch job, or web app.",
+    blocks:[ { label:"Compile → fill → export", steps:[
+      ["JasperReport <jr> = JasperCompileManager.compileReport(\"<report.jrxml>\");","Compile the design once (cache the result)."],
+      ["JasperPrint <jp> = JasperFillManager.fillReport(<jr>, <params>, <conn>);","Fill it with a parameters Map and a Connection (or a JRDataSource)."],
+      ["JasperExportManager.exportReportToPdfFile(<jp>, \"<out.pdf>\");","Export the filled report to PDF (HTML/CSV variants exist too)."],
+    ]}]
+  },
+  {
+    q:"Use a list of Java beans as the data source",
+    when:"No SQL — drive the report from in-memory objects.",
+    blocks:[ { label:"Wrap the collection", steps:[
+      ["new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource(<beanList>)","Each bean is a row; its property names become the report's field names. Fill with this instead of a Connection."],
+    ]}]
+  },
+  {
+    q:"Sum only the rows that match a condition",
+    when:"You need a conditional total without changing the query.",
+    blocks:[ { label:"A conditional Sum variable", steps:[
+      ["$F{<status>}.equals(\"<PAID>\") ? $F{<amount>} : 0","Set this as a variable's Expression and its Calculation to Sum — non-matching rows contribute 0, so only matches are totalled."],
+    ]}]
+  },
+  {
+    q:"Show a running total that resets each group",
+    when:"Per-group subtotals that restart at every group break.",
+    blocks:[ { label:"One Sum variable, scoped to the group", steps:[
+      ["$F{<amount>}","Create a variable with this Expression, Calculation = Sum, Reset Type = Group, and Reset Group = your group. It restarts at each break."],
+    ]}]
+  },
+  {
+    q:"Make a value a clickable link",
+    when:"Link a cell to a record in another system or a PDF anchor.",
+    blocks:[ { label:"Hyperlink reference expression", steps:[
+      ["\"https://crm/account/\" + $F{<accountId>}","Set the element's hyperlinkType to Reference and use this as its Hyperlink Reference Expression."],
+    ]}]
+  },
+  {
+    q:"Inject a dynamic ORDER BY safely",
+    when:"Let a parameter choose the sort column or a query fragment.",
+    blocks:[ { label:"Query substitution — handle with care", steps:[
+      ["$P!{<orderByColumn>}","$P!{} drops the parameter's raw text into the SQL. ⚠️ It is NOT escaped — only allow values from a fixed whitelist to prevent SQL injection."],
+    ]}]
+  },
+  {
+    q:"Localize a label",
+    when:"Drive report text from translation files.",
+    blocks:[ { label:"Resource bundle lookup", steps:[
+      ["$R{<label.total>}","Add the key to your .properties bundle; $R{} resolves it for the fill locale. Pass REPORT_LOCALE to switch languages."],
+    ]}]
+  },
+];
+
+/* ===================== REFERENCE ===================== */
+const BUILTIN = [
+  ["REPORT_CONNECTION","the JDBC Connection (pass to subreports)"],
+  ["REPORT_DATA_SOURCE","the current JRDataSource"],
+  ["REPORT_PARAMETERS_MAP","a Map of all parameters"],
+  ["REPORT_LOCALE","the fill Locale"],
+  ["REPORT_RESOURCE_BUNDLE","the i18n ResourceBundle"],
+  ["REPORT_MAX_COUNT","cap on records processed"],
+  ["REPORT_VIRTUALIZER","spills pages to disk (big reports)"],
+  ["IS_IGNORE_PAGINATION","render as one long page (Boolean)"],
+  ["SORT_FIELDS","runtime sort (List<JRSortField>)"],
+  ["FILTER","runtime row filter"],
+];
+const CALC = [
+  ["Sum / Average","accumulate or mean the expression"],
+  ["Count / DistinctCount","count rows / unique values"],
+  ["Highest / Lowest","max / min seen"],
+  ["First","value from the first row"],
+  ["StandardDeviation / Variance","statistical spread"],
+  ["System / Nothing","you set it / no auto-calc"],
+];
+const EVAL = [
+  ["Now","when the band prints (default)"],
+  ["Report","deferred to report end (grand totals)"],
+  ["Group","at the end of the named group"],
+  ["Page / Column","at end of page / column"],
+  ["Band","at the band's end"],
+  ["Auto","per-field smart timing"],
+];
+const BUILD = [
+  ["$P{REPORT_PARAMETERS_MAP}","Forward all parameters.","As a subreport's Parameters Map Expression, hands every parent parameter to the child in one shot."],
+  ["$P{REPORT_CONNECTION}","Reuse the connection.","As a subreport's Connection Expression, runs the child against the same database connection."],
+];
+
+/* ===================== TOPICS ===================== */
+const DATA = [
+  { id:"subreports", title:"Subreports", sub:"master → detail", groups:[
+    { label:"Wire it up", items:[
+      ["$P{SUBREPORT_DIR} + \"<Child.jasper>\"","Point to the subreport.","The Subreport Expression — a path to the compiled .jasper, usually built from a SUBREPORT_DIR parameter for portability."],
+      ["$P{REPORT_CONNECTION}","Share the DB connection.","Set as the Connection Expression so the child queries the same database as the parent."],
+      ["new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{<lineItems>})","Feed a sub-collection.","Set as the Data Source Expression to drive the subreport from a collection field on the current row."],
+      ["$P{REPORT_PARAMETERS_MAP}","Forward all parameters.","As the Parameters Map Expression, passes every parent parameter down at once."],
+    ]},
+    { label:"Pass & return", items:[
+      ["$F{<customerId>}","Pass one parameter.","A Subreport Parameter expression — the value sent down for a parameter the child declares."],
+      ["<returnValue subreportVariable=\"<ChildVar>\" toVariable=\"<ParentVar>\" calculation=\"Sum\"/>","Return a value up.","A Return Value copies a child variable into a parent variable; Sum accumulates across runs."],
+    ]},
+  ]},
+  { id:"datasets", title:"Datasets & Components", sub:"lists, tables, sub-datasets", groups:[
+    { label:"Sub-datasets", items:[
+      ["<subDataset name=\"<ItemsDS>\"/>","Declare a sub-dataset.","A reusable dataset (its own fields, query, variables) that feeds a chart, crosstab, list, or table."],
+      ["new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{<lineItems>})","Data source for a component.","The Data Source Expression in a list/table/chart datasetRun — drives it from a collection on the current row."],
+      ["new net.sf.jasperreports.engine.JREmptyDataSource(<10>)","Empty data source.","Generates N blank rows — handy for fixed-layout forms or testing a layout with no data."],
+    ]},
+    { label:"Iterating data", items:[
+      ["$F{<lineItems>}","A collection field.","A field can hold a List/array of beans; a sub-dataset iterates it inside a list or table component."],
+    ]},
+  ]},
+  { id:"crosstabs", title:"Crosstabs", sub:"pivot tables", groups:[
+    { label:"Inside a crosstab", items:[
+      ["$V{<TotalAmount>}","A measure.","In a crosstab cell, references a measure variable to print its aggregated value."],
+      ["<measure name=\"<Total>\" calculation=\"Sum\">","Define a measure.","A crosstab measure aggregates a value across the cells (Sum, Count, Average…)."],
+      ["$V{<RegionGroup>}","A bucket value.","References the current row or column group's bucket (the grouping key) in a header cell."],
+      ["$P{<crosstabParam>}","A crosstab parameter.","Crosstabs are sandboxed — pass outside values in via crosstab parameters and read them with $P{}."],
+    ]},
+  ]},
+  { id:"charts", title:"Charts", sub:"series, category, value", groups:[
+    { label:"Chart dataset expressions", items:[
+      ["$F{<category>}","Category expression.","On the chart dataset, the x-axis grouping for each data point."],
+      ["$F{<amount>}","Value expression.","The numeric measure plotted for each category/series."],
+      ["$F{<productLine>}","Series expression.","Splits the data into multiple series — e.g. one line or bar colour per product."],
+      ["$P{<chartParam>}","Feed a chart externally.","Charts run on their own dataset; pass external values through chart-dataset parameters."],
+    ]},
+  ]},
+  { id:"variables", title:"Advanced Variables", sub:"calculation, reset, eval", groups:[
+    { label:"Calculation", items:[
+      ["$F{<status>}.equals(\"<PAID>\") ? $F{<amount>} : 0","Conditional Sum.","Variable Expression + Calculation = Sum totals only matching rows (others add 0)."],
+      ["$F{<customerId>}","Count distinct.","Variable Expression + Calculation = DistinctCount counts unique values, not rows."],
+      ["new java.math.BigDecimal(0)","Initial value.","A variable's Initial Value Expression seeds it before the first row — for non-zero starts."],
+    ]},
+    { label:"Reset & evaluate", items:[
+      ["$V{<runningTotal>}","Use a variable.","Reference its value. Reset Type (Report/Page/Column/Group) decides when it restarts."],
+      ["$V{<groupSubtotal>}","Per-group total.","Set Reset Type = Group and pick the group; it accumulates within each group only."],
+      ["$V{PAGE_NUMBER} + \" / \" + $V{PAGE_COUNT}","Deferred evaluation.","Set the text field's Evaluation Time = Report so PAGE_COUNT resolves to the final total."],
+    ]},
+  ]},
+  { id:"condprint", title:"Conditional Printing & Styles", sub:"show, hide, restyle", groups:[
+    { label:"Print when", items:[
+      ["$F{<amount>}.doubleValue() > 0","Print When Expression.","A Boolean on an element — it renders only when this is true."],
+      ["$V{<RegionGroup>_COUNT} == 1","Print once per group.","True only on a group's first row — print a value a single time per group."],
+      ["isPrintRepeatedValues=\"false\"","Hide repeated values.","An element attribute: blank a value when it equals the previous row's (e.g. a repeating key)."],
+      ["isRemoveLineWhenBlank=\"true\"","Collapse empty lines.","Removes the element's line when its value is blank, so layouts don't leave gaps."],
+    ]},
+    { label:"Conditional style", items:[
+      ["\"<OVERDUE>\".equals($F{<status>})","Conditional style condition.","A <conditionalStyle> condition; when true, its overrides (colour, font) layer onto the base style."],
+      ["$F{<amount>}.doubleValue() < 0 ? \"<#cc0000>\" : \"<#000000>\"","Style expression value.","Many style properties accept an expression — here choosing a font colour by sign."],
+    ]},
+  ]},
+  { id:"groups", title:"Groups", sub:"breaks & headers", groups:[
+    { label:"Group control", items:[
+      ["$F{<region>}","Group Expression.","Whenever this value changes, Jasper starts a new group with its header/footer bands."],
+      ["$V{<RegionGroup>_COUNT}","Records in the group.","Auto-variable counting the current group's detail rows; resets at the group break."],
+      ["isStartNewPage=\"true\"","Page per group.","A group attribute — begin each group on a fresh page."],
+      ["isReprintHeaderOnEachPage=\"true\"","Repeat the header.","Reprints the group header at the top of every page the group spans."],
+      ["minHeightToStartNewPage=\"<80>\"","Avoid orphan headers.","If fewer than N points remain, push the group to the next page so its header isn't stranded."],
+    ]},
+  ]},
+  { id:"links", title:"Hyperlinks & Anchors", sub:"links, bookmarks", groups:[
+    { label:"Make things clickable", items:[
+      ["\"https://app/record/\" + $F{<id>}","Reference link.","With hyperlinkType=Reference, this Hyperlink Reference Expression turns the element into a link."],
+      ["$F{<sectionName>}","Anchor name.","An Anchor Name Expression marks a jump target (for LocalAnchor links and the PDF bookmark tree)."],
+      ["$F{<pageNo>}","Local page link.","With hyperlinkType=LocalPage, the expression returns the page number to jump to."],
+      ["bookmarkLevel=\"<1>\"","PDF bookmark.","Adds the element to the exported PDF's outline tree at the given level."],
+    ]},
+  ]},
+  { id:"i18n", title:"Internationalization", sub:"locales & bundles", groups:[
+    { label:"Localized text", items:[
+      ["$R{<label.total>}","A localized string.","Resolves the key in the report's resource bundle for the current locale."],
+      ["java.text.MessageFormat.format($R{<msg.greeting>}, $F{<name>})","With arguments.","Pulls a pattern from the bundle and fills {0}, {1}… with values."],
+      ["msg($R{<msg.count>}, $V{<Total>})","Built-in msg().","The functions library's msg() does MessageFormat in one call."],
+      ["$P{REPORT_LOCALE}","The active locale.","Read the fill Locale; pass a Locale parameter at fill time to switch languages."],
+    ]},
+  ]},
+  { id:"export", title:"Export & Properties", sub:"PDF / Excel tuning", groups:[
+    { label:"Built-in & properties", items:[
+      ["IS_IGNORE_PAGINATION","One long page.","Pass this built-in parameter as true (or set the property) to render without page breaks — ideal for HTML/Excel."],
+      ["net.sf.jasperreports.export.xls.sheet.names.1","Name an Excel sheet.","A report property that sets the worksheet name in XLSX exports."],
+      ["net.sf.jasperreports.export.xls.one.page.per.sheet=\"true\"","One sheet per page.","Controls how report pages map to Excel worksheets."],
+      ["net.sf.jasperreports.print.keep.full.text=\"true\"","Keep full cell text.","Stops Excel exports from truncating long text in a cell."],
+    ]},
+  ]},
+  { id:"javaapi", title:"Run Reports in Java", sub:"compile / fill / export", groups:[
+    { label:"The fill pipeline", items:[
+      ["JasperReport <jr> = JasperCompileManager.compileReport(\"<report.jrxml>\");","Compile.","Turns a .jrxml into a JasperReport (or .jasper file). Do this once and reuse it."],
+      ["JasperPrint <jp> = JasperFillManager.fillReport(<jr>, <paramsMap>, <conn>);","Fill with data.","Runs the report against parameters and a Connection (or a JRDataSource) to produce a JasperPrint."],
+      ["JasperExportManager.exportReportToPdfFile(<jp>, \"<out.pdf>\");","Export to PDF.","Writes the filled report to a PDF file."],
+    ]},
+    { label:"Data & other formats", items:[
+      ["new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource(<beans>)","Bean data source.","Wrap a List of POJOs as a data source — fill with this instead of a SQL Connection."],
+      ["JRXlsxExporter <e> = new JRXlsxExporter();","Export to Excel.","Configure an exporter with the JasperPrint input and an output, then call exportReport()."],
+    ]},
+  ]},
+  { id:"perf", title:"Performance & Dynamic Queries", sub:"scale & flexibility", groups:[
+    { label:"Dynamic queries", items:[
+      ["$P!{<orderByColumn>}","Inject a query chunk.","$P!{} substitutes the parameter's raw text into the SQL (e.g. a dynamic ORDER BY). ⚠️ NOT escaped — whitelist values to avoid injection."],
+      ["$X{IN, <column>, <listParam>}","Safe IN clause.","Expands a collection parameter into a parameterized IN (...). Also NOTIN, BETWEEN, EQUAL, GREATER, LESS."],
+      ["new java.util.ArrayList(java.util.Arrays.asList(\"<A>\", \"<B>\"))","Build a list parameter.","Create the collection you'd bind to a $X{IN,...} parameter."],
+    ]},
+    { label:"Scale", items:[
+      ["$P{REPORT_VIRTUALIZER}","Handle huge reports.","Pass a JRSwapFileVirtualizer so pages spill to disk instead of memory — prevents OutOfMemory on big runs."],
+      ["$P{REPORT_MAX_COUNT}","Cap the rows.","Limit how many records the report processes — great for fast previews."],
+    ]},
+  ]},
+];
+
+/* ===================== GLOSSARY ===================== */
+const GLOSSARY = [
+  ["subreport","A report embedded in another, given its own data source/connection and parameters."],
+  ["sub-dataset","A named dataset (fields, query, variables) reused by charts, crosstabs, lists, and tables."],
+  ["datasetRun","The binding that runs a sub-dataset for a component, supplying its data source or connection."],
+  ["return value","A subreport setting that copies a child variable back into a parent variable."],
+  ["crosstab","A pivot-table element with row groups, column groups, and aggregated measures."],
+  ["bucket","The grouping key of a crosstab row or column group."],
+  ["measure","A crosstab's aggregated value (Sum, Count…), printed in each cell as $V{measure}."],
+  ["calculation type","How a variable accumulates: Sum, Count, DistinctCount, Average, Highest, First…"],
+  ["reset type","When a variable restarts: Report, Page, Column, or Group."],
+  ["increment type","When a variable updates: every row, per group, per page, etc."],
+  ["evaluation time","When a text field's expression is computed: Now, Report, Page, Group, Band, Auto."],
+  ["print when","A Boolean expression that decides whether an element renders."],
+  ["conditional style","A style whose overrides apply only when its condition expression is true."],
+  ["$P!{}","Query substitution — drops a parameter's raw text into the SQL (not escaped; whitelist it)."],
+  ["$X{}","Built-in clause functions (IN, NOTIN, BETWEEN…) that build safe, parameterized SQL."],
+  ["FILTER / SORT_FIELDS","Built-in parameters to filter rows / sort fields at fill time."],
+  ["virtualizer","An object that offloads report pages to disk to keep memory use bounded."],
+  ["JasperPrint","The in-memory, filled report — what you then export to PDF, XLSX, HTML, etc."],
+  ["exporter","A class (JRPdfExporter, JRXlsxExporter…) that writes a JasperPrint to a format."],
+  ["resource bundle","Translated .properties files keyed by $R{}, selected by the fill locale."],
+];
+
+/* ===================== ENGINE ===================== */
+const escAttr = s => s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const PH_SPLIT = /(<[A-Za-z][\w.\-/:@#]*>)/g;
+const PH_MATCH = /^<([A-Za-z][\w.\-/:@#]*)>$/;
+function buildCommandHTML(cmd){
+  return cmd.split(PH_SPLIT).map(p=>{
+    const m=p.match(PH_MATCH);
+    if(m){const n=m[1];return `<input class="ph" data-ph="${escAttr(n)}" placeholder="${escAttr(n)}" size="${Math.max(n.length,2)}" spellcheck="false" autocomplete="off">`;}
+    return p ? `<span class="lit">${escHtml(p)}</span>` : '';
+  }).join('');
+}
+function readCommand(codeEl){
+  let out='';
+  codeEl.childNodes.forEach(node=>{
+    if(node.nodeType===1 && node.classList.contains('ph')){const v=node.value.trim();out+=v?v:'<'+node.dataset.ph+'>';}
+    else { out+=node.textContent; }
+  });
+  return out;
+}
+const cmdRow=(cmd,explain)=>`<div class="cmd"><code class="cmd-code">${buildCommandHTML(cmd)}</code><button class="copy" data-explain="${escAttr(explain)}" aria-label="Copy snippet">copy</button></div>`;
+
+const content=document.getElementById('content'), index=document.getElementById('index');
+function addChip(label,target,lead){const a=document.createElement('a');a.href='#'+target;a.textContent=label;a.dataset.target=target;if(lead)a.classList.add('lead');index.appendChild(a);}
+addChip('★ Scenarios','scenarios',true); addChip('★ Built-ins','reference',true);
+DATA.forEach(t=>addChip(t.title.split('(')[0].trim(), t.id));
+
+document.getElementById('glossList').innerHTML = GLOSSARY.map(([t,d])=>`<div><dt>${escHtml(t)}</dt><dd>${escHtml(d)}</dd></div>`).join('');
+
+const scn=document.createElement('section');scn.id='scenarios';
+let sH=`<div class="section-head"><h2>Scenarios &amp; Recipes</h2><span class="meta">"how do I…" → exact steps</span></div>`;
+SCENARIOS.forEach((s,i)=>{
+  let body=''; if(s.when) body+=`<p class="scn-when">${s.when}</p>`; let sb=s.q;
+  s.blocks.forEach(b=>{
+    body+=`<div class="scn-block">`; if(b.label) body+=`<div class="block-label">${b.label}</div>`; body+=`<ol class="steps">`;
+    b.steps.forEach(([c,n])=>{ sb+=' '+c+' '+n; body+=`<li class="step"><span class="step-n">•</span><div class="step-main">${cmdRow(c,n)}<div class="step-note">${n}</div></div></li>`; });
+    body+=`</ol>`; if(b.steps.length>1) body+=`<button class="copy-all">Copy these steps</button>`; body+=`</div>`;
+  });
+  sH+=`<div class="scenario searchable" data-search="${escAttr(sb.toLowerCase())}"><button class="scn-head" aria-expanded="false"><span class="scn-icon">${i+1}</span><span class="scn-q">${s.q}</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="scn-body"><div class="scn-inner"><div class="scn-pad">${body}</div></div></div></div>`;
+});
+scn.innerHTML=sH; content.appendChild(scn);
+document.querySelectorAll('.scn-block .steps').forEach(ol=>ol.querySelectorAll('.step-n').forEach((n,i)=>n.textContent=i+1));
+
+const ref=document.createElement('section');ref.id='reference';
+const biHtml=BUILTIN.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('');
+const calcHtml=CALC.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('');
+const evalHtml=EVAL.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('');
+const buildHtml=BUILD.map(([c,desc,ex])=>`<div class="cmd-block searchable" data-search="${escAttr((c+' '+desc+' '+ex).toLowerCase())}">${cmdRow(c,ex)}<div class="desc">${desc}</div></div>`).join('');
+ref.innerHTML=`<div class="section-head"><h2>Built-ins &amp; Evaluation</h2><span class="meta">params · calc · eval</span></div><div class="topic"><button class="topic-head" aria-expanded="false"><span class="num">★</span><span class="topic-title">Built-in Params, Calc &amp; Eval</span><span class="topic-sub">$P{} system · variable timing</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="topic-body"><div class="topic-body-inner"><div class="topic-pad"><div class="group-label">Built-in parameters ($P{...})</div><p class="conv-rule">These are always available at fill time — the keys behind subreports, virtualization, locales, and runtime filtering.</p><div class="types">${biHtml}</div><div class="group-label">Variable calculation types</div><div class="types">${calcHtml}</div><div class="group-label">Evaluation time (when an expression resolves)</div><div class="types">${evalHtml}</div><div class="group-label">The two you'll reach for most</div>${buildHtml}</div></div></div></div>`;
+content.appendChild(ref);
+
+DATA.forEach((topic,i)=>{
+  const sec=document.createElement('section');sec.id=topic.id;let gh='';
+  topic.groups.forEach(g=>{
+    gh+=`<div class="group"><div class="group-label">${g.label}</div>`;
+    g.items.forEach(([c,desc,ex])=>{ gh+=`<div class="cmd-block searchable" data-search="${escAttr((c+' '+desc+' '+(ex||'')).toLowerCase())}">${cmdRow(c,ex||desc)}<div class="desc">${desc}</div></div>`; });
+    gh+=`</div>`;
+  });
+  sec.innerHTML=`<div class="topic"><button class="topic-head" aria-expanded="false"><span class="num">${String(i+1).padStart(2,'0')}</span><span class="topic-title">${topic.title}</span><span class="topic-sub">${topic.sub}</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">${gh}</div></div></div></div>`;
+  content.appendChild(sec);
+});
+
+function setOpen(el,open){el.classList.toggle('open',open);const h=el.querySelector('[aria-expanded]');if(h)h.setAttribute('aria-expanded',open);}
+document.querySelectorAll('.topic-head, .scn-head').forEach(h=>h.addEventListener('click',()=>{const t=h.closest('.topic, .scenario');setOpen(t,!t.classList.contains('open'));}));
+document.getElementById('expandAll').onclick=()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,true));
+document.getElementById('collapseAll').onclick=()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,false));
+index.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{const s=document.getElementById(a.dataset.target);const acc=s.querySelector('.topic, .scenario');if(acc)setOpen(acc,true);}));
+
+const glossary=document.getElementById('glossary'), glossaryBtn=document.getElementById('glossaryBtn');
+glossaryBtn.onclick=()=>{const o=glossary.classList.toggle('open');glossaryBtn.classList.toggle('active',o);};
+
+content.addEventListener('input',e=>{
+  const inp=e.target; if(!inp.classList||!inp.classList.contains('ph')) return;
+  inp.size=Math.max(inp.value.length||inp.placeholder.length,2); inp.classList.toggle('filled',inp.value.trim().length>0);
+  inp.closest('.cmd-code').querySelectorAll('.ph').forEach(o=>{ if(o!==inp&&o.dataset.ph===inp.dataset.ph){o.value=inp.value;o.size=Math.max(o.value.length||o.placeholder.length,2);o.classList.toggle('filled',o.value.trim().length>0);} });
+});
+content.addEventListener('click',e=>{ if(e.target.classList&&e.target.classList.contains('ph')) e.stopPropagation(); });
+
+const toast=document.getElementById('toast'),toastCmd=document.getElementById('toastCmd'),toastBody=document.getElementById('toastBody');let toastTimer;
+function showToast(cmd,ex){toastCmd.textContent=cmd;toastBody.textContent=ex;toast.classList.remove('show');void toast.offsetWidth;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),7000);}
+document.getElementById('toastClose').onclick=()=>toast.classList.remove('show');
+
+content.addEventListener('click',e=>{
+  const btn=e.target.closest('.copy');
+  if(btn){ const code=btn.parentElement.querySelector('.cmd-code'); const text=readCommand(code);
+    navigator.clipboard.writeText(text).then(()=>{btn.textContent='copied';btn.classList.add('done');setTimeout(()=>{btn.textContent='copy';btn.classList.remove('done');},1300);showToast(text,btn.dataset.explain);}); return; }
+  const ca=e.target.closest('.copy-all');
+  if(ca){ const block=ca.closest('.scn-block'); const text=[...block.querySelectorAll('.cmd-code')].map(readCommand).join('\n');
+    navigator.clipboard.writeText(text).then(()=>{ca.textContent='copied all';ca.classList.add('done');setTimeout(()=>{ca.textContent='Copy these steps';ca.classList.remove('done');},1500);showToast(text,'The pieces of this recipe. Fill any blanks, then place them in the right expressions / properties.');}); }
+});
+
+const search=document.getElementById('search'),noResults=document.getElementById('noResults');
+search.addEventListener('input',()=>{
+  const q=search.value.trim().toLowerCase();
+  document.querySelectorAll('.searchable').forEach(el=>{el.style.display=(!q||el.dataset.search.includes(q))?'':'none';});
+  document.querySelectorAll('.group').forEach(g=>{g.style.display=[...g.querySelectorAll('.searchable')].some(e=>e.style.display!=='none')?'':'none';});
+  let any=false;
+  document.querySelectorAll('main section').forEach(sec=>{
+    const vis=[...sec.querySelectorAll('.searchable')].some(e=>e.style.display!=='none'); sec.style.display=vis?'':'none';
+    if(vis){any=true; if(q){ sec.querySelectorAll('.topic').forEach(t=>{ if([...t.querySelectorAll('.searchable')].some(e=>e.style.display!=='none')) setOpen(t,true); }); sec.querySelectorAll('.scenario.searchable').forEach(s=>{ if(s.style.display!=='none') setOpen(s,true); }); }}
+  });
+  noResults.style.display=any?'none':'block';
+});
+
+setOpen(document.querySelector('#scenarios .scenario'),true);
+setOpen(document.querySelector('#subreports .topic'),true);
+</script>
+</body>
+</html>

@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git — Cheat Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f4f1ea;
+    --paper:#fbfaf6;
+    --ink:#1c1a17;
+    --ink-soft:#5c574e;
+    --line:#e2ddd1;
+    --line-strong:#d2ccbd;
+    --accent:#b1442e;
+    --accent-soft:#c9633f;
+    --code-bg:#1f1d1a;
+    --code-ink:#e9e4d8;
+    --code-dim:#9c9587;
+    --code-accent:#e0a45c;
+    --code-green:#a3b86c;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--ink);
+    font-family:'Fraunces',Georgia,serif;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(var(--line) 0.5px,transparent 0.5px);
+    background-size:22px 22px;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px}
+
+  /* Header */
+  header{padding:64px 0 30px}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  h1{font-weight:600;font-size:clamp(2.6rem,8vw,4.4rem);line-height:.95;letter-spacing:-.02em;margin-bottom:16px}
+  h1 .slash{color:var(--accent)}
+  .lede{font-size:1.05rem;color:var(--ink-soft);max-width:50ch;font-weight:400}
+  .hint{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--code-dim);margin-top:14px;border-left:2px solid var(--accent);padding-left:10px}
+
+  /* Controls */
+  .controls{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 70%,transparent);padding:18px 0 14px;margin-bottom:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:200px;position:relative}
+  .search input{width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:12px 14px 12px 40px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+  .search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(177,68,46,.12)}
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.45}
+  .btn{font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.04em;padding:11px 16px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink-soft);cursor:pointer;transition:all .18s;white-space:nowrap}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  /* Glossary toggle panel */
+  .glossary{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s ease}
+  .glossary.open{grid-template-rows:1fr;margin-bottom:26px}
+  .glossary-inner{overflow:hidden}
+  .glossary-pad{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);padding:20px 22px;margin-top:2px}
+  .glossary-pad h3{font-size:1.15rem;font-weight:600;margin-bottom:3px}
+  .glossary-pad .sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);margin-bottom:16px}
+  .gloss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:15px 24px}
+  .gloss dt{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent);margin-bottom:3px}
+  .gloss dd{font-size:.9rem;color:var(--ink-soft);line-height:1.5}
+
+  /* Topic index */
+  .index{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:34px;padding-bottom:30px;border-bottom:1px solid var(--line)}
+  .index a{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:99px;transition:all .15s}
+  .index a:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .index a.lead{border-color:var(--accent);color:var(--accent)}
+  .index a.lead:hover{background:var(--accent);color:#fff}
+
+  /* Section header (non-accordion) */
+  .section-head{display:flex;align-items:baseline;gap:12px;margin:34px 0 16px;flex-wrap:wrap}
+  .section-head h2{font-size:1.7rem;font-weight:600;letter-spacing:-.015em}
+  .section-head .meta{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim)}
+
+  /* Accordions (topics + scenarios share .open mechanics) */
+  section{margin-bottom:14px;scroll-margin-top:90px}
+  .topic{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden}
+  .topic-head{display:flex;align-items:center;gap:14px;width:100%;padding:18px 20px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .topic-head:hover .topic-title{color:var(--accent)}
+  .num{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);border:1px solid var(--line-strong);border-radius:6px;padding:3px 7px;flex-shrink:0}
+  .topic-title{font-size:1.32rem;font-weight:500;letter-spacing:-.01em;transition:color .2s;flex:1}
+  .topic-sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);font-weight:400}
+  .chev{flex-shrink:0;transition:transform .3s ease;color:var(--ink-soft)}
+  .topic.open .chev,.scenario.open .chev{transform:rotate(90deg)}
+  .topic-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .topic.open .topic-body{grid-template-rows:1fr}
+  .topic-body-inner{overflow:hidden}
+  .topic-pad{padding:0 20px 22px;border-top:1px solid var(--line)}
+  .group-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-soft);margin:22px 0 10px}
+
+  /* Scenario cards */
+  .scenario{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden;margin-bottom:10px}
+  .scn-head{display:flex;align-items:center;gap:13px;width:100%;padding:16px 18px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .scn-head:hover .scn-q{color:var(--accent)}
+  .scn-icon{flex-shrink:0;width:27px;height:27px;border-radius:7px;display:grid;place-items:center;background:var(--accent);color:#fff;font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:600}
+  .scn-q{flex:1;font-size:1.06rem;font-weight:500;letter-spacing:-.01em;transition:color .2s}
+  .scn-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .scenario.open .scn-body{grid-template-rows:1fr}
+  .scn-inner{overflow:hidden}
+  .scn-pad{padding:2px 18px 18px;border-top:1px solid var(--line)}
+  .scn-when{font-size:.92rem;color:var(--ink-soft);margin:14px 0 2px;font-style:italic}
+  .scn-block{margin-top:14px}
+  .block-label{font-family:'JetBrains Mono',monospace;font-size:.71rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-soft);margin-bottom:10px}
+  .steps{list-style:none}
+  .step{display:flex;gap:11px;margin-bottom:11px}
+  .step-n{flex-shrink:0;width:22px;height:22px;margin-top:7px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--accent)}
+  .step-main{flex:1;min-width:0}
+  .step-note{font-size:.88rem;color:var(--ink-soft);margin:3px 0 0 2px}
+  .copy-all{margin-top:4px;font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:9px 14px;border:1px dashed var(--line-strong);border-radius:8px;background:none;color:var(--ink-soft);cursor:pointer;transition:all .15s}
+  .copy-all:hover{border-color:var(--accent);color:var(--accent)}
+  .copy-all.done{color:var(--code-green);border-color:var(--code-green)}
+
+  /* Conventions */
+  .types{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:8px;margin:6px 0 20px}
+  .type{display:flex;gap:9px;align-items:baseline;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+  .type b{font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:.8rem;flex-shrink:0}
+  .type span{font-size:.86rem;color:var(--ink-soft)}
+  .conv-rule{font-size:.92rem;color:var(--ink-soft);margin-bottom:6px}
+  .conv-rule code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+
+  /* Command row */
+  .cmd{display:flex;align-items:stretch;gap:0;margin-bottom:8px;border-radius:8px;overflow:hidden;border:1px solid #2b2824;background:var(--code-bg)}
+  .cmd-code{flex:1;font-family:'JetBrains Mono',monospace;font-size:.84rem;color:var(--code-ink);padding:9px 14px;overflow-x:auto;white-space:pre;line-height:1.7;display:flex;align-items:center;flex-wrap:wrap}
+  .cmd-code .c-flag{color:var(--code-accent)}
+  .cmd-code .c-str{color:var(--code-green)}
+  .cmd-code .lit{white-space:pre}
+  .ph{font-family:'JetBrains Mono',monospace;font-size:.84rem;background:rgba(224,164,92,.13);color:var(--code-accent);border:none;border-bottom:1px dashed var(--code-accent);padding:1px 2px;margin:0 1px;outline:none;border-radius:3px 3px 0 0;transition:background .15s;min-width:1ch}
+  .ph::placeholder{color:var(--code-accent);opacity:.55;font-style:italic}
+  .ph:focus{background:rgba(224,164,92,.26)}
+  .ph.filled{color:var(--code-green);border-bottom-color:var(--code-green);background:rgba(163,184,108,.14)}
+  .copy{flex-shrink:0;border:none;border-left:1px solid #2b2824;background:#26231f;color:var(--code-dim);font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:0 15px;cursor:pointer;transition:all .15s;letter-spacing:.05em;align-self:stretch}
+  .copy:hover{background:#322e29;color:var(--code-ink)}
+  .copy.done{color:var(--code-green)}
+  .desc{font-size:.92rem;color:var(--ink-soft);margin:1px 0 13px 2px}
+  .desc code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+
+  .no-results{display:none;text-align:center;padding:50px 0;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;font-size:.9rem}
+
+  footer{padding:40px 0 70px;margin-top:30px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--code-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  footer a{color:var(--accent);text-decoration:none}
+
+  /* Explainer toast */
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);width:min(560px,calc(100% - 36px));z-index:60;background:var(--paper);border:1px solid var(--line-strong);border-radius:14px;box-shadow:0 18px 50px -12px rgba(40,30,20,.4);padding:18px 20px 19px;opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.2,.9,.25,1),opacity .35s}
+  .toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+  .toast-top{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+  .toast-badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:#fff;background:var(--code-green);padding:3px 8px;border-radius:99px}
+  .toast-title{font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);flex:1}
+  .toast-close{border:none;background:none;cursor:pointer;color:var(--ink-soft);font-size:1.2rem;line-height:1;padding:2px 4px;border-radius:6px}
+  .toast-close:hover{color:var(--accent);background:var(--line)}
+  .toast-cmd{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--code-ink);background:var(--code-bg);border-radius:8px;padding:9px 12px;margin-bottom:12px;overflow-x:auto;white-space:pre;max-height:140px}
+  .toast-body{font-size:1rem;color:var(--ink);line-height:1.6}
+  .toast-progress{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);border-radius:0 0 0 14px;width:100%}
+  .toast.show .toast-progress{animation:drain 7s linear forwards}
+  @keyframes drain{from{width:100%}to{width:0%}}
+
+  ::selection{background:var(--accent);color:#fff}
+  @media(max-width:540px){
+    header{padding:42px 0 22px}
+    .topic-sub{display:none}
+    .cmd-code{font-size:.78rem}
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="top">
+
+  <header>
+    <div class="kicker">Reference · v4 · recipes · fill · learn</div>
+    <h1><span class="slash">/</span>git cheat sheet</h1>
+    <p class="lede">Task-based recipes up top, a full command reference below. Fill the orange blanks with your own values, copy, and get a plain-English explanation.</p>
+    <p class="hint">⌨ Orange blanks inside commands are editable. ⊕ Copying pops up what a command does. ⊞ Hit “Glossary” for the jargon.</p>
+  </header>
+
+  <div class="controls">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="Search…  e.g. wrong branch, rebase, undo" autocomplete="off">
+    </label>
+    <button class="btn" id="glossaryBtn">Glossary</button>
+    <button class="btn" id="expandAll">Expand all</button>
+    <button class="btn" id="collapseAll">Collapse all</button>
+  </div>
+
+  <!-- Glossary panel -->
+  <div class="glossary" id="glossary">
+    <div class="glossary-inner"><div class="glossary-pad">
+      <h3>Git glossary</h3>
+      <div class="sub">the words people throw around, in plain language</div>
+      <dl class="gloss gloss-grid">
+        <div><dt>HEAD</dt><dd>A pointer to “where you are right now” — usually the tip of your current branch.</dd></div>
+        <div><dt>detached HEAD</dt><dd>HEAD is sitting on a specific commit instead of a branch. New commits here belong to no branch and can be lost. Make a branch to keep them.</dd></div>
+        <div><dt>working tree</dt><dd>Your actual files on disk — what you edit in your editor.</dd></div>
+        <div><dt>staging area (index)</dt><dd>A holding area for changes you’ve marked with <code>git add</code>, waiting to go into the next commit.</dd></div>
+        <div><dt>commit</dt><dd>A saved snapshot of your project at a point in time, with a unique ID (hash).</dd></div>
+        <div><dt>branch</dt><dd>A movable label pointing to a commit — effectively a separate line of work.</dd></div>
+        <div><dt>main / master</dt><dd>The default primary branch. “master” is the older name; “main” is the modern default.</dd></div>
+        <div><dt>remote</dt><dd>A hosted copy of the repo, e.g. on GitHub, that you sync with.</dd></div>
+        <div><dt>origin</dt><dd>The default nickname for the remote you cloned from.</dd></div>
+        <div><dt>upstream</dt><dd>The remote branch your local branch is linked to and tracks.</dd></div>
+        <div><dt>fetch</dt><dd>Download new commits from the remote without changing your files yet.</dd></div>
+        <div><dt>fast-forward</dt><dd>A merge so simple Git just slides the branch pointer forward — no merge commit needed.</dd></div>
+        <div><dt>merge commit</dt><dd>A special commit that joins two branches together.</dd></div>
+        <div><dt>rebase</dt><dd>Re-applying your commits on top of a different base, to keep history a straight line.</dd></div>
+        <div><dt>HEAD~1 / HEAD^</dt><dd>Shorthand for ancestors: <code>HEAD~1</code> is the commit just before HEAD, <code>HEAD~2</code> two before, and so on.</dd></div>
+        <div><dt>stash</dt><dd>A shelf where you temporarily store uncommitted changes.</dd></div>
+        <div><dt>tag</dt><dd>A fixed label on a commit, usually marking a release version.</dd></div>
+        <div><dt>tracked / untracked</dt><dd>Whether Git is currently watching a file. New files are untracked until you <code>git add</code> them.</dd></div>
+        <div><dt>ref</dt><dd>Any name that points to a commit — branches, tags, and HEAD are all refs.</dd></div>
+        <div><dt>hash (SHA)</dt><dd>The unique fingerprint ID of a commit, like <code>a1b2c3d</code>.</dd></div>
+      </dl>
+    </div></div>
+  </div>
+
+  <nav class="index" id="index"></nav>
+
+  <main id="content"></main>
+  <div class="no-results" id="noResults">Nothing matches that search.</div>
+
+  <footer>
+    <span>Fill the blanks, copy, learn. Empty blanks copy as &lt;placeholder&gt;.</span>
+    <span><a href="#top">↑ back to top</a></span>
+  </footer>
+
+</div>
+
+<!-- Explainer toast -->
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <div class="toast-top">
+    <span class="toast-badge">copied</span>
+    <span class="toast-title">what this does</span>
+    <button class="toast-close" id="toastClose" aria-label="Dismiss">×</button>
+  </div>
+  <div class="toast-cmd" id="toastCmd"></div>
+  <div class="toast-body" id="toastBody"></div>
+  <div class="toast-progress"></div>
+</div>
+
+<script>
+/* ===================== SCENARIOS / RECIPES ===================== */
+const SCENARIOS = [
+  {
+    q:"Update my current branch with the latest from main / master",
+    when:"You're on a feature branch and main has moved ahead. You want its newest commits in your branch.",
+    blocks:[
+      { label:"Option A — rebase (clean, linear history)", steps:[
+        ["git fetch origin","Download the latest commits from the remote without touching your files yet."],
+        ["git rebase origin/main","Replay your branch's commits on top of the latest main. If conflicts appear, fix them, then run git rebase --continue."],
+      ]},
+      { label:"Option B — merge (simplest, keeps a merge commit)", steps:[
+        ["git fetch origin","Grab the newest commits from the remote."],
+        ["git merge origin/main","Merge main's new work into your branch, creating a merge commit. Resolve any conflicts, then commit."],
+      ]},
+      { label:"Note", steps:[
+        ["git branch -r","If your main branch is called 'master', use origin/master everywhere above. This lists remote branches so you can check the name."],
+      ]},
+    ]
+  },
+  {
+    q:"I committed to the wrong branch",
+    when:"You made one or more commits on (say) main, but they belong on a feature branch. Nothing pushed yet.",
+    blocks:[
+      { label:"Move the latest commits onto a new branch", steps:[
+        ["git branch <feature-branch>","Create a new branch right here — it now points at your commits, keeping them safe."],
+        ["git reset --hard HEAD~<n>","Rewind the wrong branch by <n> commits to remove them from it. Safe, because they live on the new branch now."],
+        ["git switch <feature-branch>","Hop onto the branch that now holds your work."],
+      ]},
+      { label:"Onto an existing branch instead", steps:[
+        ["git switch <target-branch>","Go to the branch where the commit should live."],
+        ["git cherry-pick <commit>","Copy the commit here. Then switch back to the wrong branch and remove it with reset."],
+      ]},
+    ]
+  },
+  {
+    q:"I need to undo a commit I already pushed",
+    when:"The commit is on a shared branch others may have pulled. Rewriting history would disrupt them.",
+    blocks:[
+      { label:"The safe way — revert (recommended for shared branches)", steps:[
+        ["git revert <commit>","Create a NEW commit that cancels out the old one. History stays intact, so nobody else is disrupted."],
+        ["git push","Share the revert with everyone."],
+      ]},
+    ]
+  },
+  {
+    q:"I accidentally ran git reset --hard and lost work",
+    when:"A hard reset wiped commits you actually needed. They're usually still recoverable.",
+    blocks:[
+      { label:"Recover via the reflog", steps:[
+        ["git reflog","Shows every recent position of HEAD, including the commit you 'lost'. Find its hash in the list."],
+        ["git reset --hard <lost-hash>","Jump your branch back to that commit, restoring the lost work. (Or use the next line to be safer.)"],
+        ["git switch -c <recovered> <lost-hash>","Safer: put the recovered work on a brand-new branch instead of overwriting your current one."],
+      ]},
+    ]
+  },
+  {
+    q:"I forgot to include a file in my last commit",
+    when:"You committed, then realised a file or fix should have been part of it.",
+    blocks:[
+      { label:"Fold it into the previous commit", steps:[
+        ["git add <file>","Stage the file (or fix) you forgot."],
+        ["git commit --amend --no-edit","Add it to the previous commit without changing the message. Only do this if you haven't pushed yet."],
+      ]},
+    ]
+  },
+  {
+    q:"I want to throw away all local changes and match the remote",
+    when:"Your local branch is a mess and you just want a clean copy of what's on the server.",
+    blocks:[
+      { label:"Reset hard to the remote", steps:[
+        ["git fetch origin","Make sure you have the latest remote state."],
+        ["git reset --hard origin/<branch>","Force your branch to be identical to the remote. All local commits and edits are discarded. ⚠️"],
+        ["git clean -fd","Also delete any untracked files and folders left lying around. ⚠️"],
+      ]},
+    ]
+  },
+  {
+    q:"I started editing on the wrong branch (nothing committed yet)",
+    when:"You have uncommitted changes but realise you should be on a different branch.",
+    blocks:[
+      { label:"Carry the changes over with stash", steps:[
+        ["git stash","Shelve your uncommitted changes and clean the working tree."],
+        ["git switch <correct-branch>","Move to the branch where the work belongs."],
+        ["git stash pop","Bring your shelved changes back, now on the right branch."],
+      ]},
+      { label:"Or take them along directly", steps:[
+        ["git switch -c <new-branch>","Creating/switching keeps your uncommitted changes with you, so they move to the new branch automatically."],
+      ]},
+    ]
+  },
+  {
+    q:"I need to change my last commit message",
+    when:"There's a typo or unclear wording in the most recent commit.",
+    blocks:[
+      { label:"If you haven't pushed it", steps:[
+        ["git commit --amend -m \"<new message>\"","Rewrites the last commit with a new message."],
+      ]},
+      { label:"If you already pushed it", steps:[
+        ["git commit --amend -m \"<new message>\"","Rewrite the message locally."],
+        ["git push --force-with-lease","Update the remote with the rewritten commit — safely, only if no one else pushed in between."],
+      ]},
+    ]
+  },
+  {
+    q:"I'm stuck in the middle of a merge conflict",
+    when:"A merge or rebase stopped and Git is asking you to resolve conflicting files.",
+    blocks:[
+      { label:"Resolve and finish", steps:[
+        ["git status","See exactly which files are conflicted. Open each and pick the correct lines (or use the two commands below)."],
+        ["git checkout --theirs <file>","Optional: take the incoming version of a file wholesale."],
+        ["git checkout --ours <file>","Optional: keep your own version of a file wholesale."],
+        ["git add <file>","Mark each conflict as resolved once you're happy with it."],
+        ["git merge --continue","Finish the merge. (During a rebase, use git rebase --continue instead.)"],
+      ]},
+      { label:"Or give up and undo", steps:[
+        ["git merge --abort","Cancel everything and return to the state before the merge started."],
+      ]},
+    ]
+  },
+  {
+    q:"I want to squash my whole feature branch into one commit",
+    when:"Your branch has lots of small messy commits and you want a single clean one before merging.",
+    blocks:[
+      { label:"Interactive rebase", steps:[
+        ["git rebase -i main","Opens an editor listing your commits. Leave the first as 'pick' and change the rest to 'squash' (or 's'), then save."],
+      ]},
+      { label:"Or squash on merge", steps:[
+        ["git switch main","Go to the branch you're merging into."],
+        ["git merge --squash <feature-branch>","Stage all of the feature's changes as one set."],
+        ["git commit -m \"<summary message>\"","Record them as a single tidy commit."],
+      ]},
+    ]
+  },
+  {
+    q:"I deleted a branch and need it back",
+    when:"You ran branch -d / -D and realise you still needed that work.",
+    blocks:[
+      { label:"Find it in the reflog and restore", steps:[
+        ["git reflog","Scroll for the last commit that was on the deleted branch and copy its hash."],
+        ["git switch -c <branch> <hash>","Recreate the branch pointing at that commit."],
+      ]},
+    ]
+  },
+  {
+    q:"I committed a file that shouldn't be tracked (e.g. a secret or build output)",
+    when:"A file is in the repo that you want Git to stop tracking from now on.",
+    blocks:[
+      { label:"Stop tracking it going forward", steps:[
+        ["git rm --cached <file>","Remove it from Git's tracking but keep the actual file on disk."],
+        ["echo \"<file>\" >> .gitignore","Add it to .gitignore so it won't be re-added by accident."],
+        ["git commit -m \"<stop tracking file>\"","Record the change."],
+      ]},
+      { label:"Note on removing it from ALL history", steps:[
+        ["git filter-repo --path <file> --invert-paths","Scrubbing a file from the entire history needs the separate git-filter-repo tool and rewrites history — coordinate with your team before doing this. ⚠️"],
+      ]},
+    ]
+  },
+];
+
+/* ===================== COMMIT CONVENTIONS ===================== */
+const CONV_TYPES = [
+  ["feat","a new feature"],
+  ["fix","a bug fix"],
+  ["docs","documentation only"],
+  ["style","formatting; no code-meaning change"],
+  ["refactor","code change that's neither a fix nor a feature"],
+  ["perf","a performance improvement"],
+  ["test","adding or fixing tests"],
+  ["build","build system or dependencies"],
+  ["ci","CI / pipeline configuration"],
+  ["chore","maintenance; no production code change"],
+  ["revert","reverts a previous commit"],
+];
+const CONV_CMDS = [
+  ["git commit -m \"<type>(<scope>): <short description>\"","The standard format.","The Conventional Commits format. Put one of the types (feat, fix, …) in <type>, the affected area in <scope>, and a short imperative description. Example: feat(auth): add password reset."],
+  ["git commit -m \"<type>: <short description>\"","Without a scope.","The scope in parentheses is optional — drop it when a change isn't tied to one area."],
+  ["git commit -m \"<type>!: <short description>\"","Flag a breaking change.","The ! right after the type signals a breaking change that may force others to update their code."],
+];
+
+/* ===================== COMMAND REFERENCE ===================== */
+const DATA = [
+  { id:"setup", title:"Setup & Config", sub:"identity, defaults", groups:[
+    { label:"Identity", items:[
+      ["git config --global user.name \"<your name>\"","Set the name on your commits.","Git stamps every commit with a name. This sets the one that shows up next to your changes, for every project on this computer."],
+      ["git config --global user.email \"<you@example.com>\"","Set your commit email.","Sets the email attached to your commits. Use the same address as your GitHub/GitLab account so your commits link back to your profile."],
+      ["git config --list","Show all current config values.","Prints every setting Git is currently using, so you can double-check what's configured."],
+      ["git config --global --edit","Open the global config in your editor.","Opens your personal Git settings file so you can change several options at once by hand."],
+    ]},
+    { label:"Sensible defaults", items:[
+      ["git config --global init.defaultBranch main","Name new repos' first branch main.","Makes every new repository start with a branch called 'main' instead of the older default 'master'."],
+      ["git config --global core.editor \"<code --wait>\"","Use a chosen editor for messages.","Tells Git which program to open when it needs you to type a message, and to wait until you close it before continuing."],
+      ["git config --global pull.rebase true","Rebase instead of merge on pull.","Changes how 'git pull' brings in changes: instead of a merge commit, it stacks your commits neatly on top, keeping history a straight line."],
+      ["git config --global push.autoSetupRemote true","Auto-create upstream on first push.","Pushing a brand-new branch normally fails because it has no remote yet. This makes Git create that link automatically."],
+      ["git config --global color.ui auto","Enable colored output.","Turns on colored text so added lines, removed lines, and branches are easier to tell apart."],
+    ]},
+  ]},
+  { id:"start", title:"Create & Clone", sub:"new repos", groups:[
+    { label:"Start a repo", items:[
+      ["git init","Start tracking the current folder.","Turns the current folder into a Git repository so Git begins tracking its files. Run this once at the start of a new project."],
+      ["git init <dir>","Create a new repo in a folder.","Creates a new folder and turns it into a Git repository in one step."],
+      ["git clone <url>","Clone a remote repo.","Downloads a complete copy of an existing project — all files and full history — into a new folder."],
+      ["git clone <url> <dir>","Clone into a named folder.","Same as cloning, but you choose the name of the folder it lands in."],
+      ["git clone --depth 1 <url>","Shallow clone (fast).","Downloads only the most recent snapshot instead of the entire history. Much faster when you don't need the past."],
+      ["git clone -b <branch> <url>","Clone a specific branch.","Clones the project and immediately switches to the branch you name."],
+    ]},
+  ]},
+  { id:"basics", title:"Staging & Committing", sub:"the daily loop", groups:[
+    { label:"Inspect", items:[
+      ["git status","See what changed.","Shows which files you changed, which are staged, and which Git isn't tracking yet. The command you'll use most."],
+      ["git status -s","Compact status.","The same info as 'git status' but in a tight two-letter format that fits on one screen."],
+      ["git diff","See unstaged changes.","Shows the exact lines you've changed but haven't staged — the difference from your last commit."],
+      ["git diff --staged","See staged changes.","Shows the changes you've staged — exactly what will go into your next commit."],
+    ]},
+    { label:"Stage", items:[
+      ["git add <file>","Stage one file.","Moves a file into the staging area, marking it ready to be committed. Nothing is saved permanently until you commit."],
+      ["git add .","Stage everything here.","Stages every changed and new file in the current folder and below, at once."],
+      ["git add -A","Stage all changes repo-wide.","Stages everything across the whole repo, including deletions — not just the folder you're in."],
+      ["git add -p","Interactively stage hunks.","Walks you through your changes chunk by chunk, asking which to stage. Great for splitting work into clean commits."],
+      ["git reset <file>","Unstage a file.","Takes a file back out of the staging area but leaves your edits untouched. The opposite of 'git add'."],
+    ]},
+    { label:"Commit", items:[
+      ["git commit -m \"<message>\"","Commit staged changes.","Permanently saves the staged changes as a new snapshot, labelled with the message you provide."],
+      ["git commit -am \"<message>\"","Stage tracked + commit.","Shortcut that stages all already-tracked files and commits in one move. Won't include brand-new files."],
+      ["git commit --amend","Edit the last commit.","Replaces your last commit — handy for fixing a typo or adding a forgotten file. Avoid on commits you've already shared."],
+      ["git commit --amend --no-edit","Add to last commit, keep message.","Folds whatever you've just staged into the previous commit, keeping its message unchanged."],
+      ["git commit --allow-empty -m \"<trigger>\"","Make an empty commit.","Creates a commit even though nothing changed. Sometimes used to kick off an automated build."],
+    ]},
+  ]},
+  { id:"branch", title:"Branching", sub:"parallel work", groups:[
+    { label:"View & create", items:[
+      ["git branch","List local branches.","Lists the branches in your repo and marks the one you're on with a star."],
+      ["git branch -a","List local + remote branches.","Lists your local branches plus the ones that live on the remote server."],
+      ["git branch <name>","Create a branch.","Creates a new branch from where you are now, but keeps you on your current branch."],
+      ["git switch -c <name>","Create + switch.","Creates a new branch and moves you onto it. Use this to start a feature without disturbing main."],
+      ["git switch <name>","Switch branch.","Moves you onto an existing branch, updating your files to match it."],
+      ["git checkout -b <name>","Create + switch (older).","Older command that does the same as 'switch -c': make a new branch and jump onto it."],
+    ]},
+    { label:"Manage", items:[
+      ["git branch -m <old> <new>","Rename a branch.","Renames a branch from the old name to the new one."],
+      ["git branch -d <name>","Delete a merged branch.","Deletes a branch only if its work is already merged — so you can't lose anything by accident."],
+      ["git branch -D <name>","Force-delete a branch.","Force-deletes a branch even if its work isn't merged. Use carefully — you can lose commits."],
+      ["git switch -","Switch to previous branch.","Jumps back to the branch you were on just before. Like an undo for branch switching."],
+      ["git branch --merged","List merged branches.","Lists branches already folded into your current branch — usually safe to delete."],
+    ]},
+  ]},
+  { id:"merge", title:"Merging", sub:"combining branches", groups:[
+    { label:"Merge", items:[
+      ["git merge <branch>","Merge a branch into yours.","Brings another branch's changes into the one you're on. If both touched the same lines, you resolve conflicts."],
+      ["git merge --no-ff <branch>","Always make a merge commit.","Forces a dedicated merge commit even when not strictly needed, so history clearly shows a branch existed."],
+      ["git merge --squash <branch>","Squash a branch into one set.","Takes all the branch's changes and stages them as one lump, to record as a single tidy commit."],
+      ["git merge --abort","Cancel a conflicted merge.","Cancels a merge that hit conflicts and restores everything to before you started."],
+    ]},
+    { label:"Conflicts", items:[
+      ["git diff --name-only --diff-filter=U","List conflicted files.","Lists only the files with unresolved merge conflicts, so you know exactly what to fix."],
+      ["git checkout --theirs <file>","Keep incoming version.","For a conflicted file, throw away your version and keep the incoming branch's version."],
+      ["git checkout --ours <file>","Keep your version.","For a conflicted file, keep your version and discard the incoming one."],
+      ["git merge --continue","Finish after resolving.","Tells Git you've fixed the conflicts and it should complete the merge."],
+    ]},
+  ]},
+  { id:"remote", title:"Remotes (push / pull / fetch)", sub:"working with origin", groups:[
+    { label:"Configure remotes", items:[
+      ["git remote -v","List remotes.","Lists the nicknamed servers (remotes) your repo talks to and their web addresses."],
+      ["git remote add origin <url>","Add a remote.","Connects your local repo to a remote server, giving it the standard nickname 'origin'."],
+      ["git remote set-url origin <url>","Change a remote URL.","Changes the address an existing remote points to — e.g. after switching from HTTPS to SSH."],
+      ["git remote remove <name>","Remove a remote.","Disconnects a remote so Git no longer tries to talk to it."],
+    ]},
+    { label:"Sync", items:[
+      ["git fetch","Download without merging.","Downloads the latest commits and branches but doesn't change your files. A safe way to see what's new."],
+      ["git pull","Fetch + integrate.","Downloads remote changes and merges them into your current branch. Fetch and merge in one step."],
+      ["git pull --rebase","Pull with linear history.","Pulls new changes, then replays your commits on top, keeping history a clean line instead of a merge."],
+      ["git push","Upload your commits.","Uploads your committed changes to the remote so others can see and use them."],
+      ["git push -u origin <branch>","Push + set upstream.","Uploads a branch and remembers the link, so next time you can just type 'git push'."],
+      ["git push --force-with-lease","Safer forced push.","Overwrites the remote branch with your version, but only if nobody else pushed meanwhile."],
+      ["git push origin --delete <branch>","Delete a remote branch.","Removes a branch from the remote server."],
+    ]},
+  ]},
+  { id:"stash", title:"Stash", sub:"shelve work in progress", groups:[
+    { label:"Save & restore", items:[
+      ["git stash","Shelve your changes.","Tucks away your uncommitted changes and gives you a clean working folder. Bring them back later."],
+      ["git stash -u","Stash untracked too.","Same as stashing, but also includes brand-new files Git isn't tracking yet."],
+      ["git stash push -m \"<message>\"","Stash with a label.","Stashes your changes with a description, so you can tell several stashes apart."],
+      ["git stash list","List stashes.","Shows all the separate sets of changes you've stashed away."],
+      ["git stash pop","Apply + remove latest stash.","Re-applies your most recent stash and removes it from the list."],
+      ["git stash apply","Apply, keep in list.","Re-applies your most recent stash but keeps a copy in the list, in case you need it again."],
+      ["git stash apply stash@{<n>}","Apply a specific stash.","Re-applies a particular stash you pick by its number in the list."],
+    ]},
+    { label:"Manage", items:[
+      ["git stash show -p","Show stash diff.","Shows the actual line-by-line changes saved in your latest stash."],
+      ["git stash drop stash@{<n>}","Delete one stash.","Deletes a single specific stash you no longer need."],
+      ["git stash clear","Delete all stashes.","Deletes every stash at once. There's no undo, so be sure."],
+      ["git stash branch <name>","Stash → new branch.","Creates a fresh branch and applies a stash onto it — useful when the stash won't apply cleanly."],
+    ]},
+  ]},
+  { id:"undo", title:"Undoing Things", sub:"reset, revert, restore", groups:[
+    { label:"Discard working changes", items:[
+      ["git restore <file>","Discard a file's edits.","Throws away the unsaved edits in a file and returns it to its last committed state."],
+      ["git restore .","Discard all edits.","Throws away all unsaved edits, reverting everything to the last commit."],
+      ["git restore --staged <file>","Unstage a file.","Takes a file out of the staging area without touching your edits — the modern way to unstage."],
+      ["git checkout -- <file>","Discard edits (older).","The older way to discard a file's changes and restore its last committed version."],
+    ]},
+    { label:"Move HEAD / reset", items:[
+      ["git reset --soft HEAD~1","Undo commit, keep staged.","Removes your last commit but keeps its changes staged, as if you'd just added them. Good for re-doing a commit."],
+      ["git reset --mixed HEAD~1","Undo commit, keep edits.","Removes your last commit and unstages its changes, but keeps the edits in your files. The default reset."],
+      ["git reset --hard HEAD~1","Undo commit, delete edits. ⚠️","Removes your last commit AND deletes its changes. Destructive — gone unless the reflog can save it."],
+      ["git reset --hard origin/main","Match the remote exactly. ⚠️","Throws away all local changes and commits, making your branch identical to the remote. A clean restart."],
+    ]},
+    { label:"Safe undo on shared history", items:[
+      ["git revert <commit>","Undo a commit safely.","Creates a new commit that cancels out an earlier one, without erasing history. Safe for shared branches."],
+      ["git revert HEAD","Undo the last commit.","Makes a new commit that undoes your most recent commit."],
+      ["git revert --no-commit <a>..<b>","Reverse a range, review first.","Reverses a range of commits but leaves the result staged so you can review before committing."],
+    ]},
+  ]},
+  { id:"history", title:"Inspecting History", sub:"log, show, blame", groups:[
+    { label:"Log", items:[
+      ["git log","Full history.","Shows the commit history, newest first, with author, date, and message for each."],
+      ["git log --oneline","Compact history.","A condensed history with one short line per commit — easy to scan."],
+      ["git log --oneline --graph --all","Branch graph.","Draws a text diagram of all branches and how they split and merged over time."],
+      ["git log -p","History with diffs.","Shows the full set of changes made in each commit alongside its message."],
+      ["git log --stat","History with file stats.","For each commit, lists which files changed and how many lines were added or removed."],
+      ["git log --author=\"<name>\"","Filter by author.","Shows only the commits made by a particular person."],
+      ["git log --since=\"<2 weeks ago>\"","Filter by date.","Shows only commits from a given time window, like the last two weeks."],
+      ["git log <file>","History of one file.","Shows the history of a single file — every commit that touched it."],
+    ]},
+    { label:"Examine", items:[
+      ["git show <commit>","Show a commit.","Displays a commit's message together with exactly what it changed."],
+      ["git show <commit>:<file>","Show a file at a commit.","Shows what a file looked like at a specific point in history."],
+      ["git blame <file>","Who changed each line.","Annotates each line with the commit and author who last changed it — great for 'who wrote this, and why?'."],
+      ["git diff <a>..<b>","Diff two points.","Shows the differences between two commits or two branches."],
+      ["git shortlog -sn","Commits per author.","Summarizes how many commits each contributor made, sorted by count."],
+    ]},
+  ]},
+  { id:"tag", title:"Tags", sub:"releases & milestones", groups:[
+    { label:"Create & list", items:[
+      ["git tag","List tags.","Lists all tags. Tags usually mark release versions like v1.0."],
+      ["git tag <name>","Lightweight tag at HEAD.","Puts a simple bookmark (a lightweight tag) on your current commit."],
+      ["git tag -a <name> -m \"<message>\"","Annotated tag.","Creates a richer tag recording who made it, when, and a message. Recommended for releases."],
+      ["git tag -a <name> <commit>","Tag a past commit.","Adds an annotated tag to an older commit rather than the current one."],
+      ["git show <tag>","Show a tag.","Shows a tag's details and the commit it points to."],
+    ]},
+    { label:"Share & delete", items:[
+      ["git push origin <tag>","Push one tag.","Sends a single tag to the remote. Tags aren't pushed automatically."],
+      ["git push origin --tags","Push all tags.","Sends all your local tags to the remote at once."],
+      ["git tag -d <name>","Delete a local tag.","Deletes a tag from your local repo."],
+      ["git push origin --delete <tag>","Delete a remote tag.","Removes a tag from the remote server."],
+    ]},
+  ]},
+  { id:"rebase", title:"Rebasing", sub:"rewrite & linearize", groups:[
+    { label:"Basic rebase", items:[
+      ["git rebase <branch>","Replay onto another branch.","Lifts your branch's commits off and re-applies them on top of another branch. Keeps history a straight line."],
+      ["git rebase main","Update feature onto main.","Updates your feature branch to sit on top of the latest main, pulling in others' recent work."],
+      ["git rebase --continue","Continue after a conflict.","After fixing a conflict during a rebase, carries on with the next commit."],
+      ["git rebase --skip","Skip a commit.","Skips the commit currently causing trouble and moves on."],
+      ["git rebase --abort","Cancel the rebase.","Stops the rebase and returns your branch to how it was before you started."],
+    ]},
+    { label:"Interactive (squash, reorder, edit)", items:[
+      ["git rebase -i HEAD~<n>","Rework recent commits.","Opens an editor to rewrite your last few commits — reorder, combine, rename, or drop them. Powerful cleanup."],
+      ["git rebase -i <commit>","Rework after a commit.","Interactively rework all commits that come after the one you name."],
+      ["git rebase -i --root","Rework from the start.","Interactively edit history all the way back to the very first commit."],
+      ["git rebase --onto <new> <old> <branch>","Transplant commits.","Advanced: detaches a series of commits and reattaches them onto a different base."],
+    ]},
+  ]},
+  { id:"cherry", title:"Cherry-pick", sub:"grab specific commits", groups:[
+    { label:"Pick commits", items:[
+      ["git cherry-pick <commit>","Apply one commit here.","Copies one specific commit from elsewhere onto your current branch, leaving the original in place."],
+      ["git cherry-pick <a> <b> <c>","Apply several commits.","Applies several individual commits, in the order you list them."],
+      ["git cherry-pick <a>..<b>","Apply a range.","Applies a continuous range of commits. The first one listed is not included."],
+      ["git cherry-pick -n <commit>","Apply without committing.","Brings in a commit's changes but stops before committing, so you can tweak or combine first."],
+      ["git cherry-pick --continue","Continue after a conflict.","Resumes the cherry-pick after you've resolved a conflict."],
+      ["git cherry-pick --abort","Cancel cherry-pick.","Cancels the cherry-pick and restores your branch to its previous state."],
+    ]},
+  ]},
+  { id:"reflog", title:"Reflog & Recovery", sub:"undo the undo", groups:[
+    { label:"Find lost commits", items:[
+      ["git reflog","See everywhere HEAD has been.","Shows a private log of everywhere HEAD pointed recently — including commits you 'lost'. Your safety net."],
+      ["git reflog show <branch>","Reflog for a branch.","Shows the recent movement history for one specific branch."],
+      ["git reset --hard HEAD@{<n>}","Jump back to a past state.","Jumps your branch back to a state recorded in the reflog — handy for recovering after a bad reset."],
+      ["git checkout HEAD@{<n>}","Visit a past HEAD.","Temporarily visits an earlier HEAD position so you can look at or copy old work."],
+    ]},
+    { label:"Restore", items:[
+      ["git branch <recovered> HEAD@{<n>}","Save a lost state.","Rescues a lost state by giving it a new branch name so it won't be cleaned up."],
+      ["git cherry-pick <lost-hash>","Recover a dropped commit.","Brings back a commit you thought was gone, using the ID found in the reflog."],
+      ["git fsck --lost-found","Hunt for danglers.","Searches for commits disconnected from any branch and about to be cleaned up — a last resort."],
+    ]},
+  ]},
+  { id:"clean", title:"Cleaning", sub:"remove untracked junk", groups:[
+    { label:"Clean working tree", items:[
+      ["git clean -n","Preview deletions.","Previews which untracked files would be deleted, without deleting anything. Always run this first."],
+      ["git clean -f","Delete untracked files. ⚠️","Deletes untracked files for real. Cannot be undone, so check with -n first."],
+      ["git clean -fd","Delete files + folders. ⚠️","Deletes untracked files and untracked folders too."],
+      ["git clean -fdx","Also delete ignored files. ⚠️⚠️","Also wipes files listed in .gitignore, like build output. Very thorough and very destructive."],
+    ]},
+  ]},
+  { id:"bisect", title:"Bisect", sub:"binary-search for bugs", groups:[
+    { label:"Find the bad commit", items:[
+      ["git bisect start","Begin the hunt.","Begins a guided search to find the exact commit that introduced a bug."],
+      ["git bisect bad","Mark current as broken.","Tells Git the current commit is broken, marking one end of the search range."],
+      ["git bisect good <commit>","Mark a known-good commit.","Tells Git a past commit worked. Git then checks out a commit halfway between good and bad to test."],
+      ["git bisect good","This one works.","After testing the commit Git gave you, says 'this works' and narrows the search."],
+      ["git bisect bad","This one is broken.","After testing, says 'this is broken' and narrows from the other side."],
+      ["git bisect reset","End the hunt.","Ends the search and returns you to where you started."],
+      ["git bisect run <cmd>","Automate the hunt.","Automates the search by running your test command at each step and deciding good/bad for you."],
+    ]},
+  ]},
+  { id:"worktree", title:"Worktrees", sub:"multiple branches at once", groups:[
+    { label:"Manage worktrees", items:[
+      ["git worktree add <path> <branch>","Branch in a second folder.","Checks out another branch into a separate folder, so you can work on two branches at once without stashing."],
+      ["git worktree add -b <new> <path>","New branch, new folder.","Creates a new branch and places it in its own separate working folder."],
+      ["git worktree list","List worktrees.","Shows all the extra working folders linked to this repo."],
+      ["git worktree remove <path>","Remove a worktree.","Removes one of those extra working folders when you're done."],
+      ["git worktree prune","Tidy worktree data.","Cleans up leftover bookkeeping for worktrees you've already deleted."],
+    ]},
+  ]},
+  { id:"submodule", title:"Submodules", sub:"repos inside repos", groups:[
+    { label:"Add & init", items:[
+      ["git submodule add <url> <path>","Embed another repo.","Embeds another Git repository inside yours at a chosen path, keeping their histories separate."],
+      ["git submodule init","Prepare submodule config.","Prepares your repo's configuration to use submodules already listed in it."],
+      ["git submodule update --init --recursive","Fetch all submodules.","Downloads and checks out all submodules — and submodules inside them — to the correct versions."],
+      ["git clone --recurse-submodules <url>","Clone with submodules.","Clones a project together with all of its submodules in one command."],
+    ]},
+    { label:"Update & remove", items:[
+      ["git submodule update --remote","Update submodules.","Fetches the newest commits for each submodule from their own remotes."],
+      ["git submodule foreach git pull","Run in every submodule.","Runs the same command inside every submodule — e.g. pulling updates for all at once."],
+      ["git submodule deinit <path>","Stop using a submodule.","Clears a submodule's working files and config, without removing its definition."],
+    ]},
+  ]},
+  { id:"advanced", title:"Aliases & Power Tools", sub:"speed it up", groups:[
+    { label:"Handy aliases", items:[
+      ["git config --global alias.st status","Make git st = status.","Creates a shortcut so 'git st' runs 'git status'. Saves typing on commands you use constantly."],
+      ["git config --global alias.co checkout","Make git co = checkout.","Creates a shortcut so 'git co' runs 'git checkout'."],
+      ["git config --global alias.lg \"log --oneline --graph --all\"","Pretty graph log.","Creates 'git lg' as a pretty, graph-style, one-line log of all branches."],
+      ["git config --global alias.last \"log -1 HEAD\"","Show last commit.","Creates 'git last' to quickly show your most recent commit."],
+    ]},
+    { label:"Search & maintenance", items:[
+      ["git grep \"<text>\"","Search tracked files.","Searches the text inside your tracked files — faster and more Git-aware than a plain search."],
+      ["git log -S\"<text>\"","Find when text appeared.","Finds commits where a piece of text was first added or removed. Great for 'when did this show up?'."],
+      ["git gc --aggressive","Optimize the repo.","Tidies and compresses the repo's internal storage to save space and speed things up."],
+      ["git fsck","Check integrity.","Checks the repository's internal data for corruption or problems."],
+      ["git archive -o <out.zip> HEAD","Export a snapshot.","Packages the current version of your files into a zip, with no Git history — handy for sharing."],
+    ]},
+    { label:"Ignore & untrack", items:[
+      ["echo \"<node_modules/>\" >> .gitignore","Add an ignore rule.","Adds a pattern to .gitignore so Git stops bothering you about matching files."],
+      ["git rm --cached <file>","Untrack but keep file.","Tells Git to stop tracking a file while leaving it on your disk."],
+      ["git rm -r --cached <dir>","Untrack a folder.","Stops tracking a whole folder, often used right after adding it to .gitignore."],
+      ["git check-ignore -v <file>","Why is this ignored?","Tells you which rule, in which ignore file, is causing a file to be ignored."],
+    ]},
+  ]},
+];
+
+/* ===================== HELPERS ===================== */
+const escAttr = s => s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function highlightLit(text){
+  let s = escHtml(text);
+  s = s.replace(/("[^"]*")/g,'<span class="c-str">$1</span>');
+  s = s.replace(/(^|\s)(--?[a-zA-Z][\w-]*)/g,'$1<span class="c-flag">$2</span>');
+  return s;
+}
+function buildCommandHTML(cmd){
+  return cmd.split(/(<[^>]+>)/g).map(p=>{
+    const m = p.match(/^<([^>]+)>$/);
+    if(m){
+      const name = m[1];
+      return `<input class="ph" data-ph="${escAttr(name)}" placeholder="${escAttr(name)}" size="${Math.max(name.length,3)}" spellcheck="false" autocomplete="off">`;
+    }
+    return p ? `<span class="lit">${highlightLit(p)}</span>` : '';
+  }).join('');
+}
+function readCommand(codeEl){
+  let out='';
+  codeEl.childNodes.forEach(node=>{
+    if(node.nodeType===1 && node.classList.contains('ph')){
+      const v = node.value.trim();
+      out += v ? v : '<'+node.dataset.ph+'>';
+    } else { out += node.textContent; }
+  });
+  return out;
+}
+function cmdRow(cmd, explain){
+  return `<div class="cmd"><code class="cmd-code">${buildCommandHTML(cmd)}</code><button class="copy" data-explain="${escAttr(explain)}" aria-label="Copy command">copy</button></div>`;
+}
+
+/* ===================== RENDER ===================== */
+const content = document.getElementById('content');
+const index = document.getElementById('index');
+
+/* index: lead chips first */
+function addChip(label, target, lead){
+  const a = document.createElement('a');
+  a.href = '#'+target; a.textContent = label; a.dataset.target = target;
+  if(lead) a.classList.add('lead');
+  index.appendChild(a);
+}
+addChip('★ Scenarios','scenarios',true);
+addChip('★ Commit Style','conventions',true);
+DATA.forEach(t=>addChip(t.title.split('(')[0].trim(), t.id));
+
+/* --- Scenarios section --- */
+const scnSection = document.createElement('section');
+scnSection.id = 'scenarios';
+let scnHtml = `<div class="section-head"><h2>Scenarios &amp; Recipes</h2><span class="meta">"how do I…" → exact steps</span></div>`;
+SCENARIOS.forEach((s,i)=>{
+  let body = '';
+  if(s.when) body += `<p class="scn-when">${s.when}</p>`;
+  let searchBits = s.q;
+  s.blocks.forEach(b=>{
+    body += `<div class="scn-block">`;
+    if(b.label) body += `<div class="block-label">${b.label}</div>`;
+    body += `<ol class="steps">`;
+    b.steps.forEach(([cmd,note])=>{
+      searchBits += ' '+cmd+' '+note;
+      body += `<li class="step"><span class="step-n">${'•'}</span><div class="step-main">${cmdRow(cmd,note)}<div class="step-note">${note}</div></div></li>`;
+    });
+    body += `</ol>`;
+    // copy-all only if more than one step in the block
+    if(b.steps.length>1) body += `<button class="copy-all">Copy these steps</button>`;
+    body += `</div>`;
+  });
+  scnHtml += `
+    <div class="scenario searchable" data-search="${escAttr(searchBits.toLowerCase())}">
+      <button class="scn-head" aria-expanded="false">
+        <span class="scn-icon">${i+1}</span>
+        <span class="scn-q">${s.q}</span>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+      <div class="scn-body"><div class="scn-inner"><div class="scn-pad">${body}</div></div></div>
+    </div>`;
+});
+scnSection.innerHTML = scnHtml;
+content.appendChild(scnSection);
+
+/* number the step circles per block (1,2,3…) */
+document.querySelectorAll('.scn-block .steps').forEach(ol=>{
+  ol.querySelectorAll('.step-n').forEach((n,idx)=>n.textContent = idx+1);
+});
+
+/* --- Conventions section --- */
+const convSection = document.createElement('section');
+convSection.id = 'conventions';
+let typesHtml = CONV_TYPES.map(([t,d])=>`<div class="type"><b>${t}</b><span>${d}</span></div>`).join('');
+let convCmdHtml = CONV_CMDS.map(([cmd,desc,explain])=>{
+  const search = (cmd+' '+desc+' '+explain+' conventional commit message').toLowerCase();
+  return `<div class="cmd-block searchable" data-search="${escAttr(search)}">${cmdRow(cmd,explain)}<div class="desc">${desc}</div></div>`;
+}).join('');
+convSection.innerHTML = `
+  <div class="section-head"><h2>Commit Message Style</h2><span class="meta">conventional commits</span></div>
+  <div class="topic">
+    <button class="topic-head" aria-expanded="false">
+      <span class="num">★</span>
+      <span class="topic-title">Conventional Commits</span>
+      <span class="topic-sub">type(scope): subject</span>
+      <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+    </button>
+    <div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">
+      <div class="group-label">The format</div>
+      <p class="conv-rule">Structure: <code>type(scope): subject</code> — the <code>scope</code> is optional. Keep the subject short, lower-case, imperative ("add", not "added"), and with no trailing period.</p>
+      <div class="group-label">Types</div>
+      <div class="types">${typesHtml}</div>
+      <div class="group-label">Copy a template</div>
+      ${convCmdHtml}
+    </div></div></div>
+  </div>`;
+content.appendChild(convSection);
+
+/* --- Command reference sections --- */
+DATA.forEach((topic,i)=>{
+  const section = document.createElement('section');
+  section.id = topic.id;
+  let groupsHtml = '';
+  topic.groups.forEach(g=>{
+    groupsHtml += `<div class="group"><div class="group-label">${g.label}</div>`;
+    g.items.forEach(([cmd,desc,explain])=>{
+      const search = (cmd+' '+desc+' '+(explain||'')).toLowerCase();
+      groupsHtml += `<div class="cmd-block searchable" data-search="${escAttr(search)}">${cmdRow(cmd,explain||desc)}<div class="desc">${desc}</div></div>`;
+    });
+    groupsHtml += `</div>`;
+  });
+  section.innerHTML = `
+    <div class="topic">
+      <button class="topic-head" aria-expanded="false">
+        <span class="num">${String(i+1).padStart(2,'0')}</span>
+        <span class="topic-title">${topic.title}</span>
+        <span class="topic-sub">${topic.sub}</span>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+      <div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">${groupsHtml}</div></div></div>
+    </div>`;
+  content.appendChild(section);
+});
+
+/* ===================== ACCORDION ===================== */
+function setOpen(el, open){
+  el.classList.toggle('open', open);
+  const head = el.querySelector('[aria-expanded]');
+  if(head) head.setAttribute('aria-expanded', open);
+}
+document.querySelectorAll('.topic-head, .scn-head').forEach(head=>{
+  head.addEventListener('click', ()=>{
+    const t = head.closest('.topic, .scenario');
+    setOpen(t, !t.classList.contains('open'));
+  });
+});
+document.getElementById('expandAll').onclick  = ()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,true));
+document.getElementById('collapseAll').onclick= ()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,false));
+index.querySelectorAll('a').forEach(a=>{
+  a.addEventListener('click', ()=>{
+    const sec = document.getElementById(a.dataset.target);
+    const acc = sec.querySelector('.topic, .scenario');
+    if(acc) setOpen(acc, true);
+  });
+});
+
+/* ===================== GLOSSARY TOGGLE ===================== */
+const glossary = document.getElementById('glossary');
+const glossaryBtn = document.getElementById('glossaryBtn');
+glossaryBtn.onclick = ()=>{
+  const open = glossary.classList.toggle('open');
+  glossaryBtn.classList.toggle('active', open);
+};
+
+/* ===================== PLACEHOLDER INPUTS ===================== */
+content.addEventListener('input', e=>{
+  const inp = e.target;
+  if(!inp.classList || !inp.classList.contains('ph')) return;
+  inp.size = Math.max(inp.value.length || inp.placeholder.length, 3);
+  inp.classList.toggle('filled', inp.value.trim().length>0);
+  const code = inp.closest('.cmd-code');
+  code.querySelectorAll('.ph').forEach(other=>{
+    if(other!==inp && other.dataset.ph===inp.dataset.ph){
+      other.value = inp.value;
+      other.size = Math.max(other.value.length || other.placeholder.length, 3);
+      other.classList.toggle('filled', other.value.trim().length>0);
+    }
+  });
+});
+content.addEventListener('click', e=>{
+  if(e.target.classList && e.target.classList.contains('ph')) e.stopPropagation();
+});
+
+/* ===================== TOAST ===================== */
+const toast = document.getElementById('toast');
+const toastCmd = document.getElementById('toastCmd');
+const toastBody = document.getElementById('toastBody');
+let toastTimer;
+function showToast(cmd, explanation){
+  toastCmd.textContent = cmd;
+  toastBody.textContent = explanation;
+  toast.classList.remove('show'); void toast.offsetWidth; toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toast.classList.remove('show'), 7000);
+}
+document.getElementById('toastClose').onclick = ()=>toast.classList.remove('show');
+
+/* ===================== COPY ===================== */
+content.addEventListener('click', e=>{
+  // single command
+  const btn = e.target.closest('.copy');
+  if(btn){
+    const code = btn.parentElement.querySelector('.cmd-code');
+    const text = readCommand(code);
+    navigator.clipboard.writeText(text).then(()=>{
+      btn.textContent='copied'; btn.classList.add('done');
+      setTimeout(()=>{ btn.textContent='copy'; btn.classList.remove('done'); },1300);
+      showToast(text, btn.dataset.explain);
+    });
+    return;
+  }
+  // copy whole block of steps
+  const ca = e.target.closest('.copy-all');
+  if(ca){
+    const block = ca.closest('.scn-block');
+    const cmds = [...block.querySelectorAll('.cmd-code')].map(readCommand);
+    const text = cmds.join('\n');
+    navigator.clipboard.writeText(text).then(()=>{
+      ca.textContent='copied all'; ca.classList.add('done');
+      setTimeout(()=>{ ca.textContent='Copy these steps'; ca.classList.remove('done'); },1500);
+      showToast(text, 'Run these commands in order in your terminal. Replace anything still shown as <…> with your own value first.');
+    });
+  }
+});
+
+/* ===================== SEARCH ===================== */
+const search = document.getElementById('search');
+const noResults = document.getElementById('noResults');
+search.addEventListener('input', ()=>{
+  const q = search.value.trim().toLowerCase();
+  document.querySelectorAll('.searchable').forEach(el=>{
+    el.style.display = (!q || el.dataset.search.includes(q)) ? '' : 'none';
+  });
+  // hide empty groups
+  document.querySelectorAll('.group').forEach(g=>{
+    const vis = [...g.querySelectorAll('.searchable')].some(e=>e.style.display!=='none');
+    g.style.display = vis ? '' : 'none';
+  });
+  let any = false;
+  document.querySelectorAll('main section').forEach(sec=>{
+    const vis = [...sec.querySelectorAll('.searchable')].some(e=>e.style.display!=='none');
+    sec.style.display = vis ? '' : 'none';
+    if(vis){
+      any = true;
+      if(q){
+        // open topics whose commands matched
+        sec.querySelectorAll('.topic').forEach(t=>{
+          if([...t.querySelectorAll('.searchable')].some(e=>e.style.display!=='none')) setOpen(t,true);
+        });
+        // open matching scenario cards
+        sec.querySelectorAll('.scenario.searchable').forEach(s=>{
+          if(s.style.display!=='none') setOpen(s,true);
+        });
+      }
+    }
+  });
+  noResults.style.display = any ? 'none' : 'block';
+});
+
+/* ===================== INITIAL STATE ===================== */
+setOpen(document.querySelector('#scenarios .scenario'), true); // first recipe open
+setOpen(document.querySelector('#setup .topic'), true);        // first reference topic open
+</script>
+</body>
+</html>

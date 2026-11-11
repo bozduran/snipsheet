@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Lambdas — Cheat Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Mulish:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root,[data-theme="dark"]{
+    --bg:#12131f;--paper:#1a1b2e;--ink:#e8e9f7;--ink-soft:#9a9fd0;
+    --line:#25273d;--line-strong:#343757;--accent:#818cf8;--accent-soft:#a5b4fc;
+    --green:#5fd38a;--code-bg:#0b0c16;--code-ink:#e6e8f8;--code-dim:#5d6291;
+    --code-ph:#fcd34d;--code-green:#5fd38a;--on-accent:#0b0c1c;--radius:10px;--dot:.7px;
+  }
+  [data-theme="light"]{
+    --bg:#eef0fb;--paper:#ffffff;--ink:#151733;--ink-soft:#50548a;
+    --line:#d9dcf2;--line-strong:#c2c7e8;--accent:#4f46e5;--accent-soft:#6366f1;
+    --green:#15803d;--code-bg:#0b0c16;--code-ink:#e6e8f8;--code-dim:#5d6291;
+    --code-ph:#fcd34d;--code-green:#5fd38a;--on-accent:#ffffff;--dot:.6px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;transition:background-color .3s ease}
+  body,.topic,.scenario,.panel-pad,.btn,.search input,.toast,.cmd,.type{transition:background-color .3s ease,border-color .3s ease,color .3s ease}
+  body{background:var(--bg);color:var(--ink);font-family:'Mulish',system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;background-image:radial-gradient(var(--line) var(--dot),transparent var(--dot));background-size:22px 22px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px}
+  header{padding:64px 0 26px}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  h1{font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(2.3rem,8vw,4rem);line-height:1;letter-spacing:-.03em;margin-bottom:16px}
+  h1 .mark{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:.6em;font-weight:600}
+  .lede{font-size:1.05rem;color:var(--ink-soft);max-width:58ch}
+  .lede code{font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--accent-soft)}
+  .hint{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);margin-top:14px;border-left:2px solid var(--accent);padding-left:10px}
+  .controls{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 70%,transparent);padding:18px 0 14px;margin-bottom:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:200px;position:relative}
+  .search input{width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:12px 14px 12px 40px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+  .search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent)}
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.45}
+  .btn{font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.04em;padding:11px 16px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink-soft);cursor:pointer;transition:all .18s;white-space:nowrap}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+  .panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s ease}
+  .panel.open{grid-template-rows:1fr;margin-bottom:26px}
+  .panel-inner{overflow:hidden}
+  .panel-pad{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);padding:20px 22px;margin-top:2px}
+  .panel-pad h3{font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:3px}
+  .panel-pad .sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);margin-bottom:16px}
+  .gloss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:15px 24px}
+  .gloss dt{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent-soft);margin-bottom:3px}
+  .gloss dd{font-size:.9rem;color:var(--ink-soft);line-height:1.5}
+  .index{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:34px;padding-bottom:30px;border-bottom:1px solid var(--line)}
+  .index a{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:99px;transition:all .15s}
+  .index a:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .index a.lead{border-color:var(--accent);color:var(--accent)}
+  .index a.lead:hover{background:var(--accent);color:var(--on-accent)}
+  .section-head{display:flex;align-items:baseline;gap:12px;margin:34px 0 16px;flex-wrap:wrap}
+  .section-head h2{font-family:'Sora',sans-serif;font-size:1.6rem;font-weight:800;letter-spacing:-.02em}
+  .section-head .meta{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim)}
+  section{margin-bottom:14px;scroll-margin-top:90px}
+  .topic{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden}
+  .topic-head{display:flex;align-items:center;gap:14px;width:100%;padding:18px 20px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .topic-head:hover .topic-title{color:var(--accent)}
+  .num{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);border:1px solid var(--line-strong);border-radius:6px;padding:3px 7px;flex-shrink:0}
+  .topic-title{font-family:'Sora',sans-serif;font-size:1.25rem;font-weight:700;letter-spacing:-.01em;transition:color .2s;flex:1}
+  .topic-sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);font-weight:400}
+  .chev{flex-shrink:0;transition:transform .3s ease;color:var(--ink-soft)}
+  .topic.open .chev,.scenario.open .chev{transform:rotate(90deg)}
+  .topic-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .topic.open .topic-body{grid-template-rows:1fr}
+  .topic-body-inner{overflow:hidden}
+  .topic-pad{padding:0 20px 22px;border-top:1px solid var(--line)}
+  .group-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-soft);margin:22px 0 10px}
+  .scenario{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden;margin-bottom:10px}
+  .scn-head{display:flex;align-items:center;gap:13px;width:100%;padding:16px 18px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .scn-head:hover .scn-q{color:var(--accent)}
+  .scn-icon{flex-shrink:0;width:27px;height:27px;border-radius:7px;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:700}
+  .scn-q{flex:1;font-family:'Sora',sans-serif;font-size:1.02rem;font-weight:700;letter-spacing:-.01em;transition:color .2s}
+  .scn-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .scenario.open .scn-body{grid-template-rows:1fr}
+  .scn-inner{overflow:hidden}
+  .scn-pad{padding:2px 18px 18px;border-top:1px solid var(--line)}
+  .scn-when{font-size:.92rem;color:var(--ink-soft);margin:14px 0 2px;font-style:italic}
+  .scn-block{margin-top:14px}
+  .block-label{font-family:'JetBrains Mono',monospace;font-size:.71rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-soft);margin-bottom:10px}
+  .steps{list-style:none}
+  .step{display:flex;gap:11px;margin-bottom:11px}
+  .step-n{flex-shrink:0;width:22px;height:22px;margin-top:7px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--accent)}
+  .step-main{flex:1;min-width:0}
+  .step-note{font-size:.88rem;color:var(--ink-soft);margin:3px 0 0 2px}
+  .copy-all{margin-top:4px;font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:9px 14px;border:1px dashed var(--line-strong);border-radius:8px;background:none;color:var(--ink-soft);cursor:pointer;transition:all .15s}
+  .copy-all:hover{border-color:var(--accent);color:var(--accent)}
+  .copy-all.done{color:var(--green);border-color:var(--green)}
+  .types{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:8px;margin:6px 0 18px}
+  .type{display:flex;gap:9px;align-items:baseline;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--code-bg)}
+  .type b{font-family:'JetBrains Mono',monospace;color:var(--code-ph);font-size:.78rem;flex-shrink:0;white-space:nowrap}
+  .type span{font-size:.84rem;color:var(--code-dim)}
+  .conv-rule{font-size:.92rem;color:var(--ink-soft);margin-bottom:8px}
+  .conv-rule code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+  .cmd{display:flex;align-items:stretch;gap:0;margin-bottom:8px;border-radius:8px;overflow:hidden;border:1px solid #14162a;background:var(--code-bg)}
+  .cmd-code{flex:1;font-family:'JetBrains Mono',monospace;font-size:.84rem;color:var(--code-ink);padding:9px 14px;overflow-x:auto;white-space:pre;line-height:1.7;display:flex;align-items:center;flex-wrap:wrap}
+  .cmd-code .lit{white-space:pre}
+  .ph{font-family:'JetBrains Mono',monospace;font-size:.84rem;background:rgba(252,211,77,.16);color:var(--code-ph);border:none;border-bottom:1px dashed var(--code-ph);padding:1px 2px;margin:0 1px;outline:none;border-radius:3px 3px 0 0;transition:background .15s;min-width:1ch}
+  .ph::placeholder{color:var(--code-ph);opacity:.6;font-style:italic}
+  .ph:focus{background:rgba(252,211,77,.3)}
+  .ph.filled{color:var(--code-green);border-bottom-color:var(--code-green);background:rgba(95,211,138,.15)}
+  .copy{flex-shrink:0;border:none;border-left:1px solid #14162a;background:#10122a;color:var(--code-dim);font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:0 15px;cursor:pointer;transition:all .15s;letter-spacing:.05em;align-self:stretch}
+  .copy:hover{background:#181a38;color:var(--code-ink)}
+  .copy.done{color:var(--code-green)}
+  .desc{font-size:.92rem;color:var(--ink-soft);margin:1px 0 13px 2px;line-height:1.6}
+  .desc code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+  .no-results{display:none;text-align:center;padding:50px 0;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;font-size:.9rem}
+  footer{padding:40px 0 70px;margin-top:30px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--code-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  footer a{color:var(--accent-soft);text-decoration:none}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);width:min(560px,calc(100% - 36px));z-index:60;background:var(--paper);border:1px solid var(--line-strong);border-radius:14px;box-shadow:0 18px 50px -12px rgba(0,0,0,.6);padding:18px 20px 19px;opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.2,.9,.25,1),opacity .35s}
+  .toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+  .toast-top{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+  .toast-badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--on-accent);background:var(--green);padding:3px 8px;border-radius:99px}
+  .toast-title{font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);flex:1}
+  .toast-close{border:none;background:none;cursor:pointer;color:var(--ink-soft);font-size:1.2rem;line-height:1;padding:2px 4px;border-radius:6px}
+  .toast-close:hover{color:var(--accent);background:var(--line)}
+  .toast-cmd{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--code-ink);background:var(--code-bg);border-radius:8px;padding:9px 12px;margin-bottom:12px;overflow-x:auto;white-space:pre;max-height:150px}
+  .toast-body{font-size:1rem;color:var(--ink);line-height:1.6}
+  .toast-progress{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);border-radius:0 0 0 14px;width:100%}
+  .toast.show .toast-progress{animation:drain 7s linear forwards}
+  @keyframes drain{from{width:100%}to{width:0%}}
+  ::selection{background:var(--accent);color:var(--on-accent)}
+  @media(max-width:540px){header{padding:42px 0 22px}.topic-sub{display:none}.cmd-code{font-size:.79rem}}
+</style>
+</head>
+<body>
+<div class="wrap" id="top">
+  <header>
+    <div class="kicker">Java 8+ · Lambdas · Functional interfaces · Method references</div>
+    <h1><span class="mark">( ) -&gt; { }</span> java lambdas</h1>
+    <p class="lede">A lambda is a short, anonymous function you can store in a variable, pass to a method, or return from one. This sheet covers the syntax, the built-in <code>functional interfaces</code>, method references, composing behaviour, captured variables, exceptions, concurrency, and the gotchas that trip people up. Copy any snippet to see what it does.</p>
+    <p class="hint">⌨ Gold blanks like ‹name› are editable (guillemets, so Java generics like Function&lt;T,R&gt; stay literal). ⊕ Copying explains the snippet. ☀/☾ toggles light &amp; dark. ⚠️ marks things that won't compile or can bite you.</p>
+  </header>
+
+  <div class="controls">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="Search…  e.g. Predicate, method reference, effectively final, merge" autocomplete="off">
+    </label>
+    <button class="btn" id="themeBtn">☀ Light</button>
+    <button class="btn" id="glossaryBtn">Glossary</button>
+    <button class="btn" id="expandAll">Expand all</button>
+    <button class="btn" id="collapseAll">Collapse all</button>
+  </div>
+
+  <div class="panel glossary" id="glossary">
+    <div class="panel-inner"><div class="panel-pad">
+      <h3>Lambdas glossary</h3>
+      <div class="sub">the functional-Java words, in plain language</div>
+      <dl class="gloss gloss-grid" id="glossList"></dl>
+    </div></div>
+  </div>
+
+  <nav class="index" id="index"></nav>
+  <main id="content"></main>
+  <div class="no-results" id="noResults">Nothing matches that search.</div>
+
+  <footer>
+    <span>Copy a snippet to learn it. Empty blanks copy as ‹placeholder›.</span>
+    <span><a href="#top">↑ back to top</a></span>
+  </footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <div class="toast-top"><span class="toast-badge">copied</span><span class="toast-title">what this does</span><button class="toast-close" id="toastClose" aria-label="Dismiss">×</button></div>
+  <div class="toast-cmd" id="toastCmd"></div>
+  <div class="toast-body" id="toastBody"></div>
+  <div class="toast-progress"></div>
+</div>
+
+<script>
+/* ===================== SCENARIOS ===================== */
+const SCENARIOS = [
+  {
+    q:"Sort a list by one field, then another",
+    when:"The classic reason lambdas exist: handing comparison logic to a method without writing a whole class.",
+    blocks:[{ label:"Comparator chain", steps:[
+      ["‹people›.sort(Comparator.comparing(Person::‹getLastName›).thenComparing(Person::‹getFirstName›));","Sorts the list in place by last name, and breaks ties with first name. comparing() takes a key extractor (a method reference here); each thenComparing() adds another tie-breaker."],
+      ["‹people›.sort(Comparator.comparing((Person ‹p›) -> ‹p›.‹getAge›()).reversed());","Descending order. When you use a lambda (not a method reference) before .reversed(), you must declare the parameter type, otherwise the compiler cannot infer it and reports an error."],
+    ]}]
+  },
+  {
+    q:"Remove items that match a condition",
+    when:"Replace the old iterator-and-remove loop with one line.",
+    blocks:[{ label:"removeIf", steps:[
+      ["‹names›.removeIf(n -> n.isBlank());","Deletes every element for which the lambda returns true, in place. The list must be mutable: List.of(...) throws UnsupportedOperationException."],
+      ["‹names›.removeIf(String::isBlank);","The identical behaviour as a method reference. Shorter, and it reads like a sentence."],
+    ]}]
+  },
+  {
+    q:"Pass behaviour into your own method",
+    when:"The strategy pattern in two lines: the caller decides the rule, your method does the looping.",
+    blocks:[{ label:"Accept a functional interface, then call it with a lambda", steps:[
+      ["static <T> List<T> ‹filter›(List<T> ‹list›, Predicate<T> ‹rule›) { return ‹list›.stream().filter(‹rule›).collect(Collectors.toList()); }","The method takes a Predicate<T>, a function from T to boolean. Anything that fits that shape (a lambda, a method reference, an existing Predicate variable) can be passed in."],
+      ["‹filter›(‹names›, n -> n.startsWith(\"A\"))","The caller supplies the rule inline. Same method, different behaviour every call, with no subclasses needed."],
+    ]}]
+  },
+  {
+    q:"Turn an anonymous class into a lambda",
+    when:"Spotted a new Runnable() { ... } in old code? If the interface has exactly one abstract method, it collapses.",
+    blocks:[{ label:"Before → after", steps:[
+      ["new Runnable() { @Override public void run() { System.out.println(\"hi\"); } }","Before: five tokens of ceremony around one real statement."],
+      ["() -> System.out.println(\"hi\")","After: only the parameters (none here), the arrow, and the body remain. The compiler knows it is a Runnable from where you use it, which is called target typing."],
+    ]}]
+  },
+  {
+    q:"Count occurrences with a Map and merge",
+    when:"Word counts, tallies, frequency tables. The lambda-friendly replacement for 'if containsKey then put'.",
+    blocks:[{ label:"Map.merge", steps:[
+      ["Map<String,Integer> ‹counts› = new HashMap<>();","An empty map from item to its count."],
+      ["for (String ‹w› : ‹words›) { ‹counts›.merge(‹w›, 1, Integer::sum); }","merge(key, 1, Integer::sum): if the key is absent, store 1; if present, combine the old value and 1 with Integer::sum. One call replaces the whole check-then-update dance."],
+    ]}]
+  },
+  {
+    q:"Call something that throws a checked exception inside a lambda",
+    when:"Files.readString and friends throw IOException, which the built-in functional interfaces do not allow. Wrap them once, reuse everywhere.",
+    blocks:[{ label:"A tiny adapter", steps:[
+      ["@FunctionalInterface interface ThrowingFunction<T,R> { R apply(T t) throws Exception; }","Your own functional interface whose method is allowed to throw. A lambda that throws a checked exception fits this shape where it would not fit Function."],
+      ["static <T,R> Function<T,R> ‹unchecked›(ThrowingFunction<T,R> ‹f›) { return t -> { try { return ‹f›.apply(t); } catch (Exception e) { throw new RuntimeException(e); } }; }","Converts a ThrowingFunction into a normal Function by catching the checked exception and rethrowing it unchecked. Keep the cause (pass e) so the stack trace stays useful."],
+      ["‹paths›.stream().map(‹unchecked›(p -> Files.readString(p))).toList();","Now the file-reading lambda drops straight into a stream pipeline with no try/catch noise at the call site."],
+    ]}]
+  },
+  {
+    q:"Run work in the background and use the result",
+    when:"Fetch something slow without blocking the caller.",
+    blocks:[{ label:"CompletableFuture", steps:[
+      ["CompletableFuture<String> ‹future› = CompletableFuture.supplyAsync(() -> ‹fetchData›());","Runs the Supplier lambda on a background thread (the common ForkJoinPool by default) and returns immediately with a handle to the eventual result."],
+      ["‹future›.thenApply(s -> s.trim()).thenAccept(System.out::println);","Chain what to do when the value arrives: thenApply transforms it, thenAccept consumes it. Neither blocks your current thread."],
+      ["String ‹result› = ‹future›.join();","Only when you truly need the value now: join() waits for completion. It wraps failures in an unchecked CompletionException."],
+    ]}]
+  },
+  {
+    q:"Combine conditions into one reusable rule",
+    when:"Build small named predicates, then snap them together instead of writing one giant if.",
+    blocks:[{ label:"Predicate.and / or / negate", steps:[
+      ["Predicate<User> ‹isActive› = u -> u.isActive();","A named, reusable condition. Naming it documents intent better than a comment."],
+      ["Predicate<User> ‹isAdult› = u -> u.getAge() >= 18;","A second condition. Each stays tiny and individually testable."],
+      ["‹users›.stream().filter(‹isActive›.and(‹isAdult›.negate())).toList();","Combine them: and, or, negate return new Predicates. This keeps users who are active but NOT adults."],
+    ]}]
+  },
+];
+
+/* ===================== REFERENCE ===================== */
+const IFACES = [
+  ["Predicate<T>","T → boolean   test(t)"],
+  ["Function<T,R>","T → R   apply(t)"],
+  ["Consumer<T>","T → void   accept(t)"],
+  ["Supplier<T>","() → T   get()"],
+  ["UnaryOperator<T>","T → T   apply(t)"],
+  ["BinaryOperator<T>","(T,T) → T   apply(a,b)"],
+  ["BiFunction<T,U,R>","(T,U) → R   apply(t,u)"],
+  ["BiConsumer<T,U>","(T,U) → void   accept(t,u)"],
+  ["BiPredicate<T,U>","(T,U) → boolean   test(t,u)"],
+  ["Runnable","() → void   run()"],
+  ["Callable<V>","() → V   call() throws"],
+  ["Comparator<T>","(T,T) → int   compare(a,b)"],
+];
+const FORMS = [
+  ["() -> expr","no parameters"],
+  ["x -> expr","one parameter, no parentheses"],
+  ["(a, b) -> expr","several parameters"],
+  ["(int a, int b) -> expr","explicit types"],
+  ["x -> { ...; return y; }","block body, explicit return"],
+  ["Type::method","method reference"],
+  ["Type::new","constructor reference"],
+  ["this::method","bound to the current object"],
+];
+const BUILD = [
+  ["Function<‹Integer›,‹Integer›> ‹square› = ‹x› -> ‹x› * ‹x›;","Store a lambda in a typed variable.","The type on the left (Function<Integer,Integer>) is what makes the lambda legal: it supplies the parameter and return types, and its single abstract method (apply) is the one your lambda implements. Without a target type a lambda has no meaning."],
+  ["‹square›.apply(‹5›)","Call it through the interface's method.","A lambda is not called like a function. You invoke the one abstract method of its interface: apply for Function, test for Predicate, accept for Consumer, get for Supplier, run for Runnable."],
+];
+
+/* ===================== TOPICS ===================== */
+const DATA = [
+  { id:"syntax", title:"Lambda Syntax", sub:"parameters · arrow · body", groups:[
+    { label:"The shapes", items:[
+      ["() -> ‹expression›","No parameters.","Empty parentheses are required when there are no parameters. Typical for Runnable and Supplier: () -> 42."],
+      ["‹x› -> ‹x› * 2","One parameter.","Parentheses are optional with exactly one parameter and no type. The expression after the arrow is the return value, with no return keyword needed."],
+      ["(‹a›, ‹b›) -> ‹a› + ‹b›","Two or more parameters.","Parentheses are required. Types are inferred from the target interface, so you rarely write them."],
+      ["(String ‹s›, int ‹n›) -> ‹s›.repeat(‹n›)","Explicit parameter types.","Allowed, and sometimes required to help inference (for example before .reversed()). It is all-or-nothing: you cannot type one parameter and leave another untyped."],
+      ["(var ‹x›, var ‹y›) -> ‹x› + ‹y›","var parameters (Java 11+).","Lets you attach annotations to inferred parameters, e.g. (@NonNull var x) -> ... The types are still inferred. Same all-or-nothing rule applies."],
+    ]},
+    { label:"Bodies", items:[
+      ["‹x› -> ‹x› > 0","Expression body.","A single expression. Its value is returned automatically. For a void interface (Consumer, Runnable) the expression's value is simply discarded."],
+      ["(‹a›, ‹b›) -> { int ‹sum› = ‹a› + ‹b›; return ‹sum›; }","Block body.","Curly braces allow several statements. You must write return yourself when the interface expects a value."],
+      ["‹x› -> { System.out.println(‹x›); }","Block body, no result.","For a Consumer or Runnable. A block that returns nothing is fine here and wrong for a Function."],
+    ]},
+    { label:"Assign and call", items:[
+      ["Runnable ‹task› = () -> System.out.println(\"run\");","A Runnable lambda.","Nothing executes when you create the lambda. The body runs only when something calls task.run()."],
+      ["Supplier<‹String›> ‹greeting› = () -> \"hello\";","A Supplier lambda.","Produces a value on demand with no input. Useful for lazy values: the work happens only if get() is called."],
+      ["BiFunction<Integer,Integer,Integer> ‹add› = (a, b) -> a + b;","A two-argument lambda.","BiFunction<T,U,R> takes two inputs and returns a result. Call it with add.apply(2, 3)."],
+    ]},
+  ]},
+  { id:"interfaces", title:"Functional Interfaces", sub:"java.util.function", groups:[
+    { label:"The core six", items:[
+      ["Predicate<‹String›> ‹isLong› = ‹s› -> ‹s›.length() > 10;","Predicate: T → boolean.","Answers a yes/no question about one value. Used by filter, removeIf, anyMatch. The method is test(t)."],
+      ["Function<‹String›,‹Integer›> ‹len› = ‹s› -> ‹s›.length();","Function: T → R.","Transforms one value into another, possibly of a different type. Used by map, computeIfAbsent, Comparator.comparing. The method is apply(t)."],
+      ["Consumer<‹String›> ‹printer› = ‹s› -> System.out.println(‹s›);","Consumer: T → void.","Does something with a value and returns nothing (a side effect). Used by forEach, peek, ifPresent. The method is accept(t)."],
+      ["Supplier<‹List›<‹String›>> ‹maker› = ArrayList::new;","Supplier: () → T.","Produces a value with no input. Used for lazy defaults, factories, Stream.generate, orElseGet. The method is get()."],
+      ["UnaryOperator<‹String›> ‹shout› = ‹s› -> ‹s›.toUpperCase();","UnaryOperator: T → T.","A Function whose input and output types are the same. Used by List.replaceAll and Stream.iterate."],
+      ["BinaryOperator<‹Integer›> ‹max› = (‹a›, ‹b›) -> Math.max(‹a›, ‹b›);","BinaryOperator: (T,T) → T.","Combines two values of the same type into one. Used by reduce and Map.merge. Also see BinaryOperator.minBy and maxBy."],
+    ]},
+    { label:"Two-argument and no-result", items:[
+      ["BiFunction<‹String›,‹Integer›,‹String›> ‹repeat› = (‹s›, ‹n›) -> ‹s›.repeat(‹n›);","BiFunction: (T,U) → R.","Two inputs of possibly different types, one output. Also has andThen to chain a post-processing Function."],
+      ["BiConsumer<‹String›,‹Integer›> ‹show› = (‹k›, ‹v›) -> System.out.println(‹k› + \"=\" + ‹v›);","BiConsumer: (T,U) → void.","What Map.forEach expects: one call per key and value."],
+      ["BiPredicate<‹String›,‹String›> ‹same› = (‹a›, ‹b›) -> ‹a›.equalsIgnoreCase(‹b›);","BiPredicate: (T,U) → boolean.","A yes/no question about two values."],
+      ["Callable<‹Integer›> ‹job› = () -> 42;","Callable: () → V, may throw.","Like Supplier but call() is allowed to throw checked exceptions. This is what ExecutorService.submit uses when your lambda returns a value."],
+    ]},
+    { label:"Primitive versions (avoid boxing)", items:[
+      ["IntPredicate ‹isEven› = ‹n› -> ‹n› % 2 == 0;","IntPredicate and friends.","Specializations for int, long and double skip the Integer boxing cost. Families: IntPredicate, IntFunction<R>, ToIntFunction<T>, IntUnaryOperator, IntBinaryOperator, IntSupplier, IntConsumer."],
+      ["ToIntFunction<‹String›> ‹len› = String::length;","ToIntFunction<T>: T → int.","What mapToInt expects. Returning a primitive int avoids creating Integer objects in a hot loop."],
+    ]},
+    { label:"Make your own", items:[
+      ["@FunctionalInterface interface ‹Validator›<T> { boolean ‹validate›(T ‹t›); }","A custom functional interface.","Any interface with exactly one abstract method can be the target of a lambda. @FunctionalInterface is optional, but makes the compiler enforce the one-method rule and tells readers your intent."],
+      ["@FunctionalInterface interface ‹Handler› { void ‹handle›(String ‹msg›); default ‹Handler› ‹twice›() { return m -> { ‹handle›(m); ‹handle›(m); }; } }","Default methods are allowed.","Default and static methods do not count toward the one-abstract-method limit, and neither do methods inherited from Object such as equals. That is how Comparator can have dozens of helpers yet remain functional."],
+    ]},
+  ]},
+  { id:"methodrefs", title:"Method References", sub:"Type::method", groups:[
+    { label:"The four kinds", items:[
+      ["‹Integer›::‹parseInt›","Static method.","Shorthand for s -> Integer.parseInt(s). The arguments are passed straight to the static method."],
+      ["System.out::println","Bound instance method.","Shorthand for x -> System.out.println(x). The receiver (System.out) is fixed when the reference is created, and the lambda's argument becomes the method argument."],
+      ["‹String›::‹toUpperCase›","Unbound instance method.","Shorthand for s -> s.toUpperCase(). Here the first lambda argument becomes the receiver. The tell-tale is a class name on the left with an instance method on the right."],
+      ["‹ArrayList›::new","Constructor reference.","Shorthand for () -> new ArrayList<>(). Which constructor runs is chosen by the target interface: Supplier picks the no-arg one, Function<Integer,...> picks the one that takes an int."],
+    ]},
+    { label:"Other forms", items:[
+      ["String[]::new","Array constructor reference.","Shorthand for n -> new String[n]. Most common as stream.toArray(String[]::new) to get a typed array."],
+      ["this::‹helper›","Method on the current object.","Binds to the enclosing instance. super::method calls the parent's version. Handy for passing a private helper as a callback."],
+      ["‹list›::add","Method on a specific variable.","Binds the list at creation time: x -> list.add(x). The variable must be effectively final (see Capturing Variables)."],
+    ]},
+    { label:"Choosing between them", items:[
+      ["‹x› -> ‹x›.‹getName›()  →  ‹Person›::‹getName›","Lambda → method reference.","Prefer the method reference when the lambda only forwards its arguments to one existing method. Keep the lambda when you need to add logic, reorder arguments, or the reference would be ambiguous."],
+    ]},
+  ]},
+  { id:"compose", title:"Composing Behaviour", sub:"and · or · andThen · comparing", groups:[
+    { label:"Predicate", items:[
+      ["‹p1›.and(‹p2›)","Both must hold.","Returns a new Predicate that is true only when both are true. Short-circuits: p2 is not evaluated if p1 is false."],
+      ["‹p1›.or(‹p2›)","Either may hold.","True when at least one is true. Also short-circuits."],
+      ["‹p›.negate()","Flip the result.","The opposite of p. Handy when you only have the positive predicate."],
+      ["Predicate.not(String::isBlank)","Negate a method reference (Java 11+).","Reads naturally inside a stream: .filter(Predicate.not(String::isBlank)). Before Java 11 you had to write s -> !s.isBlank()."],
+      ["Predicate.isEqual(‹target›)","Equality as a predicate.","Null-safe equals against a fixed target: .filter(Predicate.isEqual(\"admin\"))."],
+    ]},
+    { label:"Function and Consumer", items:[
+      ["‹f›.andThen(‹g›)","f first, then g.","x → g(f(x)). Reads left to right, the way the data flows."],
+      ["‹f›.compose(‹g›)","g first, then f.","x → f(g(x)). The mirror image of andThen. Easy to mix up, so pick one and stick with it."],
+      ["Function.identity()","Returns its input unchanged.","The do-nothing Function. Common as the key mapper in Collectors.toMap(Function.identity(), ...)."],
+      ["‹c1›.andThen(‹c2›)","Run two Consumers in order.","Both receive the same argument. Useful for logging then saving."],
+    ]},
+    { label:"Comparator", items:[
+      ["Comparator.comparing(‹Person›::‹getAge›)","Compare by a field.","Builds a Comparator from a key extractor. The extracted key must be Comparable."],
+      ["Comparator.comparingInt(‹Person›::‹getAge›)","Compare by a primitive field.","The int-specialized version. Avoids boxing and is the better default for numeric keys."],
+      ["‹cmp›.thenComparing(‹Person›::‹getName›)","Add a tie-breaker.","Used only when the earlier comparators say 'equal'. Chain as many as you need."],
+      ["‹cmp›.reversed()","Reverse the order.","Flips ascending to descending. After a lambda (not a method reference) you must type the parameter."],
+      ["Comparator.nullsLast(Comparator.naturalOrder())","Cope with nulls.","Sorts null elements to the end. Use nullsFirst to put them at the start. Without one of these, a null causes a NullPointerException."],
+      ["Map.Entry.<‹String›,‹Integer›>comparingByValue().reversed()","Sort map entries by value.","Typical for 'top N' lists: stream the entrySet, sort with this, then limit. The explicit type arguments help the compiler with .reversed()."],
+    ]},
+  ]},
+  { id:"capture", title:"Capturing Variables & this", sub:"effectively final", groups:[
+    { label:"The rule", items:[
+      ["int ‹base› = 10; Function<Integer,Integer> ‹add› = x -> x + ‹base›;","Capturing a local variable.","A lambda can read locals from its surrounding method, but only if they are final or effectively final (never reassigned after initialization). The lambda copies the value, which is why it must not change."],
+      ["int ‹count› = 0; ‹list›.forEach(x -> ‹count›++);","⚠️ Does not compile.","Error: local variables referenced from a lambda must be final or effectively final. The lambda may run later, or on another thread, so it cannot share a changing local."],
+      ["int ‹x› = 1; Function<Integer,Integer> ‹f› = x -> x;","⚠️ Parameter shadows a local.","A lambda parameter cannot reuse the name of a local variable in scope. Rename one of them. (Anonymous classes allow shadowing; lambdas do not.)"],
+    ]},
+    { label:"Workarounds", items:[
+      ["AtomicInteger ‹counter› = new AtomicInteger(); ‹list›.forEach(x -> ‹counter›.incrementAndGet());","Mutable holder: AtomicInteger.","The variable (counter) never changes. Only the object it points to does. Thread-safe, so it is the right choice if the lambda might run in parallel."],
+      ["int[] ‹total› = {0}; ‹list›.forEach(x -> ‹total›[0] += x);","Single-element array.","Works for single-threaded code, but it is a hack and is not thread-safe. Often a sign you should use a reduction such as stream().mapToInt(...).sum() instead."],
+      ["int ‹total› = ‹list›.stream().mapToInt(Integer::intValue).sum();","Prefer a reduction.","Instead of mutating a captured variable to accumulate, let the stream do it. No captured state, no thread-safety question."],
+    ]},
+    { label:"this and fields", items:[
+      ["this.‹count›++;","Fields can be changed.","Instance and static fields are not captured, they are reached through this or the class, so a lambda may modify them. That is legal but not thread-safe, so be deliberate."],
+      ["this","this means the enclosing object.","Inside a lambda, this refers to the surrounding class instance. Inside an anonymous class, this refers to the anonymous object. This is the biggest behavioural difference between the two."],
+    ]},
+  ]},
+  { id:"collections", title:"Lambdas in Collections & Maps", sub:"forEach · removeIf · merge", groups:[
+    { label:"List and Iterable", items:[
+      ["‹list›.forEach(‹x› -> System.out.println(‹x›));","Do something per element.","Iterable.forEach takes a Consumer. Prefer a plain for-loop if you need break, continue, or to modify a captured local."],
+      ["‹list›.removeIf(‹x› -> ‹x› < 0);","Delete matching elements.","Takes a Predicate and removes in place. Safe: no ConcurrentModificationException like a hand-written loop can cause."],
+      ["‹list›.replaceAll(String::trim);","Transform every element in place.","Takes a UnaryOperator and overwrites each slot. Unlike stream().map(), it modifies the existing list."],
+      ["‹list›.sort(Comparator.comparing(‹Person›::‹getName›));","Sort with a Comparator.","Sorts in place. Passing null means natural ordering."],
+    ]},
+    { label:"Map", items:[
+      ["‹map›.forEach((‹k›, ‹v›) -> System.out.println(‹k› + \" -> \" + ‹v›));","Iterate keys and values.","Takes a BiConsumer. Cleaner than looping over entrySet() when you just need both parts."],
+      ["‹map›.computeIfAbsent(‹key›, k -> new ArrayList<>()).add(‹value›);","Group values per key.","If the key is missing, the lambda builds the default value and stores it. Either way you get the list back to add to. The idiom for a Map<K, List<V>>."],
+      ["‹map›.merge(‹key›, 1, Integer::sum);","Insert or combine.","Absent: store the given value. Present: combine old and new with the function. The one-liner for counters and totals."],
+      ["‹map›.compute(‹key›, (k, v) -> v == null ? 1 : v + 1);","Full control over update.","Receives the key and the current value (null if absent) and stores what you return; return null to remove the entry. computeIfPresent only runs when the key already exists."],
+      ["‹map›.replaceAll((k, v) -> v * 2);","Transform every value.","Takes a BiFunction and rewrites each value in place, keeping the keys."],
+      ["‹map›.entrySet().removeIf(e -> e.getValue() == null);","Remove entries by condition.","Removing through the entrySet view deletes from the underlying map. A clean way to drop null or expired entries."],
+    ]},
+  ]},
+  { id:"hof", title:"Higher-Order Functions", sub:"functions that take or return functions", groups:[
+    { label:"Take a function", items:[
+      ["static <T,R> List<R> ‹mapAll›(List<T> ‹list›, Function<T,R> ‹f›) { List<R> ‹out› = new ArrayList<>(); for (T t : ‹list›) ‹out›.add(‹f›.apply(t)); return ‹out›; }","Accept behaviour as a parameter.","A method whose parameter is a functional interface lets callers plug in logic. This is exactly what Stream.map does internally."],
+      ["static <T> T ‹orElseCompute›(T ‹value›, Supplier<T> ‹fallback›) { return ‹value› != null ? ‹value› : ‹fallback›.get(); }","Lazy evaluation with Supplier.","The fallback runs only when needed. Passing the computed value instead would always pay the cost, which is why Optional offers orElseGet next to orElse."],
+    ]},
+    { label:"Return a function", items:[
+      ["static Predicate<String> ‹longerThan›(int ‹n›) { return s -> s.length() > ‹n›; }","A function factory.","Returns a lambda configured by the argument (n is captured, so it must be effectively final). Call it as longerThan(5) to get a ready-made Predicate."],
+      ["Function<Integer,Function<Integer,Integer>> ‹add› = a -> b -> a + b;","Currying.","A function of two arguments expressed as a function that returns a function. Use it as add.apply(2).apply(3) = 5, or keep add.apply(2) as a reusable 'add two' function."],
+      ["static <T,R> Function<T,R> ‹memoize›(Function<T,R> ‹f›) { Map<T,R> ‹cache› = new ConcurrentHashMap<>(); return t -> ‹cache›.computeIfAbsent(t, ‹f›); }","Memoization.","Wraps any function with a cache: each input is computed once, then served from the map. Do not use it with a function that itself modifies the same map (e.g. naive recursion), since computeIfAbsent forbids that."],
+    ]},
+    { label:"Callbacks", items:[
+      ["‹button›.‹onClick›(() -> System.out.println(\"clicked\"));","Event handler callback.","Any API that takes a listener or callback with one method can take a lambda: GUI events, HTTP handlers, test frameworks."],
+    ]},
+  ]},
+  { id:"exceptions", title:"Exceptions in Lambdas", sub:"checked vs unchecked", groups:[
+    { label:"The problem", items:[
+      ["‹list›.forEach(f -> Files.delete(f));","⚠️ Does not compile.","Files.delete throws a checked IOException, but Consumer.accept declares no exceptions. A lambda may only throw what its interface's method declares."],
+    ]},
+    { label:"Options", items:[
+      ["‹list›.forEach(f -> { try { Files.delete(f); } catch (IOException e) { throw new UncheckedIOException(e); } });","Option 1: try/catch inside.","Handle or wrap right in the lambda. UncheckedIOException is the JDK's purpose-built wrapper for IOException. Fine once, noisy if repeated."],
+      ["@FunctionalInterface interface ‹ThrowingConsumer›<T> { void accept(T t) throws Exception; }","Option 2: a throwing interface.","Declare your own functional interface whose method may throw, then write a small wrapper that converts it to a normal Consumer or Function (see the recipe above). Write it once, use everywhere."],
+      ["Callable<‹String›> ‹job› = () -> ‹riskyCall›();","Option 3: Callable.","Callable.call() is declared throws Exception, so the lambda may throw checked exceptions freely. Pass it to ExecutorService.submit and read failures from Future.get()."],
+      ["for (Path ‹p› : ‹paths›) { Files.delete(‹p›); }","Option 4: a plain loop.","When exception handling dominates, a regular for-loop with ordinary try/catch is often the clearest answer. Lambdas are a tool, not an obligation."],
+    ]},
+  ]},
+  { id:"concurrency", title:"Lambdas & Concurrency", sub:"threads · executors · futures", groups:[
+    { label:"Threads and executors", items:[
+      ["new Thread(() -> ‹doWork›()).start();","Start a thread.","Thread takes a Runnable, so a lambda is the natural fit. Always call start(), not run(), or it executes on the current thread."],
+      ["ExecutorService ‹pool› = Executors.newFixedThreadPool(‹4›);","Create a thread pool.","Reuses 4 worker threads instead of spawning one per task. Remember to call shutdown() when finished."],
+      ["Future<‹Integer›> ‹f› = ‹pool›.submit(() -> ‹compute›());","Submit a task, get a Future.","A lambda that returns a value becomes a Callable; one that returns nothing becomes a Runnable. Call f.get() to wait for the result."],
+      ["ScheduledExecutorService ‹s› = Executors.newScheduledThreadPool(1); ‹s›.schedule(() -> ‹ping›(), 5, TimeUnit.SECONDS);","Run later.","Executes the lambda once after the delay. scheduleAtFixedRate repeats it."],
+    ]},
+    { label:"CompletableFuture", items:[
+      ["CompletableFuture.supplyAsync(() -> ‹load›())","Start async work with a result.","Runs the Supplier on a background thread. runAsync is the version for work that returns nothing."],
+      ["‹cf›.thenApply(‹x› -> ‹x›.trim())","Transform when ready.","Maps the eventual value. Use thenCompose instead when your function itself returns another CompletableFuture, which avoids nesting."],
+      ["‹cf1›.thenCombine(‹cf2›, (‹a›, ‹b›) -> ‹a› + ‹b›)","Join two futures.","Waits for both and combines their results with a BiFunction."],
+      ["‹cf›.exceptionally(ex -> ‹fallback›)","Recover from failure.","Supplies a substitute value if any earlier stage threw. handle((value, ex) -> ...) sees both outcomes."],
+      ["‹cf›.thenAccept(System.out::println)","Consume the result.","Ends the chain with a Consumer. Nothing blocks, and the work happens when the value is available."],
+    ]},
+  ]},
+  { id:"optional", title:"Optional with Lambdas", sub:"map · orElseGet · ifPresent", groups:[
+    { label:"Transform and unwrap", items:[
+      ["Optional.ofNullable(‹value›).map(‹v› -> ‹v›.‹getName›()).orElse(\"‹N/A›\")","Null-safe navigation.","map runs the lambda only if a value is present. An empty Optional flows through untouched, then orElse supplies the fallback."],
+      ["‹opt›.orElseGet(() -> ‹expensiveDefault›())","Lazy fallback.","The Supplier runs only when the Optional is empty. orElse(x) always evaluates x, even when unused."],
+      ["‹opt›.orElseThrow(() -> new IllegalStateException(\"missing\"))","Throw your own exception.","The Supplier builds the exception only when needed. Cleaner than isPresent() followed by throw."],
+      ["‹opt›.filter(‹v› -> ‹v›.isActive())","Keep only if it matches.","Turns a present value into empty when the Predicate fails."],
+    ]},
+    { label:"Act on the value", items:[
+      ["‹opt›.ifPresent(‹v› -> System.out.println(‹v›));","Side effect if present.","Runs the Consumer only when a value exists. Nothing happens for empty."],
+      ["‹opt›.ifPresentOrElse(‹v› -> use(‹v›), () -> log(\"none\"));","Handle both cases (Java 9+).","One Consumer for the present case, one Runnable for the empty case. Replaces an if/else on isPresent()."],
+    ]},
+  ]},
+  { id:"pitfalls", title:"Gotchas & Best Practices", sub:"what trips people up", groups:[
+    { label:"Compile-time surprises", items:[
+      ["Comparator.comparing((Person ‹p›) -> ‹p›.‹getAge›()).reversed()","⚠️ Type the parameter before .reversed().","With an untyped lambda, the compiler cannot infer T through the chained call, so it falls back to Object and fails. Add the parameter type, or use a method reference (Person::getAge)."],
+      ["‹executor›.submit(() -> { throw new Exception(); });","⚠️ Runnable or Callable?","A lambda that only throws is compatible with both overloads of submit, so overload resolution can be ambiguous or pick one you did not expect. Return a value or add a cast to make the intent clear."],
+      ["Runnable r = () -> { return 5; };","⚠️ Wrong shape for the interface.","Runnable.run is void, so returning a value is a compile error. Match the lambda to the interface: Supplier or Callable if you need a result."],
+    ]},
+    { label:"Runtime behaviour", items:[
+      ["(Runnable & Serializable) () -> ‹doWork›()","Lambdas are not Serializable by default.","If you need to serialize one, intersect the target type with Serializable. Even then, serialization of lambdas is fragile across compilers, so avoid it where you can."],
+      ["lambda$‹main›$0","Stack traces show synthetic names.","A failing lambda appears as lambda$methodName$N in the trace. Short bodies or named method references make traces much easier to read."],
+    ]},
+    { label:"Style that ages well", items:[
+      ["‹x› -> ‹helper›(‹x›)  →  this::‹helper›","Keep lambdas short.","Aim for one expression, or at most a few lines. When a body grows, extract it into a named method and pass a method reference. Names document intent."],
+      ["‹list›.stream().peek(x -> ‹counter›.incrementAndGet())","Avoid side effects in stream lambdas.","Stream operations should be stateless and non-interfering. Mutating outside state breaks under parallel streams and hides intent. Collect or reduce instead."],
+      ["Predicate<‹Order›> ‹isOverdue› = o -> o.getDue().isBefore(LocalDate.now());","Name the interesting lambdas.","Assign a non-trivial lambda to a well-named variable. isOverdue.negate() reads better than repeating an inline condition."],
+      ["IntStream.range(0, ‹n›).map(i -> i * i).sum()","Prefer primitive specializations.","IntStream, ToIntFunction and friends avoid boxing. A non-capturing lambda is also created once and reused, while a capturing one allocates a new object per evaluation. Rarely a problem, but worth knowing in hot paths."],
+    ]},
+  ]},
+];
+
+/* ===================== GLOSSARY ===================== */
+const GLOSSARY = [
+  ["lambda expression","An anonymous function written as (params) -> body. It is an instance of a functional interface, not a free-standing function."],
+  ["functional interface","An interface with exactly one abstract method. The only kind of type a lambda can be assigned to."],
+  ["@FunctionalInterface","An optional annotation that makes the compiler reject the interface if it ever gains a second abstract method."],
+  ["target type","The type a lambda is being assigned or passed to. The compiler uses it to infer the lambda's parameter and return types."],
+  ["type inference","The compiler deducing parameter types (and generics) from context, which is why you rarely write them in a lambda."],
+  ["method reference","A compact form (Type::method) of a lambda that does nothing but call one existing method or constructor."],
+  ["bound / unbound reference","Bound: the receiver object is fixed up front (System.out::println). Unbound: the first lambda argument is the receiver (String::length)."],
+  ["effectively final","A local variable that is never reassigned after initialization. Required of any local a lambda captures."],
+  ["capture / closure","A lambda using variables from its enclosing scope. Java copies the captured values, hence the effectively-final rule."],
+  ["Predicate","Functional interface T → boolean, used for filtering and testing."],
+  ["Function","Functional interface T → R, used for transforming values."],
+  ["Consumer","Functional interface T → void, used for side effects such as printing or saving."],
+  ["Supplier","Functional interface () → T, used for producing or lazily computing a value."],
+  ["Operator (Unary / Binary)","A Function whose input and output types match: UnaryOperator<T> (T→T) and BinaryOperator<T> ((T,T)→T)."],
+  ["Callable","Like Supplier, but its call() method may throw checked exceptions. Used with ExecutorService."],
+  ["Comparator","Functional interface (T,T) → int that defines an ordering; the target of sort(...) and comparing(...)."],
+  ["higher-order function","A function that takes other functions as parameters or returns one."],
+  ["currying","Rewriting a multi-argument function as a chain of single-argument functions: a -> b -> a + b."],
+  ["lazy evaluation","Deferring work until the result is actually needed. Supplier and orElseGet are the usual vehicles."],
+  ["boxing","Wrapping a primitive (int) in an object (Integer). Primitive functional interfaces such as IntPredicate avoid it."],
+  ["target typing vs anonymous class","A lambda's this is the enclosing object; an anonymous class's this is itself. Lambdas also do not create a separate .class file you write."],
+  ["CompletableFuture","A handle to a result that will arrive later, with chaining methods (thenApply, thenCompose, exceptionally) that take lambdas."],
+  ["side effect","Anything a function does besides returning a value: modifying state, printing, writing files. Keep them out of stream lambdas."],
+];
+
+/* ===================== ENGINE ===================== */
+const escAttr = s => s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+/* guillemet blanks keep literal <T> generics and -> arrows intact */
+const PH_SPLIT = /(‹[^›]+›)/g;
+const PH_MATCH = /^‹([^›]+)›$/;
+function buildCommandHTML(cmd){
+  return cmd.split(PH_SPLIT).map(p=>{
+    const m=p.match(PH_MATCH);
+    if(m){const n=m[1];return `<input class="ph" data-ph="${escAttr(n)}" placeholder="${escAttr(n)}" size="${Math.max(n.length,2)}" spellcheck="false" autocomplete="off">`;}
+    return p ? `<span class="lit">${escHtml(p)}</span>` : '';
+  }).join('');
+}
+function readCommand(codeEl){
+  let out='';
+  codeEl.childNodes.forEach(node=>{
+    if(node.nodeType===1 && node.classList.contains('ph')){const v=node.value.trim();out+=v?v:'‹'+node.dataset.ph+'›';}
+    else{out+=node.textContent;}
+  });
+  return out;
+}
+const cmdRow=(cmd,explain)=>`<div class="cmd"><code class="cmd-code">${buildCommandHTML(cmd)}</code><button class="copy" data-explain="${escAttr(explain)}" aria-label="Copy snippet">copy</button></div>`;
+
+const content=document.getElementById('content'),index=document.getElementById('index');
+function addChip(label,target,lead){const a=document.createElement('a');a.href='#'+target;a.textContent=label;a.dataset.target=target;if(lead)a.classList.add('lead');index.appendChild(a);}
+addChip('★ Scenarios','scenarios',true); addChip('★ Mental model','reference',true);
+DATA.forEach(t=>addChip(t.title.split('(')[0].trim(),t.id));
+
+document.getElementById('glossList').innerHTML=GLOSSARY.map(([t,d])=>`<div><dt>${escHtml(t)}</dt><dd>${escHtml(d)}</dd></div>`).join('');
+
+const scn=document.createElement('section');scn.id='scenarios';
+let sH=`<div class="section-head"><h2>Scenarios &amp; Recipes</h2><span class="meta">"how do I…" → exact snippets</span></div>`;
+SCENARIOS.forEach((s,i)=>{
+  let body=''; if(s.when) body+=`<p class="scn-when">${escHtml(s.when)}</p>`; let sb=s.q;
+  s.blocks.forEach(b=>{
+    body+=`<div class="scn-block">`; if(b.label) body+=`<div class="block-label">${escHtml(b.label)}</div>`; body+=`<ol class="steps">`;
+    b.steps.forEach(([c,n])=>{sb+=' '+c+' '+n; body+=`<li class="step"><span class="step-n">•</span><div class="step-main">${cmdRow(c,n)}<div class="step-note">${escHtml(n)}</div></div></li>`;});
+    body+=`</ol>`; if(b.steps.length>1) body+=`<button class="copy-all">Copy these steps</button>`; body+=`</div>`;
+  });
+  sH+=`<div class="scenario searchable" data-search="${escAttr(sb.toLowerCase())}"><button class="scn-head" aria-expanded="false"><span class="scn-icon">${i+1}</span><span class="scn-q">${escHtml(s.q)}</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="scn-body"><div class="scn-inner"><div class="scn-pad">${body}</div></div></div></div>`;
+});
+scn.innerHTML=sH; content.appendChild(scn);
+document.querySelectorAll('.scn-block .steps').forEach(ol=>ol.querySelectorAll('.step-n').forEach((n,i)=>n.textContent=i+1));
+
+const ref=document.createElement('section');ref.id='reference';
+const ifHtml=IFACES.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('');
+const formHtml=FORMS.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('');
+const buildHtml=BUILD.map(([c,desc,ex])=>`<div class="cmd-block searchable" data-search="${escAttr((c+' '+desc+' '+ex).toLowerCase())}">${cmdRow(c,ex)}<div class="desc">${escHtml(desc)}</div></div>`).join('');
+ref.innerHTML=`<div class="section-head"><h2>The Mental Model</h2><span class="meta">what a lambda really is</span></div><div class="topic"><button class="topic-head" aria-expanded="false"><span class="num">★</span><span class="topic-title">A Lambda Is an Implementation of One Method</span><span class="topic-sub">forms · interfaces · target typing</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="topic-body"><div class="topic-body-inner"><div class="topic-pad"><div class="group-label">The one idea</div><p class="conv-rule">A lambda has no type of its own. It becomes whatever <code>functional interface</code> it is assigned to, and its body is the implementation of that interface's single abstract method. So to read or write a lambda, always ask: <code>which interface is this, and what does its one method take and return?</code> The signature of that method tells you the parameters and the result.</p>${buildHtml}<div class="group-label">Which interface do I need?</div><div class="types">${ifHtml}</div><div class="group-label">Lambda forms</div><div class="types">${formHtml}</div></div></div></div></div>`;
+content.appendChild(ref);
+
+DATA.forEach((topic,i)=>{
+  const sec=document.createElement('section');sec.id=topic.id;let gh='';
+  topic.groups.forEach(g=>{
+    gh+=`<div class="group"><div class="group-label">${escHtml(g.label)}</div>`;
+    g.items.forEach(([c,desc,ex])=>{gh+=`<div class="cmd-block searchable" data-search="${escAttr((c+' '+desc+' '+(ex||'')).toLowerCase())}">${cmdRow(c,ex||desc)}<div class="desc">${escHtml(desc)}</div></div>`;});
+    gh+=`</div>`;
+  });
+  sec.innerHTML=`<div class="topic"><button class="topic-head" aria-expanded="false"><span class="num">${String(i+1).padStart(2,'0')}</span><span class="topic-title">${escHtml(topic.title)}</span><span class="topic-sub">${escHtml(topic.sub)}</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">${gh}</div></div></div></div>`;
+  content.appendChild(sec);
+});
+
+function setOpen(el,open){el.classList.toggle('open',open);const h=el.querySelector('[aria-expanded]');if(h)h.setAttribute('aria-expanded',open);}
+document.querySelectorAll('.topic-head, .scn-head').forEach(h=>h.addEventListener('click',()=>{const t=h.closest('.topic, .scenario');setOpen(t,!t.classList.contains('open'));}));
+document.getElementById('expandAll').onclick=()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,true));
+document.getElementById('collapseAll').onclick=()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,false));
+index.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{const s=document.getElementById(a.dataset.target);const acc=s&&s.querySelector('.topic, .scenario');if(acc)setOpen(acc,true);}));
+
+const glossary=document.getElementById('glossary'),glossaryBtn=document.getElementById('glossaryBtn');
+glossaryBtn.onclick=()=>{const o=glossary.classList.toggle('open');glossaryBtn.classList.toggle('active',o);};
+
+const themeBtn=document.getElementById('themeBtn');
+function applyTheme(mode){document.documentElement.setAttribute('data-theme',mode);themeBtn.textContent=mode==='dark'?'☀ Light':'☾ Dark';}
+themeBtn.onclick=()=>applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
+applyTheme('dark');
+
+content.addEventListener('input',e=>{
+  const inp=e.target; if(!inp.classList||!inp.classList.contains('ph')) return;
+  inp.size=Math.max(inp.value.length||inp.placeholder.length,2); inp.classList.toggle('filled',inp.value.trim().length>0);
+  inp.closest('.cmd-code').querySelectorAll('.ph').forEach(o=>{if(o!==inp&&o.dataset.ph===inp.dataset.ph){o.value=inp.value;o.size=Math.max(o.value.length||o.placeholder.length,2);o.classList.toggle('filled',o.value.trim().length>0);}});
+});
+content.addEventListener('click',e=>{if(e.target.classList&&e.target.classList.contains('ph'))e.stopPropagation();});
+
+const toast=document.getElementById('toast'),toastCmd=document.getElementById('toastCmd'),toastBody=document.getElementById('toastBody');let toastTimer;
+function showToast(cmd,ex){toastCmd.textContent=cmd;toastBody.textContent=ex;toast.classList.remove('show');void toast.offsetWidth;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),7000);}
+document.getElementById('toastClose').onclick=()=>toast.classList.remove('show');
+
+content.addEventListener('click',e=>{
+  const btn=e.target.closest('.copy');
+  if(btn){const code=btn.parentElement.querySelector('.cmd-code');const text=readCommand(code);
+    navigator.clipboard.writeText(text).then(()=>{btn.textContent='copied';btn.classList.add('done');setTimeout(()=>{btn.textContent='copy';btn.classList.remove('done');},1300);showToast(text,btn.dataset.explain);}); return;}
+  const ca=e.target.closest('.copy-all');
+  if(ca){const block=ca.closest('.scn-block');const text=[...block.querySelectorAll('.cmd-code')].map(readCommand).join('\n');
+    navigator.clipboard.writeText(text).then(()=>{ca.textContent='copied all';ca.classList.add('done');setTimeout(()=>{ca.textContent='Copy these steps';ca.classList.remove('done');},1500);showToast(text,'The steps of this recipe in order. Fill any blanks, then drop them into your Java class.');}); }
+});
+
+const search=document.getElementById('search'),noResults=document.getElementById('noResults');
+search.addEventListener('input',()=>{
+  const q=search.value.trim().toLowerCase();
+  document.querySelectorAll('.searchable').forEach(el=>{el.style.display=(!q||el.dataset.search.includes(q))?'':'none';});
+  document.querySelectorAll('.group').forEach(g=>{g.style.display=[...g.querySelectorAll('.searchable')].some(e=>e.style.display!=='none')?'':'none';});
+  let any=false;
+  document.querySelectorAll('main section').forEach(sec=>{
+    const vis=[...sec.querySelectorAll('.searchable')].some(e=>e.style.display!=='none');sec.style.display=vis?'':'none';
+    if(vis){any=true;if(q){sec.querySelectorAll('.topic').forEach(t=>{if([...t.querySelectorAll('.searchable')].some(e=>e.style.display!=='none'))setOpen(t,true);});sec.querySelectorAll('.scenario.searchable').forEach(s=>{if(s.style.display!=='none')setOpen(s,true);});}}
+  });
+  noResults.style.display=any?'none':'block';
+});
+
+setOpen(document.querySelector('#scenarios .scenario'),true);
+setOpen(document.querySelector('#syntax .topic'),true);
+</script>
+</body>
+</html>

@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Optional & Streams — Cheat Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700;800&family=Mulish:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root,[data-theme="dark"]{
+    --bg:#0c1a12;
+    --paper:#121f17;
+    --ink:#e2f0e6;
+    --ink-soft:#7aaa88;
+    --line:#1c2f22;
+    --line-strong:#2a4232;
+    --accent:#4ade80;
+    --accent-soft:#86efac;
+    --green:#4ade80;
+    --code-bg:#080f0b;
+    --code-ink:#d4edda;
+    --code-dim:#4d7a5a;
+    --code-ph:#fcd34d;
+    --code-green:#4ade80;
+    --on-accent:#060f09;
+    --radius:10px;
+    --dot:.7px;
+  }
+  [data-theme="light"]{
+    --bg:#edf6ef;
+    --paper:#ffffff;
+    --ink:#0d2415;
+    --ink-soft:#3a6647;
+    --line:#cce5d4;
+    --line-strong:#aed1bb;
+    --accent:#16a34a;
+    --accent-soft:#22c55e;
+    --green:#15803d;
+    --code-bg:#080f0b;
+    --code-ink:#d4edda;
+    --code-dim:#4d7a5a;
+    --code-ph:#fcd34d;
+    --code-green:#4ade80;
+    --on-accent:#ffffff;
+    --dot:.6px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;transition:background-color .3s ease}
+  body,.topic,.scenario,.panel-pad,.btn,.search input,.toast,.cmd,.type{transition:background-color .3s ease,border-color .3s ease,color .3s ease}
+  body{background:var(--bg);color:var(--ink);font-family:'Mulish',system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;background-image:radial-gradient(var(--line) var(--dot),transparent var(--dot));background-size:22px 22px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px}
+  header{padding:64px 0 26px}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  h1{font-family:'DM Sans',sans-serif;font-weight:800;font-size:clamp(2.4rem,8vw,4.1rem);line-height:.98;letter-spacing:-.03em;margin-bottom:16px}
+  h1 .mark{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:.58em;font-weight:600}
+  .lede{font-size:1.05rem;color:var(--ink-soft);max-width:57ch}
+  .lede code{font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--accent-soft)}
+  .hint{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);margin-top:14px;border-left:2px solid var(--accent);padding-left:10px}
+  .controls{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 70%,transparent);padding:18px 0 14px;margin-bottom:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:200px;position:relative}
+  .search input{width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:12px 14px 12px 40px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+  .search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent)}
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.45}
+  .btn{font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.04em;padding:11px 16px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink-soft);cursor:pointer;transition:all .18s;white-space:nowrap}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+  .panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s ease}
+  .panel.open{grid-template-rows:1fr;margin-bottom:26px}
+  .panel-inner{overflow:hidden}
+  .panel-pad{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);padding:20px 22px;margin-top:2px}
+  .panel-pad h3{font-family:'DM Sans',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:3px}
+  .panel-pad .sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);margin-bottom:16px}
+  .gloss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:15px 24px}
+  .gloss dt{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent-soft);margin-bottom:3px}
+  .gloss dd{font-size:.9rem;color:var(--ink-soft);line-height:1.5}
+  .index{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:34px;padding-bottom:30px;border-bottom:1px solid var(--line)}
+  .index a{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:99px;transition:all .15s}
+  .index a:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .index a.lead{border-color:var(--accent);color:var(--accent)}
+  .index a.lead:hover{background:var(--accent);color:var(--on-accent)}
+  .section-head{display:flex;align-items:baseline;gap:12px;margin:34px 0 16px;flex-wrap:wrap}
+  .section-head h2{font-family:'DM Sans',sans-serif;font-size:1.7rem;font-weight:800;letter-spacing:-.02em}
+  .section-head .meta{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim)}
+  section{margin-bottom:14px;scroll-margin-top:90px}
+  .topic{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden}
+  .topic-head{display:flex;align-items:center;gap:14px;width:100%;padding:18px 20px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .topic-head:hover .topic-title{color:var(--accent)}
+  .num{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);border:1px solid var(--line-strong);border-radius:6px;padding:3px 7px;flex-shrink:0}
+  .topic-title{font-family:'DM Sans',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:-.01em;transition:color .2s;flex:1}
+  .topic-sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);font-weight:400}
+  .chev{flex-shrink:0;transition:transform .3s ease;color:var(--ink-soft)}
+  .topic.open .chev,.scenario.open .chev{transform:rotate(90deg)}
+  .topic-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .topic.open .topic-body{grid-template-rows:1fr}
+  .topic-body-inner{overflow:hidden}
+  .topic-pad{padding:0 20px 22px;border-top:1px solid var(--line)}
+  .group-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-soft);margin:22px 0 10px}
+  .scenario{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden;margin-bottom:10px}
+  .scn-head{display:flex;align-items:center;gap:13px;width:100%;padding:16px 18px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .scn-head:hover .scn-q{color:var(--accent)}
+  .scn-icon{flex-shrink:0;width:27px;height:27px;border-radius:7px;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:700}
+  .scn-q{flex:1;font-family:'DM Sans',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:-.01em;transition:color .2s}
+  .scn-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .scenario.open .scn-body{grid-template-rows:1fr}
+  .scn-inner{overflow:hidden}
+  .scn-pad{padding:2px 18px 18px;border-top:1px solid var(--line)}
+  .scn-when{font-size:.92rem;color:var(--ink-soft);margin:14px 0 2px;font-style:italic}
+  .scn-block{margin-top:14px}
+  .block-label{font-family:'JetBrains Mono',monospace;font-size:.71rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-soft);margin-bottom:10px}
+  .steps{list-style:none}
+  .step{display:flex;gap:11px;margin-bottom:11px}
+  .step-n{flex-shrink:0;width:22px;height:22px;margin-top:7px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--accent)}
+  .step-main{flex:1;min-width:0}
+  .step-note{font-size:.88rem;color:var(--ink-soft);margin:3px 0 0 2px}
+  .copy-all{margin-top:4px;font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:9px 14px;border:1px dashed var(--line-strong);border-radius:8px;background:none;color:var(--ink-soft);cursor:pointer;transition:all .15s}
+  .copy-all:hover{border-color:var(--accent);color:var(--accent)}
+  .copy-all.done{color:var(--green);border-color:var(--green)}
+  .types{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:8px;margin:6px 0 18px}
+  .type{display:flex;gap:9px;align-items:baseline;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--code-bg)}
+  .type b{font-family:'JetBrains Mono',monospace;color:var(--code-ph);font-size:.78rem;flex-shrink:0;white-space:nowrap}
+  .type span{font-size:.84rem;color:var(--code-dim)}
+  .conv-rule{font-size:.92rem;color:var(--ink-soft);margin-bottom:8px}
+  .conv-rule code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+  .cmd{display:flex;align-items:stretch;gap:0;margin-bottom:8px;border-radius:8px;overflow:hidden;border:1px solid #0a1a0d;background:var(--code-bg)}
+  .cmd-code{flex:1;font-family:'JetBrains Mono',monospace;font-size:.84rem;color:var(--code-ink);padding:9px 14px;overflow-x:auto;white-space:pre;line-height:1.7;display:flex;align-items:center;flex-wrap:wrap}
+  .cmd-code .lit{white-space:pre}
+  .ph{font-family:'JetBrains Mono',monospace;font-size:.84rem;background:rgba(252,211,77,.16);color:var(--code-ph);border:none;border-bottom:1px dashed var(--code-ph);padding:1px 2px;margin:0 1px;outline:none;border-radius:3px 3px 0 0;transition:background .15s;min-width:1ch}
+  .ph::placeholder{color:var(--code-ph);opacity:.6;font-style:italic}
+  .ph:focus{background:rgba(252,211,77,.3)}
+  .ph.filled{color:var(--code-green);border-bottom-color:var(--code-green);background:rgba(74,222,128,.15)}
+  .copy{flex-shrink:0;border:none;border-left:1px solid #0a1a0d;background:#091209;color:var(--code-dim);font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:0 15px;cursor:pointer;transition:all .15s;letter-spacing:.05em;align-self:stretch}
+  .copy:hover{background:#0e1f11;color:var(--code-ink)}
+  .copy.done{color:var(--code-green)}
+  .desc{font-size:.92rem;color:var(--ink-soft);margin:1px 0 13px 2px;line-height:1.6}
+  .desc code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+  .no-results{display:none;text-align:center;padding:50px 0;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;font-size:.9rem}
+  footer{padding:40px 0 70px;margin-top:30px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--code-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  footer a{color:var(--accent-soft);text-decoration:none}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);width:min(560px,calc(100% - 36px));z-index:60;background:var(--paper);border:1px solid var(--line-strong);border-radius:14px;box-shadow:0 18px 50px -12px rgba(0,0,0,.6);padding:18px 20px 19px;opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.2,.9,.25,1),opacity .35s}
+  .toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+  .toast-top{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+  .toast-badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--on-accent);background:var(--green);padding:3px 8px;border-radius:99px}
+  .toast-title{font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);flex:1}
+  .toast-close{border:none;background:none;cursor:pointer;color:var(--ink-soft);font-size:1.2rem;line-height:1;padding:2px 4px;border-radius:6px}
+  .toast-close:hover{color:var(--accent);background:var(--line)}
+  .toast-cmd{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--code-ink);background:var(--code-bg);border-radius:8px;padding:9px 12px;margin-bottom:12px;overflow-x:auto;white-space:pre;max-height:150px}
+  .toast-body{font-size:1rem;color:var(--ink);line-height:1.6}
+  .toast-progress{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);border-radius:0 0 0 14px;width:100%}
+  .toast.show .toast-progress{animation:drain 7s linear forwards}
+  @keyframes drain{from{width:100%}to{width:0%}}
+  ::selection{background:var(--accent);color:var(--on-accent)}
+  @media(max-width:540px){header{padding:42px 0 22px}.topic-sub{display:none}.cmd-code{font-size:.79rem}}
+</style>
+</head>
+<body>
+<div class="wrap" id="top">
+  <header>
+    <div class="kicker">Java · Optional &amp; Streams · Java 8+</div>
+    <h1><span class="mark">.stream()</span> java optional &amp; streams</h1>
+    <p class="lede">Stop writing null checks and for-loops by hand. <code>Optional</code> wraps a value that might be absent; <code>Stream</code> pipelines let you filter, map, collect, and reduce any sequence declaratively. Copy any expression to see exactly what it does.</p>
+    <p class="hint">⌨ Gold blanks like ‹type› are editable — guillemets so Java generics like List‹String› stay intact. ⊕ Copying explains the method. ☀/☾ toggles light &amp; dark.</p>
+  </header>
+
+  <div class="controls">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="Search…  e.g. flatMap, collect, filter, orElse, reduce" autocomplete="off">
+    </label>
+    <button class="btn" id="themeBtn" aria-label="Toggle light and dark mode">☀ Light</button>
+    <button class="btn" id="glossaryBtn">Glossary</button>
+    <button class="btn" id="expandAll">Expand all</button>
+    <button class="btn" id="collapseAll">Collapse all</button>
+  </div>
+
+  <div class="panel glossary" id="glossary">
+    <div class="panel-inner"><div class="panel-pad">
+      <h3>Optional &amp; Streams glossary</h3>
+      <div class="sub">the functional-Java words, in plain language</div>
+      <dl class="gloss gloss-grid" id="glossList"></dl>
+    </div></div>
+  </div>
+
+  <nav class="index" id="index"></nav>
+  <main id="content"></main>
+  <div class="no-results" id="noResults">Nothing matches that search.</div>
+
+  <footer>
+    <span>Copy an expression to learn it. Empty blanks copy as ‹placeholder›.</span>
+    <span><a href="#top">↑ back to top</a></span>
+  </footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <div class="toast-top"><span class="toast-badge">copied</span><span class="toast-title">what this does</span><button class="toast-close" id="toastClose" aria-label="Dismiss">×</button></div>
+  <div class="toast-cmd" id="toastCmd"></div>
+  <div class="toast-body" id="toastBody"></div>
+  <div class="toast-progress"></div>
+</div>
+
+<script>
+/* ===================== SCENARIOS ===================== */
+const SCENARIOS = [
+  {
+    q:"Safely read a value that might be null",
+    when:"Replace the classic 'if (x != null)' pattern with a clear, chainable alternative.",
+    blocks:[{ label:"Optional.ofNullable → orElse", steps:[
+      ["Optional.ofNullable(‹maybeNull›)","Wrap an expression that might be null. ofNullable accepts null without throwing — unlike Optional.of, which throws NPE on null."],
+      [".map(‹obj› -> ‹obj.getName()›)","Transform the value if it's there. If the Optional is empty, map does nothing and passes the empty through."],
+      [".orElse(\"‹default›\")","Unwrap with a fallback. If empty, returns the fallback value. The full chain is common for deriving a display string from a nullable object."],
+    ]}]
+  },
+  {
+    q:"Filter a list and collect the results",
+    when:"The most common stream pipeline — keep matching elements, return a new list.",
+    blocks:[{ label:"stream → filter → collect", steps:[
+      ["‹items›.stream()","Open a stream over the list. This doesn't copy the data; it creates a lazy pipeline that processes elements one at a time."],
+      [".filter(‹item› -> ‹item.isActive()›)","Keep only elements where the predicate is true. All other elements are discarded without being processed further."],
+      [".collect(Collectors.toList())","Terminate the stream and gather the surviving elements into a new List. Nothing in the pipeline runs until a terminal operation is called."],
+    ]}]
+  },
+  {
+    q:"Transform every element in a list",
+    when:"Map each element to a new value — the stream version of a for-each that builds a new list.",
+    blocks:[{ label:"stream → map → collect", steps:[
+      ["‹names›.stream()","Open the stream."],
+      [".map(String::toUpperCase)","Apply a function to every element, producing a new element. Here, a method reference replaces the lambda n -> n.toUpperCase()."],
+      [".collect(Collectors.toList())","Collect into a new list. The original list is unchanged."],
+    ]}]
+  },
+  {
+    q:"Flatten a list of lists into one list",
+    when:"You have a List<List<T>> and want a single List<T>.",
+    blocks:[{ label:"flatMap collapses one level", steps:[
+      ["‹listOfLists›.stream()","Stream the outer list — each element is itself a list."],
+      [".flatMap(Collection::stream)","Map each inner list to its own stream, then flatten all those streams into one. flatMap is map + flatten in a single step."],
+      [".collect(Collectors.toList())","Collect the now-flat sequence."],
+    ]}]
+  },
+  {
+    q:"Sum / average / count a list of numbers",
+    when:"Aggregate a numeric field across a collection.",
+    blocks:[{ label:"mapToInt + summary", steps:[
+      ["‹orders›.stream()","Open the stream."],
+      [".mapToInt(‹Order›::‹getTotal›)","Convert each element to a primitive int (or double/long). This gives you an IntStream with math-specific terminal operations."],
+      [".sum()","Sum everything. Swap for .average() → OptionalDouble, .count() → long, or .summaryStatistics() for min/max/avg/sum/count in one call."],
+    ]}]
+  },
+  {
+    q:"Group a list into a map by a property",
+    when:"Partition records by category, status, or any field — the Collectors.groupingBy recipe.",
+    blocks:[{ label:"groupingBy", steps:[
+      ["‹items›.stream()","Open the stream."],
+      [".collect(Collectors.groupingBy(‹Item›::‹getCategory›))","Collect into a Map<K, List<V>> where the key is the result of the classifier. Every element lands in the bucket matching its category."],
+    ]}]
+  },
+  {
+    q:"Find the first matching element",
+    when:"Search a collection and stop at the first hit — returns an Optional so the 'not found' case is explicit.",
+    blocks:[{ label:"filter + findFirst", steps:[
+      ["‹users›.stream()","Open the stream."],
+      [".filter(‹u› -> ‹u.getId()›.equals(‹targetId›))","Narrow to matching elements."],
+      [".findFirst()","Return an Optional<T> containing the first match, or empty if nothing matched. Use .orElseThrow() to assert one must exist."],
+    ]}]
+  },
+  {
+    q:"Chain Optional calls without nested null checks",
+    when:"Navigate a deep object graph where any step might be absent.",
+    blocks:[{ label:"flatMap for nested Optionals", steps:[
+      ["Optional.ofNullable(‹user›)","Wrap the top-level nullable."],
+      [".flatMap(‹u› -> Optional.ofNullable(‹u.getAddress()›))","flatMap unwraps one Optional and returns another — avoids Optional<Optional<T>> that map would give you here."],
+      [".map(‹addr› -> ‹addr.getCity()›)","A regular map is fine at the leaf since getCity returns a String, not an Optional."],
+      [".orElse(\"‹Unknown›\")","A safe fallback if any step was absent."],
+    ]}]
+  },
+];
+
+/* ===================== REFERENCE ===================== */
+const OPT_TOKENS = [
+  ["Optional.of(v)","wrap a non-null value"],
+  ["Optional.ofNullable(v)","wrap, allowing null"],
+  ["Optional.empty()","an explicitly empty Optional"],
+  [".isPresent()","true if a value is there"],
+  [".isEmpty()","true if empty (Java 11+)"],
+  [".get()","unwrap — throws if empty ⚠️"],
+  [".orElse(default)","unwrap or fallback value"],
+  [".orElseGet(supplier)","unwrap or compute fallback"],
+  [".orElseThrow()","unwrap or throw (Java 10+)"],
+  [".map(fn)","transform if present"],
+  [".flatMap(fn)","transform returning Optional"],
+  [".filter(pred)","empty if predicate fails"],
+  [".ifPresent(fn)","run side-effect if present"],
+];
+const STREAM_TOKENS = [
+  ["stream()","open a sequential stream"],
+  ["parallelStream()","open a parallel stream"],
+  ["Stream.of(a,b,c)","stream of specific values"],
+  ["Stream.generate(sup)","infinite stream from supplier"],
+  ["Stream.iterate(s,fn)","infinite stream from seed+fn"],
+  ["filter(pred)","keep matching elements"],
+  ["map(fn)","transform each element"],
+  ["flatMap(fn)","map + flatten one level"],
+  ["distinct()","remove duplicates"],
+  ["sorted()","natural-order sort"],
+  ["sorted(comparator)","custom sort"],
+  ["limit(n)","take first n elements"],
+  ["skip(n)","drop first n elements"],
+  ["peek(fn)","side-effect without changing elements"],
+  ["forEach(fn)","consume each — terminal"],
+  ["collect(collector)","accumulate — terminal"],
+  ["count()","count elements — terminal"],
+  ["findFirst()","first element as Optional — terminal"],
+  ["anyMatch(pred)","any element matches — terminal"],
+  ["allMatch(pred)","all elements match — terminal"],
+  ["reduce(id,fn)","fold to a single value — terminal"],
+];
+const BUILD = [
+  ["‹list›.stream().filter(‹x› -> ‹x.isActive()›).collect(Collectors.toList())","The core pipeline.","The backbone of almost every stream: open → intermediate ops → terminal. Nothing runs until the terminal call. Intermediate ops are lazy."],
+  ["Optional.ofNullable(‹value›).map(‹v› -> ‹v.getName()›).orElse(\"‹N/A›\")","The core Optional chain.","Safe null-navigation: wrap → transform → unwrap with fallback. Use flatMap instead of map when the transformation itself returns an Optional."],
+];
+
+/* ===================== TOPICS ===================== */
+const DATA = [
+  { id:"opt-create", title:"Creating Optionals", sub:"wrap · empty · of", groups:[
+    { label:"Factory methods", items:[
+      ["Optional.of(‹value›)","Wrap a known non-null value.","Use when you're certain the value is never null. Throws NullPointerException immediately if it is — which is actually useful because it fails fast and loudly."],
+      ["Optional.ofNullable(‹value›)","Wrap a value that might be null.","The safe wrapper: if value is null you get an empty Optional; otherwise a populated one. The everyday choice when wrapping external data."],
+      ["Optional.empty()","An explicitly empty Optional.","Returns a singleton empty Optional. Use when a method's contract says 'might return nothing' and you're in the empty branch."],
+    ]},
+  ]},
+  { id:"opt-unwrap", title:"Unwrapping Optionals", sub:"get values safely", groups:[
+    { label:"Safe unwrap (prefer these)", items:[
+      [".orElse(‹defaultValue›)","Value or a constant fallback.","Returns the contained value, or the fallback if empty. The fallback is always evaluated even if not used — use orElseGet for expensive fallbacks."],
+      [".orElseGet(‹supplier›)","Value or a computed fallback.","Like orElse, but the fallback is a lambda evaluated only when the Optional is empty. Prefer this when the fallback involves an object creation or a method call."],
+      [".orElseThrow()","Value or throw NoSuchElementException.","The Java 10+ no-argument form. Prefer this over .get() — the intent ('I assert a value is here') is explicit, and the exception message is clearer."],
+      [".orElseThrow(‹ExceptionSupplier›)","Value or throw your own exception.","Provide a lambda that creates the exception — great for domain-specific errors like 'UserNotFoundException'."],
+    ]},
+    { label:"Unsafe unwrap (avoid)", items:[
+      [".get()","⚠️ Unwrap directly.","Throws NoSuchElementException if empty. Avoid in production code — the intent is unclear and callers forget to guard it. Almost always replaceable with orElseThrow."],
+    ]},
+    { label:"Check & act", items:[
+      [".isPresent()","Test for a value.","Returns true if a value is present. Often a smell — if you're writing 'if (opt.isPresent()) opt.get()' you should use orElse or map instead."],
+      [".isEmpty()","Test for emptiness (Java 11+).","The readable complement to isPresent(). Useful when you need the negative branch first."],
+      [".ifPresent(‹consumer›)","Run a side-effect if present.","Calls the consumer only when a value is there. Good for logging or triggering an action without needing the value back."],
+      [".ifPresentOrElse(‹consumer›, ‹emptyAction›)","Handle both branches (Java 9+).","Calls the consumer when present, or the emptyAction when absent. Replaces an if/else over isPresent cleanly."],
+    ]},
+  ]},
+  { id:"opt-transform", title:"Transforming Optionals", sub:"map · flatMap · filter · stream", groups:[
+    { label:"Transform", items:[
+      [".map(‹fn›)","Transform if present.","Applies the function to the value and wraps the result in a new Optional. If the Optional is empty, the function is never called and an empty passes through."],
+      [".flatMap(‹fn›)","Transform when the function returns Optional.","Like map, but the function returns an Optional itself — flatMap unwraps it so you don't end up with Optional<Optional<T>>. The key to chaining nullable navigations."],
+      [".filter(‹predicate›)","Discard if condition fails.","If a value is present and the predicate returns false, returns empty. If the predicate returns true, the Optional is unchanged."],
+    ]},
+    { label:"Convert to stream", items:[
+      [".stream()","Turn into a Stream (Java 9+).","An empty Optional gives an empty stream; a present Optional gives a one-element stream. Useful for merging Optionals into larger stream pipelines."],
+    ]},
+  ]},
+  { id:"stream-create", title:"Creating Streams", sub:"collection · array · generate", groups:[
+    { label:"From existing data", items:[
+      ["‹collection›.stream()","Stream a Collection.","Opens a sequential stream over any Collection (List, Set, etc.). The source is not modified."],
+      ["‹collection›.parallelStream()","Parallel stream.","Splits the work across the ForkJoinPool. Only worth it for large collections and CPU-bound work; adds overhead for small datasets or I/O-bound work."],
+      ["Arrays.stream(‹array›)","Stream an array.","Wraps a primitive or object array in a stream. For int[], long[], double[] you get IntStream/LongStream/DoubleStream with math operations."],
+      ["Stream.of(‹a›, ‹b›, ‹c›)","Stream specific values.","Quick inline stream — useful in tests and when combining a handful of known values."],
+    ]},
+    { label:"Generate", items:[
+      ["Stream.generate(‹supplier›).limit(‹n›)","Infinite stream from a supplier.","Repeatedly calls the supplier. Always add limit() or takeWhile() or you'll run forever."],
+      ["Stream.iterate(‹seed›, ‹fn›).limit(‹n›)","Infinite stream from a seed.","Each element is fn applied to the previous. Stream.iterate(0, x -> x + 2) generates even numbers. Java 9 adds a predicate version."],
+      ["IntStream.range(‹start›, ‹end›)","A range of ints.","Produces start, start+1, … end-1 (exclusive). rangeClosed includes end. IntStream avoids boxing overhead for numbers."],
+    ]},
+  ]},
+  { id:"stream-intermediate", title:"Intermediate Operations", sub:"filter · map · flat · sort", groups:[
+    { label:"Filter & slice", items:[
+      [".filter(‹predicate›)","Keep matching elements.","Discards elements where the predicate returns false. Lazy — only evaluates as far as needed by the terminal operation."],
+      [".distinct()","Remove duplicates.","Uses equals() and hashCode(). For ordered streams, the first occurrence is kept."],
+      [".limit(‹n›)","Take the first n elements.","Short-circuits — the rest of the pipeline stops once n elements have been produced. Essential with infinite streams."],
+      [".skip(‹n›)","Drop the first n elements.","Useful for paging: skip((page - 1) * size) then limit(size)."],
+      [".takeWhile(‹predicate›)","Take while true (Java 9+).","Stops at the first element that fails the predicate. Efficient for already-sorted or naturally ordered streams."],
+      [".dropWhile(‹predicate›)","Drop while true (Java 9+).","Skips elements until the predicate fails, then passes the rest through."],
+    ]},
+    { label:"Transform", items:[
+      [".map(‹fn›)","Transform every element.","Applies the function to each element, replacing it with the result. The stream stays the same length."],
+      [".mapToInt(‹fn›)","Map to a primitive IntStream.","Avoids boxing Integer objects. Also mapToLong and mapToDouble. Use when you need sum(), average(), or summaryStatistics()."],
+      [".flatMap(‹fn›)","Map and flatten.","Each element is mapped to a stream, then all those streams are concatenated into one. The essential tool for unwrapping nested collections."],
+      [".peek(‹consumer›)","Inspect without changing.","Passes each element through unchanged after calling the consumer. Mainly for debugging — add a peek with a print to see what's flowing through the pipeline."],
+    ]},
+    { label:"Sort", items:[
+      [".sorted()","Natural order.","Sorts using Comparable. The whole stream must be consumed before the first element is emitted — avoid on very large streams."],
+      [".sorted(Comparator.comparing(‹fn›))","Sort by a field.","Comparator.comparing builds a comparator from a key extractor. Chain .thenComparing(…) for secondary sorts. Reverse with .reversed()."],
+    ]},
+  ]},
+  { id:"stream-terminal", title:"Terminal Operations", sub:"collect · reduce · match · find", groups:[
+    { label:"Collect to a container", items:[
+      [".collect(Collectors.toList())","Collect into a List.","The most common terminal operation. Returns a mutable List; use Collectors.toUnmodifiableList() for an immutable one (Java 10+)."],
+      [".collect(Collectors.toSet())","Collect into a Set.","Deduplicates automatically. Order is not guaranteed."],
+      [".collect(Collectors.joining(\"‹, ›\"))","Join strings with a separator.","Concatenates String elements. Also joining(delimiter, prefix, suffix) for wrapping the result."],
+      [".collect(Collectors.toMap(‹keyFn›, ‹valueFn›))","Collect into a Map.","Throws on duplicate keys by default — add a merge function as the third argument to resolve clashes."],
+      [".collect(Collectors.groupingBy(‹classifier›))","Group into Map<K, List<V>>.","Buckets elements by the classifier's result. Combine with a downstream collector for counting, mapping, or further grouping."],
+      [".collect(Collectors.groupingBy(‹classifier›, Collectors.counting()))","Group and count.","A two-level collection: group by key, then apply Collectors.counting() inside each bucket to count occurrences."],
+      [".collect(Collectors.partitioningBy(‹predicate›))","Partition into true/false buckets.","Produces a Map<Boolean, List<T>> — a special groupingBy with only two keys."],
+    ]},
+    { label:"Reduce & aggregate", items:[
+      [".reduce(‹identity›, ‹binaryOp›)","Fold to a single value.","Combines elements left to right starting from identity. identity must be a neutral value (0 for addition, 1 for multiplication, \"\" for string concat)."],
+      [".count()","Count elements.","Returns a long. For large streams it's efficient — short-circuits when the count is already known from the source size."],
+      [".min(Comparator.comparing(‹fn›))","Minimum element.","Returns Optional<T> — empty if the stream was empty."],
+      [".max(Comparator.comparing(‹fn›))","Maximum element.","Returns Optional<T> — empty if the stream was empty."],
+    ]},
+    { label:"Match & find", items:[
+      [".anyMatch(‹predicate›)","Does any element match?","Returns true as soon as one match is found — short-circuits the rest. Returns false for an empty stream."],
+      [".allMatch(‹predicate›)","Do all elements match?","Returns false as soon as one failure is found. Returns true for an empty stream."],
+      [".noneMatch(‹predicate›)","Do no elements match?","The inverse of anyMatch. Returns true for an empty stream."],
+      [".findFirst()","First element (Optional).","Returns the first element in encounter order, or empty. Use findAny() for parallel streams where order doesn't matter — it's faster."],
+    ]},
+    { label:"Consume", items:[
+      [".forEach(‹consumer›)","Process each element.","Runs the consumer for every element. Has no return value. In parallel streams, order is not guaranteed — use forEachOrdered when order matters."],
+      [".toArray()","Collect to an array.","Returns Object[]. Pass a constructor reference for typed arrays: .toArray(String[]::new)."],
+    ]},
+  ]},
+  { id:"collectors", title:"Collectors in Depth", sub:"grouping · mapping · teeing", groups:[
+    { label:"Downstream collectors", items:[
+      ["Collectors.counting()","Count per group.","Used as the downstream argument in groupingBy to count elements in each bucket."],
+      ["Collectors.mapping(‹fn›, Collectors.toList())","Map then collect.","Applies a mapping function before collecting — e.g. group by city, then collect just the name in each group."],
+      ["Collectors.summingInt(‹fn›)","Sum ints per group.","Also summingLong, summingDouble. Gets the sum of a numeric field in each groupingBy bucket."],
+      ["Collectors.averagingInt(‹fn›)","Average ints per group.","Returns a Double per bucket."],
+      ["Collectors.toUnmodifiableList()","Immutable result list (Java 10+).","Produces a List that throws on mutation — good practice when the caller shouldn't modify the result."],
+    ]},
+    { label:"Advanced", items:[
+      ["Collectors.teeing(‹c1›, ‹c2›, ‹merger›)","Two collectors at once (Java 12+).","Runs two collectors in parallel and merges their results — get the min and max in a single pass without iterating twice."],
+      ["Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList)","Post-process the result.","Wraps a downstream collector and applies a final transform to its result."],
+    ]},
+  ]},
+  { id:"primitive", title:"Primitive Streams", sub:"IntStream · LongStream · DoubleStream", groups:[
+    { label:"IntStream specifics", items:[
+      ["IntStream.range(‹start›, ‹end›)","Range of ints (exclusive end).","Generates start through end-1. Use rangeClosed for inclusive. Avoids boxing Integer objects."],
+      [".sum()","Sum all elements.","Only available on IntStream, LongStream, DoubleStream — not on Stream<T>."],
+      [".average()","Average as OptionalDouble.","Returns OptionalDouble — handle the empty case for streams that might be empty."],
+      [".summaryStatistics()","Count, sum, min, max, average.","All five aggregates in one pass — the most efficient way to compute multiple stats."],
+      [".boxed()","Convert to Stream<Integer>.","Boxes the primitives back into objects so you can use standard Stream collectors."],
+      ["mapToObj(‹fn›)","Map to an object stream.","Converts each primitive to an object, producing a Stream<R>."],
+    ]},
+  ]},
+  { id:"advanced", title:"Advanced Patterns", sub:"lazy · parallel · custom comparators", groups:[
+    { label:"Laziness & short-circuit", items:[
+      [".filter(‹p1›).filter(‹p2›)","Chain filters rather than &&.","Both approaches work. Chaining makes each condition individually readable and debuggable; && can be slightly faster as one predicate. Style choice."],
+      [".anyMatch(‹pred›)","Short-circuit early.","Stops processing as soon as a match is found — don't replace with filter().count() > 0 which processes every element."],
+      ["Stream.iterate(‹seed›, ‹pred›, ‹fn›)","Bounded iteration (Java 9+).","The three-argument form adds a hasNext predicate, so the stream terminates naturally without an explicit limit."],
+    ]},
+    { label:"Parallel streams", items:[
+      ["‹list›.parallelStream().filter(‹p›).collect(Collectors.toList())","Run pipeline in parallel.","Uses the common ForkJoinPool. Results are collected in the correct order for ordered sources. Worth measuring — overhead often outweighs gains for small lists."],
+      [".sequential()","Switch back to sequential.","You can mix: start parallel, go sequential for an ordered terminal op, or vice versa."],
+    ]},
+    { label:"Comparators", items:[
+      ["Comparator.comparing(‹Person›::‹getAge›)","Compare by a field.","Builds a Comparator from a key extractor — clean, no boilerplate."],
+      ["Comparator.comparing(‹Person›::‹getAge›).reversed()","Reverse the order.","Chain .reversed() to flip ascending to descending."],
+      ["Comparator.comparing(‹Person›::‹getLastName›).thenComparing(‹Person›::‹getFirstName›)","Sort by multiple fields.","Primary then secondary sort — thenComparing chains as many levels as you need."],
+      ["Comparator.nullsLast(Comparator.naturalOrder())","Handle nulls explicitly.","Puts nulls at the end. Use nullsFirst to put them at the start."],
+    ]},
+  ]},
+];
+
+/* ===================== GLOSSARY ===================== */
+const GLOSSARY = [
+  ["Optional<T>","A container that either holds exactly one non-null value, or is empty. Replaces null as the representation of 'might not be here'."],
+  ["Stream<T>","A lazily-evaluated sequence of elements that supports a pipeline of operations. Not a data structure — it's a view over a source."],
+  ["intermediate operation","A stream operation (filter, map, sorted…) that returns a new Stream. They are lazy: nothing runs until a terminal is called."],
+  ["terminal operation","A stream operation (collect, forEach, count…) that triggers the pipeline and produces a result or side-effect."],
+  ["lazy evaluation","The stream's elements are only processed as far as the terminal operation needs — short-circuiting terminals like findFirst() can stop early."],
+  ["short-circuit","An operation that can terminate without processing all elements: limit, findFirst, anyMatch, allMatch, noneMatch."],
+  ["Collector","A recipe for accumulating stream elements into a result — a list, set, map, string, or custom container. Supplied to collect()."],
+  ["flatMap","A stream/Optional operation that maps each element to a stream (or Optional) and then flattens one level — avoiding nested containers."],
+  ["reduce","A terminal operation that folds the stream into a single value by repeatedly applying a binary function."],
+  ["predicate","A function that takes a value and returns boolean — used by filter, anyMatch, allMatch, etc."],
+  ["supplier","A zero-argument function that produces a value — used by orElseGet, Stream.generate, and Collectors."],
+  ["consumer","A function that takes a value and returns nothing — used by forEach, ifPresent, peek."],
+  ["Function<T,R>","A function from T to R — used by map, flatMap, and Comparator.comparing."],
+  ["method reference","A shorthand for a lambda that just calls one method — e.g. String::toUpperCase instead of s -> s.toUpperCase()."],
+  ["IntStream / LongStream / DoubleStream","Primitive specializations of Stream that avoid boxing and add math-specific operations like sum(), average(), summaryStatistics()."],
+  ["groupingBy","A Collector that buckets elements by a classifier function, producing Map<K, List<V>>."],
+  ["NPE (NullPointerException)","Java's classic null-dereference exception. Optional's primary job is making the absent-value case explicit so NPEs don't surprise you at runtime."],
+  ["encounter order","The order elements appear in from the source. Ordered collections (List, arrays) have encounter order; Set and Map generally do not."],
+  ["parallel stream","A stream that uses the ForkJoinPool to process elements concurrently. Useful for CPU-intensive work on large datasets; adds overhead for small ones."],
+];
+
+/* ===================== ENGINE ===================== */
+const escAttr = s => s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const PH_SPLIT = /(‹[^›]+›)/g;
+const PH_MATCH = /^‹([^›]+)›$/;
+function buildCommandHTML(cmd){
+  return cmd.split(PH_SPLIT).map(p=>{
+    const m=p.match(PH_MATCH);
+    if(m){const n=m[1];return `<input class="ph" data-ph="${escAttr(n)}" placeholder="${escAttr(n)}" size="${Math.max(n.length,2)}" spellcheck="false" autocomplete="off">`;}
+    return p ? `<span class="lit">${escHtml(p)}</span>` : '';
+  }).join('');
+}
+function readCommand(codeEl){
+  let out='';
+  codeEl.childNodes.forEach(node=>{
+    if(node.nodeType===1 && node.classList.contains('ph')){const v=node.value.trim();out+=v?v:'‹'+node.dataset.ph+'›';}
+    else{out+=node.textContent;}
+  });
+  return out;
+}
+const cmdRow=(cmd,explain)=>`<div class="cmd"><code class="cmd-code">${buildCommandHTML(cmd)}</code><button class="copy" data-explain="${escAttr(explain)}" aria-label="Copy expression">copy</button></div>`;
+
+const content=document.getElementById('content'),index=document.getElementById('index');
+function addChip(label,target,lead){const a=document.createElement('a');a.href='#'+target;a.textContent=label;a.dataset.target=target;if(lead)a.classList.add('lead');index.appendChild(a);}
+addChip('★ Scenarios','scenarios',true); addChip('★ Mental model','reference',true);
+DATA.forEach(t=>addChip(t.title.split('(')[0].trim(),t.id));
+
+document.getElementById('glossList').innerHTML=GLOSSARY.map(([t,d])=>`<div><dt>${escHtml(t)}</dt><dd>${escHtml(d)}</dd></div>`).join('');
+
+const scn=document.createElement('section');scn.id='scenarios';
+let sH=`<div class="section-head"><h2>Scenarios &amp; Recipes</h2><span class="meta">"how do I…" → exact expression</span></div>`;
+SCENARIOS.forEach((s,i)=>{
+  let body=''; if(s.when) body+=`<p class="scn-when">${escHtml(s.when)}</p>`; let sb=s.q;
+  s.blocks.forEach(b=>{
+    body+=`<div class="scn-block">`; if(b.label) body+=`<div class="block-label">${escHtml(b.label)}</div>`; body+=`<ol class="steps">`;
+    b.steps.forEach(([c,n])=>{sb+=' '+c+' '+n; body+=`<li class="step"><span class="step-n">•</span><div class="step-main">${cmdRow(c,n)}<div class="step-note">${escHtml(n)}</div></div></li>`;});
+    body+=`</ol>`; if(b.steps.length>1) body+=`<button class="copy-all">Copy these steps</button>`; body+=`</div>`;
+  });
+  sH+=`<div class="scenario searchable" data-search="${escAttr(sb.toLowerCase())}"><button class="scn-head" aria-expanded="false"><span class="scn-icon">${i+1}</span><span class="scn-q">${escHtml(s.q)}</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="scn-body"><div class="scn-inner"><div class="scn-pad">${body}</div></div></div></div>`;
+});
+scn.innerHTML=sH; content.appendChild(scn);
+document.querySelectorAll('.scn-block .steps').forEach(ol=>ol.querySelectorAll('.step-n').forEach((n,i)=>n.textContent=i+1));
+
+const ref=document.createElement('section');ref.id='reference';
+const optHtml=OPT_TOKENS.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('');
+const strHtml=STREAM_TOKENS.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('');
+const buildHtml=BUILD.map(([c,desc,ex])=>`<div class="cmd-block searchable" data-search="${escAttr((c+' '+desc+' '+ex).toLowerCase())}">${cmdRow(c,ex)}<div class="desc">${escHtml(desc)}</div></div>`).join('');
+ref.innerHTML=`<div class="section-head"><h2>The Mental Model</h2><span class="meta">pipelines · laziness · unwrapping</span></div><div class="topic"><button class="topic-head" aria-expanded="false"><span class="num">★</span><span class="topic-title">Pipelines, Laziness &amp; the Two APIs</span><span class="topic-sub">Optional · Stream</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="topic-body"><div class="topic-body-inner"><div class="topic-pad"><div class="group-label">The key idea</div><p class="conv-rule">Both APIs are about <code>composing operations</code> without writing loops or null checks. A Stream pipeline runs nothing until a terminal operation fires — and it only processes as many elements as the terminal needs. An Optional is a single-element version of the same idea: present or absent, always explicit.</p>${buildHtml}<div class="group-label">Optional quick-ref</div><div class="types">${optHtml}</div><div class="group-label">Stream quick-ref</div><div class="types">${strHtml}</div></div></div></div></div>`;
+content.appendChild(ref);
+
+DATA.forEach((topic,i)=>{
+  const sec=document.createElement('section');sec.id=topic.id;let gh='';
+  topic.groups.forEach(g=>{
+    gh+=`<div class="group"><div class="group-label">${escHtml(g.label)}</div>`;
+    g.items.forEach(([c,desc,ex])=>{gh+=`<div class="cmd-block searchable" data-search="${escAttr((c+' '+desc+' '+(ex||'')).toLowerCase())}">${cmdRow(c,ex||desc)}<div class="desc">${escHtml(desc)}</div></div>`;});
+    gh+=`</div>`;
+  });
+  sec.innerHTML=`<div class="topic"><button class="topic-head" aria-expanded="false"><span class="num">${String(i+1).padStart(2,'0')}</span><span class="topic-title">${escHtml(topic.title)}</span><span class="topic-sub">${escHtml(topic.sub)}</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">${gh}</div></div></div></div>`;
+  content.appendChild(sec);
+});
+
+function setOpen(el,open){el.classList.toggle('open',open);const h=el.querySelector('[aria-expanded]');if(h)h.setAttribute('aria-expanded',open);}
+document.querySelectorAll('.topic-head, .scn-head').forEach(h=>h.addEventListener('click',()=>{const t=h.closest('.topic, .scenario');setOpen(t,!t.classList.contains('open'));}));
+document.getElementById('expandAll').onclick=()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,true));
+document.getElementById('collapseAll').onclick=()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,false));
+index.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{const s=document.getElementById(a.dataset.target);const acc=s.querySelector('.topic, .scenario');if(acc)setOpen(acc,true);}));
+
+const glossary=document.getElementById('glossary'),glossaryBtn=document.getElementById('glossaryBtn');
+glossaryBtn.onclick=()=>{const o=glossary.classList.toggle('open');glossaryBtn.classList.toggle('active',o);};
+
+const themeBtn=document.getElementById('themeBtn');
+function applyTheme(mode){document.documentElement.setAttribute('data-theme',mode);themeBtn.textContent=mode==='dark'?'☀ Light':'☾ Dark';}
+themeBtn.onclick=()=>applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
+applyTheme('dark');
+
+content.addEventListener('input',e=>{
+  const inp=e.target; if(!inp.classList||!inp.classList.contains('ph')) return;
+  inp.size=Math.max(inp.value.length||inp.placeholder.length,2); inp.classList.toggle('filled',inp.value.trim().length>0);
+  inp.closest('.cmd-code').querySelectorAll('.ph').forEach(o=>{if(o!==inp&&o.dataset.ph===inp.dataset.ph){o.value=inp.value;o.size=Math.max(o.value.length||o.placeholder.length,2);o.classList.toggle('filled',o.value.trim().length>0);}});
+});
+content.addEventListener('click',e=>{if(e.target.classList&&e.target.classList.contains('ph'))e.stopPropagation();});
+
+const toast=document.getElementById('toast'),toastCmd=document.getElementById('toastCmd'),toastBody=document.getElementById('toastBody');let toastTimer;
+function showToast(cmd,ex){toastCmd.textContent=cmd;toastBody.textContent=ex;toast.classList.remove('show');void toast.offsetWidth;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),7000);}
+document.getElementById('toastClose').onclick=()=>toast.classList.remove('show');
+
+content.addEventListener('click',e=>{
+  const btn=e.target.closest('.copy');
+  if(btn){const code=btn.parentElement.querySelector('.cmd-code');const text=readCommand(code);
+    navigator.clipboard.writeText(text).then(()=>{btn.textContent='copied';btn.classList.add('done');setTimeout(()=>{btn.textContent='copy';btn.classList.remove('done');},1300);showToast(text,btn.dataset.explain);}); return;}
+  const ca=e.target.closest('.copy-all');
+  if(ca){const block=ca.closest('.scn-block');const text=[...block.querySelectorAll('.cmd-code')].map(readCommand).join('\n');
+    navigator.clipboard.writeText(text).then(()=>{ca.textContent='copied all';ca.classList.add('done');setTimeout(()=>{ca.textContent='Copy these steps';ca.classList.remove('done');},1500);showToast(text,'The pipeline pieces in order. Fill any blanks, then chain them in your Java method.');}); }
+});
+
+const search=document.getElementById('search'),noResults=document.getElementById('noResults');
+search.addEventListener('input',()=>{
+  const q=search.value.trim().toLowerCase();
+  document.querySelectorAll('.searchable').forEach(el=>{el.style.display=(!q||el.dataset.search.includes(q))?'':'none';});
+  document.querySelectorAll('.group').forEach(g=>{g.style.display=[...g.querySelectorAll('.searchable')].some(e=>e.style.display!=='none')?'':'none';});
+  let any=false;
+  document.querySelectorAll('main section').forEach(sec=>{
+    const vis=[...sec.querySelectorAll('.searchable')].some(e=>e.style.display!=='none');sec.style.display=vis?'':'none';
+    if(vis){any=true;if(q){sec.querySelectorAll('.topic').forEach(t=>{if([...t.querySelectorAll('.searchable')].some(e=>e.style.display!=='none'))setOpen(t,true);});sec.querySelectorAll('.scenario.searchable').forEach(s=>{if(s.style.display!=='none')setOpen(s,true);});}}
+  });
+  noResults.style.display=any?'none':'block';
+});
+
+setOpen(document.querySelector('#scenarios .scenario'),true);
+setOpen(document.querySelector('#opt-create .topic'),true);
+</script>
+</body>
+</html>

@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visualforce — Cheat Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#e9f0ec;
+    --paper:#ffffff;
+    --ink:#13241c;
+    --ink-soft:#4d6157;
+    --line:#d8e4dd;
+    --line-strong:#c2d4cb;
+    --accent:#059669;
+    --accent-soft:#10b981;
+    --green:#16a34a;
+    --code-bg:#0e1a15;
+    --code-ink:#e6f0ea;
+    --code-dim:#7d9389;
+    --code-gold:#fbbf24;
+    --code-green:#34d399;
+    --on-accent:#ffffff;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--ink);
+    font-family:'Albert Sans',system-ui,sans-serif;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(var(--line) 0.6px,transparent 0.6px);
+    background-size:22px 22px;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px}
+
+  /* Header */
+  header{padding:64px 0 26px}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  h1{font-family:'Manrope',sans-serif;font-weight:800;font-size:clamp(2.4rem,8vw,4.1rem);line-height:.98;letter-spacing:-.03em;margin-bottom:16px}
+  h1 .mark{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:.5em;font-weight:600}
+  .lede{font-size:1.05rem;color:var(--ink-soft);max-width:54ch}
+  .lede code{font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--accent)}
+  .hint{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);margin-top:14px;border-left:2px solid var(--accent);padding-left:10px}
+
+  /* Controls */
+  .controls{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 70%,transparent);padding:18px 0 14px;margin-bottom:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:200px;position:relative}
+  .search input{width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:12px 14px 12px 40px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+  .search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(5,150,105,.16)}
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.45}
+  .btn{font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.04em;padding:11px 16px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink-soft);cursor:pointer;transition:all .18s;white-space:nowrap}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+
+  /* Glossary panel */
+  .panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s ease}
+  .panel.open{grid-template-rows:1fr;margin-bottom:26px}
+  .panel-inner{overflow:hidden}
+  .panel-pad{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);padding:20px 22px;margin-top:2px}
+  .panel-pad h3{font-family:'Manrope',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:3px}
+  .panel-pad .sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);margin-bottom:16px}
+  .gloss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:15px 24px}
+  .gloss dt{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent);margin-bottom:3px}
+  .gloss dd{font-size:.9rem;color:var(--ink-soft);line-height:1.5}
+
+  /* Index */
+  .index{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:34px;padding-bottom:30px;border-bottom:1px solid var(--line)}
+  .index a{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:99px;transition:all .15s}
+  .index a:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .index a.lead{border-color:var(--accent);color:var(--accent)}
+  .index a.lead:hover{background:var(--accent);color:var(--on-accent)}
+
+  /* Section header */
+  .section-head{display:flex;align-items:baseline;gap:12px;margin:34px 0 16px;flex-wrap:wrap}
+  .section-head h2{font-family:'Manrope',sans-serif;font-size:1.7rem;font-weight:700;letter-spacing:-.02em}
+  .section-head .meta{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim)}
+
+  /* Accordions */
+  section{margin-bottom:14px;scroll-margin-top:90px}
+  .topic{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden}
+  .topic-head{display:flex;align-items:center;gap:14px;width:100%;padding:18px 20px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .topic-head:hover .topic-title{color:var(--accent)}
+  .num{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);border:1px solid var(--line-strong);border-radius:6px;padding:3px 7px;flex-shrink:0}
+  .topic-title{font-family:'Manrope',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:-.01em;transition:color .2s;flex:1}
+  .topic-sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);font-weight:400}
+  .chev{flex-shrink:0;transition:transform .3s ease;color:var(--ink-soft)}
+  .topic.open .chev,.scenario.open .chev{transform:rotate(90deg)}
+  .topic-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .topic.open .topic-body{grid-template-rows:1fr}
+  .topic-body-inner{overflow:hidden}
+  .topic-pad{padding:0 20px 22px;border-top:1px solid var(--line)}
+  .group-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-soft);margin:22px 0 10px}
+
+  /* Scenario cards */
+  .scenario{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden;margin-bottom:10px}
+  .scn-head{display:flex;align-items:center;gap:13px;width:100%;padding:16px 18px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .scn-head:hover .scn-q{color:var(--accent)}
+  .scn-icon{flex-shrink:0;width:27px;height:27px;border-radius:7px;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:600}
+  .scn-q{flex:1;font-family:'Manrope',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:-.01em;transition:color .2s}
+  .scn-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .scenario.open .scn-body{grid-template-rows:1fr}
+  .scn-inner{overflow:hidden}
+  .scn-pad{padding:2px 18px 18px;border-top:1px solid var(--line)}
+  .scn-when{font-size:.92rem;color:var(--ink-soft);margin:14px 0 2px;font-style:italic}
+  .scn-block{margin-top:14px}
+  .block-label{font-family:'JetBrains Mono',monospace;font-size:.71rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-soft);margin-bottom:10px}
+  .steps{list-style:none}
+  .step{display:flex;gap:11px;margin-bottom:11px}
+  .step-n{flex-shrink:0;width:22px;height:22px;margin-top:7px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--accent)}
+  .step-main{flex:1;min-width:0}
+  .step-note{font-size:.88rem;color:var(--ink-soft);margin:3px 0 0 2px}
+  .copy-all{margin-top:4px;font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:9px 14px;border:1px dashed var(--line-strong);border-radius:8px;background:none;color:var(--ink-soft);cursor:pointer;transition:all .15s}
+  .copy-all:hover{border-color:var(--accent);color:var(--accent)}
+  .copy-all.done{color:var(--green);border-color:var(--green)}
+
+  /* Reference grids */
+  .types{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:8px;margin:6px 0 18px}
+  .type{display:flex;gap:9px;align-items:baseline;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--code-bg)}
+  .type b{font-family:'JetBrains Mono',monospace;color:var(--code-gold);font-size:.78rem;flex-shrink:0;white-space:nowrap}
+  .type span{font-size:.84rem;color:var(--code-dim)}
+  .conv-rule{font-size:.92rem;color:var(--ink-soft);margin-bottom:8px}
+  .conv-rule code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+
+  /* Code row */
+  .cmd{display:flex;align-items:stretch;gap:0;margin-bottom:8px;border-radius:8px;overflow:hidden;border:1px solid #1d2c25;background:var(--code-bg)}
+  .cmd-code{flex:1;font-family:'JetBrains Mono',monospace;font-size:.84rem;color:var(--code-ink);padding:9px 14px;overflow-x:auto;white-space:pre;line-height:1.7;display:flex;align-items:center;flex-wrap:wrap}
+  .cmd-code .lit{white-space:pre}
+  .ph{font-family:'JetBrains Mono',monospace;font-size:.84rem;background:rgba(251,191,36,.15);color:var(--code-gold);border:none;border-bottom:1px dashed var(--code-gold);padding:1px 2px;margin:0 1px;outline:none;border-radius:3px 3px 0 0;transition:background .15s;min-width:1ch}
+  .ph::placeholder{color:var(--code-gold);opacity:.6;font-style:italic}
+  .ph:focus{background:rgba(251,191,36,.28)}
+  .ph.filled{color:var(--code-green);border-bottom-color:var(--code-green);background:rgba(52,211,153,.16)}
+  .copy{flex-shrink:0;border:none;border-left:1px solid #1d2c25;background:#16261f;color:var(--code-dim);font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:0 15px;cursor:pointer;transition:all .15s;letter-spacing:.05em;align-self:stretch}
+  .copy:hover{background:#1d3029;color:var(--code-ink)}
+  .copy.done{color:var(--code-green)}
+  .desc{font-size:.92rem;color:var(--ink-soft);margin:1px 0 13px 2px}
+  .desc code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+
+  .no-results{display:none;text-align:center;padding:50px 0;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;font-size:.9rem}
+
+  footer{padding:40px 0 70px;margin-top:30px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--code-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  footer a{color:var(--accent);text-decoration:none}
+
+  /* Toast */
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);width:min(560px,calc(100% - 36px));z-index:60;background:var(--paper);border:1px solid var(--line-strong);border-radius:14px;box-shadow:0 18px 50px -12px rgba(10,40,28,.4);padding:18px 20px 19px;opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.2,.9,.25,1),opacity .35s}
+  .toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+  .toast-top{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+  .toast-badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--on-accent);background:var(--green);padding:3px 8px;border-radius:99px}
+  .toast-title{font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);flex:1}
+  .toast-close{border:none;background:none;cursor:pointer;color:var(--ink-soft);font-size:1.2rem;line-height:1;padding:2px 4px;border-radius:6px}
+  .toast-close:hover{color:var(--accent);background:var(--line)}
+  .toast-cmd{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--code-ink);background:var(--code-bg);border-radius:8px;padding:9px 12px;margin-bottom:12px;overflow-x:auto;white-space:pre;max-height:150px}
+  .toast-body{font-size:1rem;color:var(--ink);line-height:1.6}
+  .toast-progress{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);border-radius:0 0 0 14px;width:100%}
+  .toast.show .toast-progress{animation:drain 7s linear forwards}
+  @keyframes drain{from{width:100%}to{width:0%}}
+
+  ::selection{background:var(--accent);color:var(--on-accent)}
+  @media(max-width:540px){
+    header{padding:42px 0 22px}
+    .topic-sub{display:none}
+    .cmd-code{font-size:.79rem}
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="top">
+
+  <header>
+    <div class="kicker">Salesforce · Visualforce · v1</div>
+    <h1><span class="mark">&lt;apex:/&gt;</span> visualforce cheat sheet</h1>
+    <p class="lede">Pages, components, the <code>{!...}</code> expression language, controllers, AJAX, and remoting — the markup side of Salesforce. Copy any tag to see what it does.</p>
+    <p class="hint">⌨ Gold blanks like ‹field› are editable; the literal &lt;apex:&gt; tags stay put. ⊕ Copying explains the tag.</p>
+  </header>
+
+  <div class="controls">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="Search…  e.g. inputField, rerender, repeat, remoting" autocomplete="off">
+    </label>
+    <button class="btn" id="glossaryBtn">Glossary</button>
+    <button class="btn" id="expandAll">Expand all</button>
+    <button class="btn" id="collapseAll">Collapse all</button>
+  </div>
+
+  <!-- Glossary -->
+  <div class="panel glossary" id="glossary">
+    <div class="panel-inner"><div class="panel-pad">
+      <h3>Visualforce glossary</h3>
+      <div class="sub">the markup-side words people throw around, in plain language</div>
+      <dl class="gloss gloss-grid">
+        <div><dt>Visualforce</dt><dd>Salesforce's tag-based UI framework — markup pages backed by Apex controllers.</dd></div>
+        <div><dt>component</dt><dd>An <code>&lt;apex:…&gt;</code> tag that renders a piece of UI, like a button or a table.</dd></div>
+        <div><dt>expression {!…}</dt><dd>Merge-field syntax that pulls data, reads properties, or wires actions to the controller.</dd></div>
+        <div><dt>controller</dt><dd>The Apex class that supplies a page its data and action methods.</dd></div>
+        <div><dt>standard controller</dt><dd>A built-in controller for one object — gives you save/edit/delete and the record for free.</dd></div>
+        <div><dt>standard list controller</dt><dd>A built-in controller for a set of records, with pagination, via recordSetVar.</dd></div>
+        <div><dt>custom controller</dt><dd>Your own Apex class fully driving the page.</dd></div>
+        <div><dt>controller extension</dt><dd>An Apex class that adds methods on top of a standard controller.</dd></div>
+        <div><dt>getter / setter</dt><dd>Methods (or properties) the page reads and writes through {!…}.</dd></div>
+        <div><dt>action method</dt><dd>A controller method run by a button/link; returns a PageReference (navigate) or null (stay).</dd></div>
+        <div><dt>PageReference</dt><dd>An object representing a URL or page to send the user to.</dd></div>
+        <div><dt>view state</dt><dd>The page's serialized state posted back on every request. Keep it small — there's a 170 KB limit.</dd></div>
+        <div><dt>reRender</dt><dd>An AJAX partial refresh of named components, without reloading the whole page.</dd></div>
+        <div><dt>$-globals</dt><dd>System merge variables like $User, $Label, $Resource, $Action.</dd></div>
+        <div><dt>static resource</dt><dd>An uploaded JS/CSS/image/zip file, referenced with $Resource.</dd></div>
+        <div><dt>JavaScript Remoting</dt><dd>Calling @RemoteAction Apex methods straight from JavaScript — fast and view-state-free.</dd></div>
+        <div><dt>action binding</dt><dd>Wiring a UI event (a click, a change) to a controller method.</dd></div>
+        <div><dt>recordSetVar</dt><dd>The variable that holds a list controller's records for iteration.</dd></div>
+        <div><dt>composition / template</dt><dd>apex:composition / insert / define — reusable page layouts.</dd></div>
+        <div><dt>Lightning stylesheets</dt><dd>SLDS styling for Visualforce via lightningStylesheets="true".</dd></div>
+      </dl>
+    </div></div>
+  </div>
+
+  <nav class="index" id="index"></nav>
+
+  <main id="content"></main>
+  <div class="no-results" id="noResults">Nothing matches that search.</div>
+
+  <footer>
+    <span>Copy a tag to learn it. Empty blanks copy as ‹placeholder›.</span>
+    <span><a href="#top">↑ back to top</a></span>
+  </footer>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <div class="toast-top">
+    <span class="toast-badge">copied</span>
+    <span class="toast-title">what this does</span>
+    <button class="toast-close" id="toastClose" aria-label="Dismiss">×</button>
+  </div>
+  <div class="toast-cmd" id="toastCmd"></div>
+  <div class="toast-body" id="toastBody"></div>
+  <div class="toast-progress"></div>
+</div>
+
+<script>
+/* ===================== SCENARIOS / RECIPES ===================== */
+const SCENARIOS = [
+  {
+    q:"Display a record read-only",
+    when:"Show one record's details, no edit form. The standard controller loads it from ?id= in the URL.",
+    blocks:[ { label:"Bind, then lay out fields", steps:[
+      ["<apex:page standardController=\"‹Account›\">","Bind the page to the object so {!Account} is the current record."],
+      ["<apex:pageBlock><apex:pageBlockSection><apex:outputField value=\"{!‹Account.Name›}\"/></apex:pageBlockSection></apex:pageBlock>","Use outputField inside a section — labels and formatting come for free."],
+    ]}]
+  },
+  {
+    q:"Build an editable form that saves",
+    when:"With a standard controller you get save() for nothing.",
+    blocks:[ { label:"Form → inputs → button", steps:[
+      ["<apex:form>","Wrap everything that posts back in a form."],
+      ["<apex:inputField value=\"{!‹Account.Name›}\"/>","Bind each input to a field; inputField renders the correct control and validation."],
+      ["<apex:commandButton value=\"Save\" action=\"{!save}\"/>","The standard controller's save() persists the record — no Apex needed."],
+    ]}]
+  },
+  {
+    q:"Show a table of records",
+    when:"Loop a list from the controller into a styled table.",
+    blocks:[ { label:"Expose a list, then iterate", steps:[
+      ["public List<Account> getAccounts() { return [SELECT Id, Name FROM Account LIMIT 50]; }","In the controller, return the list from a getter named getAccounts."],
+      ["<apex:pageBlockTable value=\"{!accounts}\" var=\"a\"><apex:column value=\"{!a.Name}\"/></apex:pageBlockTable>","Loop {!accounts} with pageBlockTable; one apex:column per field."],
+    ]}]
+  },
+  {
+    q:"Read a URL parameter (?id=...)",
+    when:"Grab a query-string value inside the controller.",
+    blocks:[ { label:"From the controller", steps:[
+      ["String ‹recId› = ApexPages.currentPage().getParameters().get('id');","Reads ?id=… (or any parameter) from the current page's URL."],
+    ]}]
+  },
+  {
+    q:"Refresh part of the page (AJAX, no reload)",
+    when:"Update just one area after an action instead of reloading everything.",
+    blocks:[ { label:"reRender a named panel", steps:[
+      ["<apex:commandButton value=\"Search\" action=\"{!‹search›}\" reRender=\"‹results›\"/>","The button calls an action and refreshes only the component(s) named in reRender."],
+      ["<apex:outputPanel id=\"‹results›\">{!‹resultText›}</apex:outputPanel>","Wrap the area to update in an outputPanel carrying that id."],
+    ]}]
+  },
+  {
+    q:"Drive a page with a custom controller",
+    when:"No standard object — your own class supplies everything.",
+    blocks:[ { label:"Point the page at your class", steps:[
+      ["<apex:page controller=\"‹MyController›\">","Tell the page which Apex class controls it."],
+      ["public class ‹MyController› { public String ‹greeting› { get { return 'Hi'; } } }","Expose properties/getters the page reads via {!greeting}."],
+    ]}]
+  },
+  {
+    q:"Extend a standard controller",
+    when:"Keep the free CRUD, but add your own logic.",
+    blocks:[ { label:"standardController + extensions", steps:[
+      ["<apex:page standardController=\"‹Account›\" extensions=\"‹AccountExt›\">","Standard behavior stays; your extension adds methods."],
+      ["public class ‹AccountExt› { public ‹AccountExt›(ApexPages.StandardController ‹sc›) { } }","The extension's constructor receives the StandardController to reach the record."],
+    ]}]
+  },
+  {
+    q:"Call Apex from JavaScript (Remoting)",
+    when:"Fast, JSON-based calls with no form post or view state.",
+    blocks:[ { label:"Annotate, then invoke", steps:[
+      ["@RemoteAction global static String ‹ping›() { return 'pong'; }","Mark a static Apex method @RemoteAction so JavaScript can call it directly."],
+      ["Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.‹MyCtrl.ping›}', function(res, ev){ console.log(res); });","Invoke it from JS and handle the result in the callback."],
+    ]}]
+  },
+  {
+    q:"Add a static resource (JS / CSS / image)",
+    when:"Reference uploaded assets from the page.",
+    blocks:[ { label:"$Resource and URLFOR", steps:[
+      ["<apex:stylesheet value=\"{!$Resource.‹myStyles›}\"/>","Reference a static resource by its name with $Resource."],
+      ["<apex:image value=\"{!URLFOR($Resource.‹assets›, '‹img/logo.png›')}\"/>","For a file inside a zip resource, use URLFOR with the inner path."],
+    ]}]
+  },
+];
+
+/* ===================== REFERENCE: ANATOMY OF A PAGE ===================== */
+const GLOBALS = [
+  ["$User","the running user: {!$User.FirstName}"],
+  ["$Profile","the user's profile fields"],
+  ["$Label","custom labels: {!$Label.My_Label}"],
+  ["$Resource","static resources: {!$Resource.myCss}"],
+  ["$Action","standard actions: {!$Action.Account.New}"],
+  ["$Page","other VF pages: {!$Page.OtherPage}"],
+  ["$Component","a component's generated DOM id"],
+  ["$ObjectType","object & field describe metadata"],
+  ["$Setup","custom settings / metadata values"],
+  ["$CurrentPage","current URL and its parameters"],
+];
+const FUNCS = [
+  ["IF(c, a, b)","a when c is true, else b"],
+  ["AND() OR() NOT()","boolean logic"],
+  ["ISBLANK(x)","true when x is empty"],
+  ["BLANKVALUE(x, y)","x, or y if x is blank"],
+  ["CASE(x, …)","multi-branch switch"],
+  ["URLFOR(t, id, p)","build a URL or link"],
+  ["TEXT(x)","convert a value to text"],
+  ["LEN(s)","length of a string"],
+  ["CONTAINS(s, sub)","does s contain sub?"],
+  ["BEGINS(s, pre)","does s start with pre?"],
+];
+const SKELETON = [
+  ["<apex:page controller=\"‹MyController›\"></apex:page>","A custom-controller page.","The outermost tag of every Visualforce page — 'controller' points to your Apex class; everything renders inside it."],
+  ["<apex:page standardController=\"‹Account›\"></apex:page>","A record-bound page.","'standardController' gives free data binding plus save/edit/delete, with the record available as {!Account}."],
+];
+
+/* ===================== COMPONENT REFERENCE ===================== */
+const DATA = [
+  { id:"page", title:"Page Basics", sub:"the <apex:page> tag", groups:[
+    { label:"Controllers & attributes", items:[
+      ["<apex:page standardController=\"‹Account›\">","Bind to one record.","A standard controller — free CRUD and the record as {!Account}. Reads ?id= from the URL."],
+      ["<apex:page controller=\"‹MyController›\">","Use a custom controller.","Drives the whole page from your own Apex class."],
+      ["<apex:page standardController=\"‹Account›\" extensions=\"‹MyExt›\">","Extend a standard controller.","Keep the standard behavior and add your own methods via an extension class."],
+      ["<apex:page standardController=\"‹Account›\" recordSetVar=\"‹accounts›\">","A list page.","A standard LIST controller — iterate many records via {!accounts} and get free pagination."],
+    ]},
+    { label:"Page options", items:[
+      ["<apex:page lightningStylesheets=\"true\">","Apply SLDS styling.","Styles standard components with the Lightning Design System for a modern look."],
+      ["<apex:page showHeader=\"false\" sidebar=\"false\">","A bare page.","Hides the Salesforce header and sidebar — common for embedded or print views."],
+      ["<apex:page action=\"{!‹doInit›}\">","Run code on load.","Calls a controller method when the page first loads — used to initialize or redirect."],
+      ["<apex:page renderAs=\"pdf\">","Render as a PDF.","Outputs the page as a downloadable PDF instead of HTML."],
+    ]},
+  ]},
+  { id:"expr", title:"Expressions {!...}", sub:"merge fields & methods", groups:[
+    { label:"Pull data", items:[
+      ["{!‹Account.Name›}","A field value.","Outputs a field from the controller's record or a property — read-only display."],
+      ["{!‹myProperty›}","A controller property.","Outputs the value of a getter/property on the controller."],
+      ["{!‹myMethod›}","Bind a method.","On an action attribute it wires a click to a controller method; as a value it calls a getter."],
+    ]},
+    { label:"Globals & functions", items:[
+      ["{!$User.FirstName}","A global variable.","$-globals expose system data: $User, $Label, $Resource, $Page, and more."],
+      ["{!$Label.‹My_Label›}","A custom label.","Outputs a translatable custom label by its API name."],
+      ["{!IF(‹cond›, '‹yes›', '‹no›')}","A conditional value.","An inline if/else inside an expression — handy for swapping text or CSS."],
+      ["{!URLFOR($Action.‹Account›.New)}","Build a URL.","URLFOR creates links to standard actions, pages, or static-resource files."],
+    ]},
+  ]},
+  { id:"form", title:"Forms & Input", sub:"bind & submit", groups:[
+    { label:"Inputs", items:[
+      ["<apex:form></apex:form>","A form.","Wraps inputs and buttons. Any user input or postback action needs a form around it."],
+      ["<apex:inputField value=\"{!‹Account.Industry›}\"/>","Bind to a field.","Renders the right control for the field's type and respects its label, help text, and validation."],
+      ["<apex:inputText value=\"{!‹searchTerm›}\"/>","A plain text input.","Binds to a String property when there's no underlying field."],
+      ["<apex:inputCheckbox value=\"{!‹flag›}\"/>","A checkbox.","Binds to a Boolean. See also inputTextarea, selectList, and selectRadio."],
+    ]},
+    { label:"Submit", items:[
+      ["<apex:commandButton value=\"Save\" action=\"{!‹save›}\"/>","A button that runs a method.","Posts the form and calls the controller action. With a standard controller, action=\"{!save}\" saves for free."],
+      ["<apex:commandLink value=\"Edit\" action=\"{!‹edit›}\"/>","A link that runs a method.","Like a command button, but rendered as a hyperlink."],
+      ["<apex:param name=\"‹id›\" value=\"{!‹acct.Id›}\"/>","Pass a parameter.","Nested inside a command/link/actionFunction to send a value to the controller."],
+    ]},
+  ]},
+  { id:"output", title:"Output & Iteration", sub:"display lists & tables", groups:[
+    { label:"Tables", items:[
+      ["<apex:pageBlockTable value=\"{!‹accounts›}\" var=\"‹a›\"></apex:pageBlockTable>","A styled table.","Loops a list and renders Salesforce-styled rows. Put apex:column tags inside."],
+      ["<apex:column value=\"{!‹a.Name›}\"/>","A table column.","One column per field. Use headerValue or a header facet to customize the header."],
+      ["<apex:dataTable value=\"{!‹items›}\" var=\"‹i›\"></apex:dataTable>","An unstyled table.","Like pageBlockTable but with no Salesforce styling — full control via your own CSS."],
+    ]},
+    { label:"Repeat & output", items:[
+      ["<apex:repeat value=\"{!‹items›}\" var=\"‹i›\"></apex:repeat>","Loop anything.","Repeats its body for each item — build any custom markup, not just tables."],
+      ["<apex:outputText value=\"{!‹Account.Name›}\"/>","Output text.","Displays a value, with optional formatting and escaping control."],
+      ["<apex:outputField value=\"{!‹Account.Industry›}\"/>","Output a field.","Shows a field read-only, with its proper label and format."],
+      ["<apex:variable var=\"‹idx›\" value=\"{!0}\"/>","Declare a local variable.","Defines a page-level variable — e.g. a counter used inside a repeat."],
+    ]},
+  ]},
+  { id:"layout", title:"Page Layout", sub:"blocks, sections, tabs", groups:[
+    { label:"Blocks & sections", items:[
+      ["<apex:pageBlock title=\"‹Details›\"></apex:pageBlock>","A bordered block.","The classic Salesforce detail-page container. Holds sections and buttons."],
+      ["<apex:pageBlockSection title=\"‹Info›\" columns=\"2\"></apex:pageBlockSection>","A field section.","Lays fields out in a labeled, multi-column grid; inputField/outputField inside auto-align."],
+      ["<apex:pageBlockButtons></apex:pageBlockButtons>","Block buttons.","Places command buttons into the block's header and footer bars."],
+      ["<apex:pageBlockSectionItem></apex:pageBlockSectionItem>","A custom section cell.","Lets you put your own label + control pair into a pageBlockSection grid."],
+    ]},
+    { label:"Tabs & grids", items:[
+      ["<apex:tabPanel><apex:tab label=\"‹One›\"></apex:tab></apex:tabPanel>","Tabbed content.","Renders a set of tabs; each apex:tab is one panel."],
+      ["<apex:panelGrid columns=\"2\"></apex:panelGrid>","A simple grid.","Arranges child components into an HTML table with the given number of columns."],
+    ]},
+  ]},
+  { id:"ajax", title:"AJAX & Partial Refresh", sub:"update without reload", groups:[
+    { label:"Trigger an action", items:[
+      ["<apex:commandButton value=\"Go\" action=\"{!‹run›}\" reRender=\"‹panel›\"/>","Refresh part of the page.","reRender names the component id(s) to refresh after the action — no full reload."],
+      ["<apex:actionFunction name=\"‹refreshData›\" action=\"{!‹run›}\" reRender=\"‹panel›\"/>","Call Apex from JavaScript.","Generates a JS function (refreshData()) you call to run a controller method and rerender."],
+      ["<apex:actionSupport event=\"onchange\" action=\"{!‹run›}\" reRender=\"‹panel›\"/>","React to a DOM event.","Attaches an Apex action to an event on its parent component, e.g. a picklist's onchange."],
+      ["<apex:actionPoller action=\"{!‹refresh›}\" interval=\"15\" reRender=\"‹panel›\"/>","Poll on a timer.","Calls a controller method every N seconds — handy for live dashboards."],
+    ]},
+    { label:"Targets & feedback", items:[
+      ["<apex:outputPanel id=\"‹panel›\"></apex:outputPanel>","A refresh target.","A wrapper with an id you point reRender at. Always wrap the area you want updated."],
+      ["<apex:actionStatus id=\"‹spinner›\" startText=\"Loading…\"/>","A loading indicator.","Shows status while an AJAX request is in flight; point a component's status attribute at it."],
+      ["<apex:actionRegion></apex:actionRegion>","Isolate a submit.","Limits processing and validation to the components inside it during an AJAX action."],
+    ]},
+  ]},
+  { id:"messages", title:"Messages & Validation", sub:"show feedback", groups:[
+    { label:"Display messages", items:[
+      ["<apex:pageMessages/>","Show all messages.","Renders every message added to the page (errors, confirmations) in the standard styled box."],
+      ["<apex:messages/>","Plain message list.","Outputs the messages without the pageMessages styling."],
+      ["<apex:message for=\"‹inputId›\"/>","One field's error.","Shows the validation message tied to a specific input component."],
+      ["ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, '‹text›'));","Add a message (Apex).","From the controller, push an error/warning/confirm that <apex:pageMessages/> will display."],
+    ]},
+  ]},
+  { id:"controllers", title:"Controllers (Apex side)", sub:"feed the page", groups:[
+    { label:"Properties & actions", items:[
+      ["public String ‹searchTerm› { get; set; }","An exposed property.","The page reads it with {!searchTerm} and writes it back from inputs. get/set make it bindable."],
+      ["public PageReference ‹save›() { return null; }","An action method.","Runs on a button/link. Return null to stay on the page, or a PageReference to navigate."],
+      ["public List<Account> ‹getAccounts›() { return [SELECT Id FROM Account]; }","A getter for the page.","{!accounts} calls this. Cache the result in a property so it isn't re-queried on every reference."],
+    ]},
+    { label:"Standard controller & params", items:[
+      ["public ‹MyExt›(ApexPages.StandardController ‹stdCtrl›) { }","Extension constructor.","An extension takes the StandardController, so it can read the record via stdCtrl.getRecord()."],
+      ["String ‹id› = ApexPages.currentPage().getParameters().get('id');","Read a URL parameter.","Pulls ?id=… (or any query parameter) from the current page's URL."],
+      ["return new PageReference('/‹apex/OtherPage›');","Navigate to a page.","Returning a PageReference from an action redirects the user there."],
+    ]},
+  ]},
+  { id:"resources", title:"Static Resources & Templates", sub:"assets & reuse", groups:[
+    { label:"Include assets", items:[
+      ["<apex:includeScript value=\"{!$Resource.‹myJs›}\"/>","Include a script.","Loads a JavaScript static resource into the page."],
+      ["<apex:stylesheet value=\"{!$Resource.‹myCss›}\"/>","Include a stylesheet.","Loads a CSS static resource."],
+      ["<apex:image value=\"{!URLFOR($Resource.‹myZip›, '‹img/logo.png›')}\"/>","A file inside a zip.","URLFOR reaches a specific file inside a zipped static resource."],
+    ]},
+    { label:"Reusable layouts", items:[
+      ["<apex:composition template=\"{!$Page.‹MyTemplate›}\"></apex:composition>","Use a template page.","Pulls in a template and fills its named slots — the Visualforce way to share layout."],
+      ["<apex:define name=\"‹body›\"></apex:define>","Fill a template slot.","Supplies content for the matching <apex:insert name=\"body\"/> in the template."],
+      ["<apex:insert name=\"‹body›\"/>","Define a slot (in template).","Marks a spot in a template that consuming pages fill with apex:define."],
+      ["<apex:include pageName=\"‹Header›\"/>","Include another page.","Inlines the rendered output of another Visualforce page."],
+    ]},
+  ]},
+  { id:"js", title:"JavaScript & Remoting", sub:"call Apex from JS", groups:[
+    { label:"Remoting", items:[
+      ["@RemoteAction global static ‹String› ‹getData›(String ‹arg›) { return ''; }","A remoting method.","Annotate a static Apex method @RemoteAction so JavaScript can call it directly — no form post."],
+      ["Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.‹MyCtrl.getData›}', ‹arg›, function(result, event){ });","Invoke it from JS.","Calls the @RemoteAction method and runs your callback with the result — fast, JSON-based, no view state."],
+    ]},
+    { label:"Bridge JS & the page", items:[
+      ["'{!$Component.‹myInput›}'","Get a component's DOM id.","Resolves to the real generated HTML id of a Visualforce component so your script can find it."],
+      ["<apex:includeScript value=\"{!$Resource.‹jquery›}\"/>","Load a JS library.","Bring in jQuery or another library from a static resource before your own scripts run."],
+    ]},
+  ]},
+];
+
+/* ===================== HELPERS ===================== */
+const escAttr = s => s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+/* placeholders use guillemets ‹…› so the literal <apex:…> markup stays intact */
+const PH_SPLIT = /(‹[^›]+›)/g;
+const PH_MATCH = /^‹([^›]+)›$/;
+
+function buildCommandHTML(cmd){
+  return cmd.split(PH_SPLIT).map(p=>{
+    const m = p.match(PH_MATCH);
+    if(m){
+      const name = m[1];
+      return `<input class="ph" data-ph="${escAttr(name)}" placeholder="${escAttr(name)}" size="${Math.max(name.length,2)}" spellcheck="false" autocomplete="off">`;
+    }
+    return p ? `<span class="lit">${escHtml(p)}</span>` : '';
+  }).join('');
+}
+function readCommand(codeEl){
+  let out='';
+  codeEl.childNodes.forEach(node=>{
+    if(node.nodeType===1 && node.classList.contains('ph')){
+      const v = node.value.trim();
+      out += v ? v : '‹'+node.dataset.ph+'›';
+    } else { out += node.textContent; }
+  });
+  return out;
+}
+function cmdRow(cmd, explain){
+  return `<div class="cmd"><code class="cmd-code">${buildCommandHTML(cmd)}</code><button class="copy" data-explain="${escAttr(explain)}" aria-label="Copy tag">copy</button></div>`;
+}
+
+/* ===================== RENDER ===================== */
+const content = document.getElementById('content');
+const index = document.getElementById('index');
+
+function addChip(label, target, lead){
+  const a = document.createElement('a');
+  a.href = '#'+target; a.textContent = label; a.dataset.target = target;
+  if(lead) a.classList.add('lead');
+  index.appendChild(a);
+}
+addChip('★ Scenarios','scenarios',true);
+addChip('★ Anatomy','reference',true);
+DATA.forEach(t=>addChip(t.title.split('(')[0].trim(), t.id));
+
+/* Scenarios */
+const scnSection = document.createElement('section');
+scnSection.id = 'scenarios';
+let scnHtml = `<div class="section-head"><h2>Scenarios &amp; Recipes</h2><span class="meta">"how do I…" → exact tags</span></div>`;
+SCENARIOS.forEach((s,i)=>{
+  let body = '';
+  if(s.when) body += `<p class="scn-when">${s.when}</p>`;
+  let searchBits = s.q;
+  s.blocks.forEach(b=>{
+    body += `<div class="scn-block">`;
+    if(b.label) body += `<div class="block-label">${b.label}</div>`;
+    body += `<ol class="steps">`;
+    b.steps.forEach(([cmd,note])=>{
+      searchBits += ' '+cmd+' '+note;
+      body += `<li class="step"><span class="step-n">•</span><div class="step-main">${cmdRow(cmd,note)}<div class="step-note">${note}</div></div></li>`;
+    });
+    body += `</ol>`;
+    if(b.steps.length>1) body += `<button class="copy-all">Copy these steps</button>`;
+    body += `</div>`;
+  });
+  scnHtml += `
+    <div class="scenario searchable" data-search="${escAttr(searchBits.toLowerCase())}">
+      <button class="scn-head" aria-expanded="false">
+        <span class="scn-icon">${i+1}</span>
+        <span class="scn-q">${s.q}</span>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+      <div class="scn-body"><div class="scn-inner"><div class="scn-pad">${body}</div></div></div>
+    </div>`;
+});
+scnSection.innerHTML = scnHtml;
+content.appendChild(scnSection);
+document.querySelectorAll('.scn-block .steps').forEach(ol=>{
+  ol.querySelectorAll('.step-n').forEach((n,idx)=>n.textContent = idx+1);
+});
+
+/* Reference: anatomy of a page */
+const refSection = document.createElement('section');
+refSection.id = 'reference';
+const skeletonHtml = SKELETON.map(([cmd,desc,explain])=>{
+  const search = (cmd+' '+desc+' '+explain+' page skeleton controller').toLowerCase();
+  return `<div class="cmd-block searchable" data-search="${escAttr(search)}">${cmdRow(cmd,explain)}<div class="desc">${desc}</div></div>`;
+}).join('');
+const globalsHtml = GLOBALS.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('');
+const funcsHtml = FUNCS.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('');
+refSection.innerHTML = `
+  <div class="section-head"><h2>Anatomy of a Page</h2><span class="meta">the mental model</span></div>
+  <div class="topic">
+    <button class="topic-head" aria-expanded="false">
+      <span class="num">★</span>
+      <span class="topic-title">Skeleton, Globals &amp; Functions</span>
+      <span class="topic-sub">$-vars · {!…} helpers</span>
+      <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+    </button>
+    <div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">
+      <div class="group-label">Every page starts here</div>
+      <p class="conv-rule">A page is one <code>&lt;apex:page&gt;</code> tag with a controller. Standard controllers give you free CRUD; custom controllers give you total control. The page talks to the controller through <code>{!…}</code> expressions.</p>
+      ${skeletonHtml}
+      <div class="group-label">Global variables in {!…}</div>
+      <div class="types">${globalsHtml}</div>
+      <div class="group-label">Handy expression functions</div>
+      <div class="types">${funcsHtml}</div>
+    </div></div></div>
+  </div>`;
+content.appendChild(refSection);
+
+/* Component reference */
+DATA.forEach((topic,i)=>{
+  const section = document.createElement('section');
+  section.id = topic.id;
+  let groupsHtml = '';
+  topic.groups.forEach(g=>{
+    groupsHtml += `<div class="group"><div class="group-label">${g.label}</div>`;
+    g.items.forEach(([cmd,desc,explain])=>{
+      const search = (cmd+' '+desc+' '+(explain||'')).toLowerCase();
+      groupsHtml += `<div class="cmd-block searchable" data-search="${escAttr(search)}">${cmdRow(cmd,explain||desc)}<div class="desc">${desc}</div></div>`;
+    });
+    groupsHtml += `</div>`;
+  });
+  section.innerHTML = `
+    <div class="topic">
+      <button class="topic-head" aria-expanded="false">
+        <span class="num">${String(i+1).padStart(2,'0')}</span>
+        <span class="topic-title">${topic.title}</span>
+        <span class="topic-sub">${topic.sub}</span>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+      <div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">${groupsHtml}</div></div></div>
+    </div>`;
+  content.appendChild(section);
+});
+
+/* ===================== ACCORDION ===================== */
+function setOpen(el, open){
+  el.classList.toggle('open', open);
+  const head = el.querySelector('[aria-expanded]');
+  if(head) head.setAttribute('aria-expanded', open);
+}
+document.querySelectorAll('.topic-head, .scn-head').forEach(head=>{
+  head.addEventListener('click', ()=>{
+    const t = head.closest('.topic, .scenario');
+    setOpen(t, !t.classList.contains('open'));
+  });
+});
+document.getElementById('expandAll').onclick  = ()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,true));
+document.getElementById('collapseAll').onclick= ()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,false));
+index.querySelectorAll('a').forEach(a=>{
+  a.addEventListener('click', ()=>{
+    const sec = document.getElementById(a.dataset.target);
+    const acc = sec.querySelector('.topic, .scenario');
+    if(acc) setOpen(acc, true);
+  });
+});
+
+/* ===================== GLOSSARY TOGGLE ===================== */
+const glossary = document.getElementById('glossary');
+const glossaryBtn = document.getElementById('glossaryBtn');
+glossaryBtn.onclick = ()=>{
+  const open = glossary.classList.toggle('open');
+  glossaryBtn.classList.toggle('active', open);
+};
+
+/* ===================== PLACEHOLDER INPUTS ===================== */
+content.addEventListener('input', e=>{
+  const inp = e.target;
+  if(!inp.classList || !inp.classList.contains('ph')) return;
+  inp.size = Math.max(inp.value.length || inp.placeholder.length, 2);
+  inp.classList.toggle('filled', inp.value.trim().length>0);
+  const code = inp.closest('.cmd-code');
+  code.querySelectorAll('.ph').forEach(other=>{
+    if(other!==inp && other.dataset.ph===inp.dataset.ph){
+      other.value = inp.value;
+      other.size = Math.max(other.value.length || other.placeholder.length, 2);
+      other.classList.toggle('filled', other.value.trim().length>0);
+    }
+  });
+});
+content.addEventListener('click', e=>{
+  if(e.target.classList && e.target.classList.contains('ph')) e.stopPropagation();
+});
+
+/* ===================== TOAST ===================== */
+const toast = document.getElementById('toast');
+const toastCmd = document.getElementById('toastCmd');
+const toastBody = document.getElementById('toastBody');
+let toastTimer;
+function showToast(cmd, explanation){
+  toastCmd.textContent = cmd;
+  toastBody.textContent = explanation;
+  toast.classList.remove('show'); void toast.offsetWidth; toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toast.classList.remove('show'), 7000);
+}
+document.getElementById('toastClose').onclick = ()=>toast.classList.remove('show');
+
+/* ===================== COPY ===================== */
+content.addEventListener('click', e=>{
+  const btn = e.target.closest('.copy');
+  if(btn){
+    const code = btn.parentElement.querySelector('.cmd-code');
+    const text = readCommand(code);
+    navigator.clipboard.writeText(text).then(()=>{
+      btn.textContent='copied'; btn.classList.add('done');
+      setTimeout(()=>{ btn.textContent='copy'; btn.classList.remove('done'); },1300);
+      showToast(text, btn.dataset.explain);
+    });
+    return;
+  }
+  const ca = e.target.closest('.copy-all');
+  if(ca){
+    const block = ca.closest('.scn-block');
+    const text = [...block.querySelectorAll('.cmd-code')].map(readCommand).join('\n');
+    navigator.clipboard.writeText(text).then(()=>{
+      ca.textContent='copied all'; ca.classList.add('done');
+      setTimeout(()=>{ ca.textContent='Copy these steps'; ca.classList.remove('done'); },1500);
+      showToast(text, 'The key pieces of this recipe, in order. Fill any blanks and assemble them into your page and controller.');
+    });
+  }
+});
+
+/* ===================== SEARCH ===================== */
+const search = document.getElementById('search');
+const noResults = document.getElementById('noResults');
+search.addEventListener('input', ()=>{
+  const q = search.value.trim().toLowerCase();
+  document.querySelectorAll('.searchable').forEach(el=>{
+    el.style.display = (!q || el.dataset.search.includes(q)) ? '' : 'none';
+  });
+  document.querySelectorAll('.group').forEach(g=>{
+    const vis = [...g.querySelectorAll('.searchable')].some(e=>e.style.display!=='none');
+    g.style.display = vis ? '' : 'none';
+  });
+  let any = false;
+  document.querySelectorAll('main section').forEach(sec=>{
+    const vis = [...sec.querySelectorAll('.searchable')].some(e=>e.style.display!=='none');
+    sec.style.display = vis ? '' : 'none';
+    if(vis){
+      any = true;
+      if(q){
+        sec.querySelectorAll('.topic').forEach(t=>{
+          if([...t.querySelectorAll('.searchable')].some(e=>e.style.display!=='none')) setOpen(t,true);
+        });
+        sec.querySelectorAll('.scenario.searchable').forEach(s=>{
+          if(s.style.display!=='none') setOpen(s,true);
+        });
+      }
+    }
+  });
+  noResults.style.display = any ? 'none' : 'block';
+});
+
+/* ===================== INITIAL STATE ===================== */
+setOpen(document.querySelector('#scenarios .scenario'), true);
+setOpen(document.querySelector('#page .topic'), true);
+</script>
+</body>
+</html>

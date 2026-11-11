@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Go — Cheat Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600&family=Work+Sans:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f1620;
+    --paper:#161f2c;
+    --ink:#e8eef5;
+    --ink-soft:#9aa8b8;
+    --line:#26313f;
+    --line-strong:#34414f;
+    --accent:#00add8;
+    --accent-soft:#5dcbe4;
+    --green:#58c463;
+    --code-bg:#0a0f17;
+    --code-ink:#e6edf3;
+    --code-dim:#6f7d8d;
+    --code-blue:#79d9ec;
+    --code-str:#a5e8c0;
+    --code-green:#58c463;
+    --on-accent:#04141a;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--ink);
+    font-family:'Public Sans',system-ui,sans-serif;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(var(--line) 0.6px,transparent 0.6px);
+    background-size:22px 22px;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px}
+
+  /* Header */
+  header{padding:64px 0 30px}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  h1{font-family:'Work Sans',sans-serif;font-weight:700;font-size:clamp(2.5rem,8vw,4.2rem);line-height:.98;letter-spacing:-.025em;margin-bottom:16px}
+  h1 .mark{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:.66em}
+  .lede{font-size:1.05rem;color:var(--ink-soft);max-width:54ch}
+  .lede code{font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--accent-soft)}
+  .hint{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--code-dim);margin-top:14px;border-left:2px solid var(--accent);padding-left:10px}
+
+  /* Controls */
+  .controls{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 70%,transparent);padding:18px 0 14px;margin-bottom:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:200px;position:relative}
+  .search input{width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:12px 14px 12px 40px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+  .search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,173,216,.2)}
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.5}
+  .btn{font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.04em;padding:11px 16px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink-soft);cursor:pointer;transition:all .18s;white-space:nowrap}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+
+  /* Glossary */
+  .glossary{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s ease}
+  .glossary.open{grid-template-rows:1fr;margin-bottom:26px}
+  .glossary-inner{overflow:hidden}
+  .glossary-pad{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);padding:20px 22px;margin-top:2px}
+  .glossary-pad h3{font-family:'Work Sans',sans-serif;font-size:1.2rem;font-weight:600;margin-bottom:3px}
+  .glossary-pad .sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);margin-bottom:16px}
+  .gloss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:15px 24px}
+  .gloss dt{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent);margin-bottom:3px}
+  .gloss dd{font-size:.9rem;color:var(--ink-soft);line-height:1.5}
+
+  /* Index */
+  .index{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:34px;padding-bottom:30px;border-bottom:1px solid var(--line)}
+  .index a{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:99px;transition:all .15s}
+  .index a:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .index a.lead{border-color:var(--accent);color:var(--accent)}
+  .index a.lead:hover{background:var(--accent);color:var(--on-accent)}
+
+  /* Section header */
+  .section-head{display:flex;align-items:baseline;gap:12px;margin:34px 0 16px;flex-wrap:wrap}
+  .section-head h2{font-family:'Work Sans',sans-serif;font-size:1.7rem;font-weight:600;letter-spacing:-.02em}
+  .section-head .meta{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim)}
+
+  /* Accordions */
+  section{margin-bottom:14px;scroll-margin-top:90px}
+  .topic{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden}
+  .topic-head{display:flex;align-items:center;gap:14px;width:100%;padding:18px 20px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .topic-head:hover .topic-title{color:var(--accent)}
+  .num{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);border:1px solid var(--line-strong);border-radius:6px;padding:3px 7px;flex-shrink:0}
+  .topic-title{font-family:'Work Sans',sans-serif;font-size:1.3rem;font-weight:600;letter-spacing:-.01em;transition:color .2s;flex:1}
+  .topic-sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);font-weight:400}
+  .chev{flex-shrink:0;transition:transform .3s ease;color:var(--ink-soft)}
+  .topic.open .chev,.scenario.open .chev{transform:rotate(90deg)}
+  .topic-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .topic.open .topic-body{grid-template-rows:1fr}
+  .topic-body-inner{overflow:hidden}
+  .topic-pad{padding:0 20px 22px;border-top:1px solid var(--line)}
+  .group-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-soft);margin:22px 0 10px}
+
+  /* Scenario cards */
+  .scenario{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden;margin-bottom:10px}
+  .scn-head{display:flex;align-items:center;gap:13px;width:100%;padding:16px 18px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .scn-head:hover .scn-q{color:var(--accent)}
+  .scn-icon{flex-shrink:0;width:27px;height:27px;border-radius:7px;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:600}
+  .scn-q{flex:1;font-family:'Work Sans',sans-serif;font-size:1.05rem;font-weight:600;letter-spacing:-.01em;transition:color .2s}
+  .scn-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .scenario.open .scn-body{grid-template-rows:1fr}
+  .scn-inner{overflow:hidden}
+  .scn-pad{padding:2px 18px 18px;border-top:1px solid var(--line)}
+  .scn-when{font-size:.92rem;color:var(--ink-soft);margin:14px 0 2px;font-style:italic}
+  .scn-block{margin-top:14px}
+  .block-label{font-family:'JetBrains Mono',monospace;font-size:.71rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-soft);margin-bottom:10px}
+  .steps{list-style:none}
+  .step{display:flex;gap:11px;margin-bottom:11px}
+  .step-n{flex-shrink:0;width:22px;height:22px;margin-top:7px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--accent)}
+  .step-main{flex:1;min-width:0}
+  .step-note{font-size:.88rem;color:var(--ink-soft);margin:3px 0 0 2px}
+  .copy-all{margin-top:4px;font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:9px 14px;border:1px dashed var(--line-strong);border-radius:8px;background:none;color:var(--ink-soft);cursor:pointer;transition:all .15s}
+  .copy-all:hover{border-color:var(--accent);color:var(--accent)}
+  .copy-all.done{color:var(--green);border-color:var(--green)}
+
+  /* Reference grids */
+  .types{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:8px;margin:6px 0 18px}
+  .type{display:flex;gap:9px;align-items:baseline;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--code-bg)}
+  .type b{font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:.78rem;flex-shrink:0;white-space:nowrap}
+  .type span{font-size:.84rem;color:var(--ink-soft)}
+  .conv-rule{font-size:.92rem;color:var(--ink-soft);margin-bottom:8px}
+  .conv-rule code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+
+  /* Command row */
+  .cmd{display:flex;align-items:stretch;gap:0;margin-bottom:8px;border-radius:8px;overflow:hidden;border:1px solid #1c2733;background:var(--code-bg)}
+  .cmd-code{flex:1;font-family:'JetBrains Mono',monospace;font-size:.84rem;color:var(--code-ink);padding:9px 14px;overflow-x:auto;white-space:pre;line-height:1.7;display:flex;align-items:center;flex-wrap:wrap}
+  .cmd-code .c-flag{color:var(--code-blue)}
+  .cmd-code .c-str{color:var(--code-str)}
+  .cmd-code .lit{white-space:pre}
+  .ph{font-family:'JetBrains Mono',monospace;font-size:.84rem;background:rgba(121,217,236,.14);color:var(--code-blue);border:none;border-bottom:1px dashed var(--code-blue);padding:1px 2px;margin:0 1px;outline:none;border-radius:3px 3px 0 0;transition:background .15s;min-width:1ch}
+  .ph::placeholder{color:var(--code-blue);opacity:.55;font-style:italic}
+  .ph:focus{background:rgba(121,217,236,.28)}
+  .ph.filled{color:var(--code-green);border-bottom-color:var(--code-green);background:rgba(88,196,99,.16)}
+  .copy{flex-shrink:0;border:none;border-left:1px solid #1c2733;background:#121b25;color:var(--code-dim);font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:0 15px;cursor:pointer;transition:all .15s;letter-spacing:.05em;align-self:stretch}
+  .copy:hover{background:#18222e;color:var(--code-ink)}
+  .copy.done{color:var(--code-green)}
+  .desc{font-size:.92rem;color:var(--ink-soft);margin:1px 0 13px 2px}
+  .desc code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+
+  .no-results{display:none;text-align:center;padding:50px 0;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;font-size:.9rem}
+
+  footer{padding:40px 0 70px;margin-top:30px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--code-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  footer a{color:var(--accent);text-decoration:none}
+
+  /* Toast */
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);width:min(560px,calc(100% - 36px));z-index:60;background:var(--paper);border:1px solid var(--line-strong);border-radius:14px;box-shadow:0 18px 50px -12px rgba(0,0,0,.6);padding:18px 20px 19px;opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.2,.9,.25,1),opacity .35s}
+  .toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+  .toast-top{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+  .toast-badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--on-accent);background:var(--green);padding:3px 8px;border-radius:99px}
+  .toast-title{font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);flex:1}
+  .toast-close{border:none;background:none;cursor:pointer;color:var(--ink-soft);font-size:1.2rem;line-height:1;padding:2px 4px;border-radius:6px}
+  .toast-close:hover{color:var(--accent);background:var(--line)}
+  .toast-cmd{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--code-ink);background:var(--code-bg);border-radius:8px;padding:9px 12px;margin-bottom:12px;overflow-x:auto;white-space:pre;max-height:140px}
+  .toast-body{font-size:1rem;color:var(--ink);line-height:1.6}
+  .toast-progress{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);border-radius:0 0 0 14px;width:100%}
+  .toast.show .toast-progress{animation:drain 7s linear forwards}
+  @keyframes drain{from{width:100%}to{width:0%}}
+
+  ::selection{background:var(--accent);color:var(--on-accent)}
+  @media(max-width:540px){
+    header{padding:42px 0 22px}
+    .topic-sub{display:none}
+    .cmd-code{font-size:.78rem}
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="top">
+
+  <header>
+    <div class="kicker">Go · golang · v1</div>
+    <h1><span class="mark">go&gt;</span> go cheat sheet</h1>
+    <p class="lede">The <code>go</code> toolchain and the language idioms you reach for daily — modules, testing, goroutines, error handling — with task-based recipes up top. Fill the cyan blanks, copy, and get a plain-English explanation.</p>
+    <p class="hint">⌨ Cyan blanks inside commands are editable. ⊕ Copying explains what it does. ⊞ Hit “Glossary” for the jargon.</p>
+  </header>
+
+  <div class="controls">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="Search…  e.g. goroutine, go test, modules" autocomplete="off">
+    </label>
+    <button class="btn" id="glossaryBtn">Glossary</button>
+    <button class="btn" id="expandAll">Expand all</button>
+    <button class="btn" id="collapseAll">Collapse all</button>
+  </div>
+
+  <!-- Glossary -->
+  <div class="glossary" id="glossary">
+    <div class="glossary-inner"><div class="glossary-pad">
+      <h3>Go glossary</h3>
+      <div class="sub">the words people throw around, in plain language</div>
+      <dl class="gloss gloss-grid">
+        <div><dt>module</dt><dd>A collection of related packages versioned together, defined by a go.mod file. The unit you publish and depend on.</dd></div>
+        <div><dt>package</dt><dd>A directory of .go files compiled together. <code>package main</code> with a <code>main()</code> is an executable; others are libraries.</dd></div>
+        <div><dt>go.mod / go.sum</dt><dd>The module's name and dependency list / the checksums that verify those dependencies haven't changed.</dd></div>
+        <div><dt>goroutine</dt><dd>A function running concurrently, managed by the Go runtime. Far lighter than an OS thread — you can have thousands.</dd></div>
+        <div><dt>channel</dt><dd>A typed pipe used to send and receive values between goroutines safely.</dd></div>
+        <div><dt>slice</dt><dd>A flexible, growable view over an array — the everyday list type in Go.</dd></div>
+        <div><dt>map</dt><dd>A built-in hash table mapping keys to values.</dd></div>
+        <div><dt>struct</dt><dd>A typed grouping of named fields — Go's main way to model data.</dd></div>
+        <div><dt>interface</dt><dd>A set of method signatures. Any type with those methods satisfies it automatically — no “implements” keyword.</dd></div>
+        <div><dt>pointer</dt><dd>Holds the memory address of a value. <code>&x</code> takes an address, <code>*p</code> reads through one.</dd></div>
+        <div><dt>rune</dt><dd>A Unicode code point — an alias for int32.</dd></div>
+        <div><dt>byte</dt><dd>A single 8-bit value — an alias for uint8.</dd></div>
+        <div><dt>zero value</dt><dd>The default a variable gets with no initializer: 0, false, "", or nil. There are no uninitialized values in Go.</dd></div>
+        <div><dt>defer</dt><dd>Schedules a call to run when the surrounding function returns — used for cleanup like closing files.</dd></div>
+        <div><dt>panic / recover</dt><dd>Go's abort-and-catch mechanism for truly exceptional cases — not for everyday error handling.</dd></div>
+        <div><dt>error</dt><dd>The built-in interface for failures. Functions return errors as ordinary values you check.</dd></div>
+        <div><dt>nil</dt><dd>The zero value for pointers, slices, maps, channels, interfaces, and functions.</dd></div>
+        <div><dt>receiver</dt><dd>The value a method is attached to, written before the method name: <code>func (r T) M()</code>.</dd></div>
+        <div><dt>vendoring</dt><dd>Copying dependencies into a vendor/ folder so builds need no network.</dd></div>
+        <div><dt>workspace (go.work)</dt><dd>A way to develop several local modules together as one.</dd></div>
+        <div><dt>GOOS / GOARCH</dt><dd>The target operating system and CPU architecture, set to cross-compile binaries.</dd></div>
+      </dl>
+    </div></div>
+  </div>
+
+  <nav class="index" id="index"></nav>
+
+  <main id="content"></main>
+  <div class="no-results" id="noResults">Nothing matches that search.</div>
+
+  <footer>
+    <span>Fill the blanks, copy, learn. Empty blanks copy as &lt;placeholder&gt;.</span>
+    <span><a href="#top">↑ back to top</a></span>
+  </footer>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <div class="toast-top">
+    <span class="toast-badge">copied</span>
+    <span class="toast-title">what this does</span>
+    <button class="toast-close" id="toastClose" aria-label="Dismiss">×</button>
+  </div>
+  <div class="toast-cmd" id="toastCmd"></div>
+  <div class="toast-body" id="toastBody"></div>
+  <div class="toast-progress"></div>
+</div>
+
+<script>
+/* ===================== SCENARIOS / RECIPES ===================== */
+const SCENARIOS = [
+  {
+    q:"Start a brand-new Go project",
+    when:"Empty folder → running program. Set up the module, then run it.",
+    blocks:[
+      { label:"Init and run", steps:[
+        ["go mod init <github.com/you/project>","Creates go.mod with your module path (usually your repo URL). This is what makes the folder a Go module."],
+        ["go run .","After writing a main.go with package main and a main() function, this compiles and runs it."],
+      ]},
+    ]
+  },
+  {
+    q:"Add a third-party package",
+    when:"You want to use an external library in your code.",
+    blocks:[
+      { label:"Get it and tidy up", steps:[
+        ["go get <github.com/some/lib>","Downloads the package and records it in go.mod. Then add the import to your code."],
+        ["go mod tidy","Cleans up go.mod and go.sum so they exactly match what your code imports."],
+      ]},
+    ]
+  },
+  {
+    q:"Run my tests with a coverage report",
+    when:"You want to see how much of your code the tests actually exercise.",
+    blocks:[
+      { label:"Measure, then visualize", steps:[
+        ["go test ./... -coverprofile=<cover.out>","Runs all tests and writes coverage data to a file."],
+        ["go tool cover -html=<cover.out>","Opens a browser report highlighting covered and uncovered lines."],
+      ]},
+    ]
+  },
+  {
+    q:"Build a binary for a different OS",
+    when:"You're on a Mac but need a Linux executable (or vice-versa). Go cross-compiles with no extra toolchain.",
+    blocks:[
+      { label:"Set the target and build", steps:[
+        ["GOOS=linux GOARCH=amd64 go build -o <app> .","Builds a Linux/amd64 binary. Swap in darwin/arm64, windows/amd64, etc."],
+      ]},
+    ]
+  },
+  {
+    q:"Update a dependency to a newer version",
+    when:"A library released a fix and you want it.",
+    blocks:[
+      { label:"Pick a version or take the latest", steps:[
+        ["go get <github.com/some/lib>@<v1.5.0>","Moves the dependency to a specific version, tag, branch, or commit."],
+        ["go mod tidy","Re-sync go.mod / go.sum after the change."],
+      ]},
+    ]
+  },
+  {
+    q:"Track down a data race",
+    when:"Something behaves differently under load and you suspect concurrent access.",
+    blocks:[
+      { label:"Run the test under the race detector", steps:[
+        ["go test -run <TestConcurrent> -race -v","Runs the matching test with the race detector on, reporting any unsynchronized shared access it finds."],
+      ]},
+    ]
+  },
+  {
+    q:"Format and check before committing",
+    when:"Go has one canonical style and a built-in linter — run both so your diff stays clean.",
+    blocks:[
+      { label:"Format, then vet", steps:[
+        ["go fmt ./...","Rewrites every file to the standard formatting."],
+        ["go vet ./...","Reports likely bugs the compiler allows, like bad Printf format strings."],
+      ]},
+    ]
+  },
+  {
+    q:"Work on several local modules at once",
+    when:"You're editing a library and an app that uses it, side by side, without publishing.",
+    blocks:[
+      { label:"Set up a workspace", steps:[
+        ["go work init <./app> <./lib>","Creates a go.work file tying the local modules together."],
+        ["go work use <./another-module>","Adds more local modules to the workspace as you go."],
+      ]},
+    ]
+  },
+];
+
+/* ===================== REFERENCE: TYPES / ZERO VALUES ===================== */
+const TYPES = [
+  ["bool","true or false"],
+  ["string","immutable UTF-8 text"],
+  ["int, int64…","signed integers (int is 32- or 64-bit)"],
+  ["uint, uintptr","unsigned integers"],
+  ["byte","alias for uint8 (a raw byte)"],
+  ["rune","alias for int32 (a Unicode code point)"],
+  ["float64","floating-point numbers"],
+  ["complex128","complex numbers"],
+  ["error","the built-in error interface"],
+];
+const ZEROVALS = [
+  ["numbers","0"],
+  ["bool","false"],
+  ["string","\"\" (empty)"],
+  ["pointer / slice / map","nil"],
+  ["chan / func / interface","nil"],
+  ["struct","every field zeroed"],
+];
+const DECL_CMDS = [
+  ["var <name> <type>","Declare with the zero value.","With no initializer, a variable automatically gets its type's zero value. There are no undefined values in Go."],
+  ["<name> := <value>","Short declaration.","Inside a function, this declares and initializes a variable with its type inferred from the value."],
+];
+
+/* ===================== COMMAND REFERENCE ===================== */
+const DATA = [
+  { id:"build", title:"Run, Build & Install", sub:"compile & execute", groups:[
+    { label:"Run & build", items:[
+      ["go run .","Run the current package.","Compiles and runs the package in the current directory without leaving a binary behind. Great for quick iteration."],
+      ["go run <main.go>","Run a specific file.","Compiles and runs a single Go file."],
+      ["go build","Compile to a binary.","Compiles the current package into an executable in the current directory."],
+      ["go build -o <app> .","Build with a chosen name.","Compiles the package and writes the binary to the path you name."],
+      ["go build ./...","Build everything.","Compiles every package in the module to confirm it all builds, without producing library binaries."],
+      ["go install","Build + put on PATH.","Compiles the package and installs the resulting binary into your Go bin directory, which is on your PATH."],
+    ]},
+    { label:"Cross-compile & clean", items:[
+      ["GOOS=linux GOARCH=amd64 go build -o <app> .","Build for another OS/CPU.","Sets the target operating system and architecture, so you can build (say) a Linux binary from a Mac — no extra toolchain needed."],
+      ["go clean","Remove build artifacts.","Deletes object files and build output for the current package."],
+      ["go clean -cache","Clear the build cache.","Empties Go's global build cache — useful when you suspect stale compiled results."],
+    ]},
+  ]},
+  { id:"mod", title:"Modules & Dependencies", sub:"go.mod, go get", groups:[
+    { label:"Module basics", items:[
+      ["go mod init <module-path>","Start a module.","Creates a go.mod file with the module path you choose — usually your repo URL, like github.com/you/proj."],
+      ["go mod tidy","Sync go.mod with imports.","Adds any dependencies your code imports and removes ones you no longer use. Run it after changing imports."],
+      ["go mod download","Download deps to cache.","Downloads the modules listed in go.mod into the local module cache."],
+      ["go mod verify","Check deps are intact.","Verifies the downloaded dependencies haven't been modified since they were added."],
+    ]},
+    { label:"Get & update", items:[
+      ["go get <package>","Add a dependency.","Adds or updates a dependency and records it in go.mod. Use the import path, e.g. github.com/gin-gonic/gin."],
+      ["go get <package>@<version>","Pin a version.","Gets a specific version, tag, branch, or commit (e.g. @v1.9.0 or @latest)."],
+      ["go get -u ./...","Update dependencies.","Updates dependencies to newer minor and patch versions across the whole module."],
+      ["go mod why <package>","Why is this here?","Explains the import chain that pulls a given package into your build."],
+    ]},
+    { label:"Inspect & vendor", items:[
+      ["go list -m all","List all modules.","Lists every module your build depends on, directly and transitively, with versions."],
+      ["go mod graph","Show the dep graph.","Prints the module dependency graph as edges, for tooling or debugging."],
+      ["go mod vendor","Vendor dependencies.","Copies all dependencies into a vendor/ folder so builds don't need the network."],
+    ]},
+  ]},
+  { id:"test", title:"Testing", sub:"go test", groups:[
+    { label:"Run tests", items:[
+      ["go test ./...","Test everything.","Runs all tests in every package of the module."],
+      ["go test -run <TestName>","Run matching tests.","Runs only tests whose name matches the pattern (a regular expression)."],
+      ["go test -v","Verbose output.","Shows each test as it runs, with its log output, instead of just a summary."],
+      ["go test -race","Detect data races.","Builds with the race detector to catch concurrent-access bugs at runtime. Slower, but invaluable."],
+      ["go test -count=1","Bypass the test cache.","Forces tests to actually re-run instead of using cached results."],
+    ]},
+    { label:"Coverage & benchmarks", items:[
+      ["go test -cover","Show coverage %.","Prints the percentage of code exercised by your tests."],
+      ["go test -coverprofile=<cover.out>","Write a coverage profile.","Saves detailed coverage data to a file you can visualize."],
+      ["go tool cover -html=<cover.out>","View coverage in a browser.","Opens an HTML report highlighting which lines were and weren't covered."],
+      ["go test -bench=.","Run benchmarks.","Runs benchmark functions (BenchmarkXxx). The '.' pattern runs all of them."],
+      ["go test -bench=. -benchmem","Benchmark with allocations.","Also reports memory allocations per operation alongside timing."],
+    ]},
+  ]},
+  { id:"tools", title:"Format, Vet & Tools", sub:"keep code clean", groups:[
+    { label:"Tooling", items:[
+      ["go fmt ./...","Auto-format your code.","Rewrites your source to the standard Go formatting. There's only one correct style, and this enforces it."],
+      ["go vet ./...","Catch suspicious code.","Reports likely mistakes the compiler allows — bad format strings, unreachable code, and more."],
+      ["go fix ./...","Modernize old code.","Rewrites code using outdated APIs to their current equivalents."],
+      ["go doc <package>","Read docs in the terminal.","Prints documentation for a package or symbol, e.g. go doc strings.Split."],
+      ["go generate ./...","Run code generators.","Executes the //go:generate directives in your code to regenerate generated files."],
+    ]},
+  ]},
+  { id:"decl", title:"Declarations & Types", sub:"var, func, struct", groups:[
+    { label:"Variables & constants", items:[
+      ["var <name> <type> = <value>","Declare a variable.","The full form: name, type, and value. The type can be omitted when it's inferable from the value."],
+      ["<name> := <value>","Short declaration.","Declares and initializes with the type inferred. Usable only inside functions."],
+      ["const <Name> = <value>","Declare a constant.","A value fixed at compile time. Exported (public) names start with a capital letter."],
+    ]},
+    { label:"Functions, structs, interfaces", items:[
+      ["func <name>(<arg> <type>) <ret> { return <x> }","Define a function.","Parameters are name-then-type; the return type comes after the parameter list."],
+      ["func <name>() (<type>, error) { }","Return a value and error.","The idiomatic Go shape: return a result plus an error for the caller to check."],
+      ["type <Name> struct { <Field> <type> }","Define a struct.","Groups named fields into a new type. Capitalized field names are exported."],
+      ["type <Name> interface { <Method>() <type> }","Define an interface.","Lists method signatures. Any type with those methods satisfies it automatically — no 'implements' needed."],
+      ["func (<r> <Type>) <Method>() { }","Define a method.","Attaches a function to a type via a receiver written before the name."],
+    ]},
+  ]},
+  { id:"flow", title:"Control Flow", sub:"if, for, switch", groups:[
+    { label:"Branching & loops", items:[
+      ["if <cond> { } else { }","Conditional.","Braces are always required; there are no parentheses around the condition."],
+      ["if <v>, err := <call>; err != nil { }","If with a short statement.","Run a statement, then test its result. The variables are scoped to the if/else — the most common Go error check."],
+      ["for <i> := 0; <i> < <n>; <i>++ { }","Counting loop.","Go's only loop keyword is 'for'; this is the classic three-part form."],
+      ["for <i>, <v> := range <slice> { }","Range loop.","Iterates a slice, array, map, string, or channel, giving index/key and value."],
+      ["for <cond> { }","While-style loop.","A 'for' with just a condition acts like a while loop. Drop the condition for an infinite loop."],
+      ["switch <x> { case <a>: ; default: }","Switch.","No fall-through by default — each case stops on its own. Omit <x> for an if/else chain."],
+      ["defer <call>","Run on function exit.","Schedules a call for when the surrounding function returns — perfect for closing files or unlocking mutexes."],
+    ]},
+  ]},
+  { id:"data", title:"Slices, Maps & Strings", sub:"the workhorses", groups:[
+    { label:"Slices", items:[
+      ["<s> := []<type>{}","Create a slice.","A slice is a flexible, growable view over an array — the everyday list type in Go."],
+      ["<s> := make([]<type>, <len>, <cap>)","Pre-size a slice.","Allocates a slice with a length and optional capacity, avoiding reallocations as it grows."],
+      ["<s> = append(<s>, <v>)","Append to a slice.","Adds an element, returning a (possibly new) slice. Always assign the result back."],
+    ]},
+    { label:"Maps", items:[
+      ["<m> := map[<key>]<val>{}","Create a map.","A hash table from keys to values. Reading a missing key returns the value type's zero value."],
+      ["<v>, ok := <m>[<key>]","Look up safely.","The two-value form tells you, via ok, whether the key was actually present."],
+      ["delete(<m>, <key>)","Remove a key.","Deletes a key/value pair from a map. Safe even if the key isn't there."],
+    ]},
+    { label:"Common helpers", items:[
+      ["len(<x>)","Length.","Returns the number of elements in a slice, map, string, or channel."],
+      ["strings.Split(<s>, <sep>)","Split a string.","Splits a string into a slice around a separator (from the strings package)."],
+      ["strconv.Itoa(<n>)","Number to string.","Converts an int to its string form. Use strconv.Atoi for the reverse."],
+    ]},
+  ]},
+  { id:"conc", title:"Concurrency", sub:"goroutines & channels", groups:[
+    { label:"Goroutines & channels", items:[
+      ["go <call>","Start a goroutine.","Runs a function concurrently in a lightweight goroutine. It returns immediately; the work happens in the background."],
+      ["<ch> := make(chan <type>)","Create a channel.","A typed pipe for passing values between goroutines. Unbuffered by default."],
+      ["<ch> := make(chan <type>, <buf>)","Buffered channel.","Adds a buffer so sends don't block until the buffer is full."],
+      ["<ch> <- <v>","Send to a channel.","Sends a value into the channel. Blocks until a receiver is ready (or there's buffer space)."],
+      ["<v> := <-<ch>","Receive from a channel.","Takes the next value out of the channel, waiting if none is ready yet."],
+      ["close(<ch>)","Close a channel.","Signals no more values will be sent. Receivers detect this with the two-value receive form."],
+      ["select { case <v> := <-<ch>: ; default: }","Multiplex channels.","Waits on multiple channel operations and runs whichever is ready first. A default case makes it non-blocking."],
+    ]},
+  ]},
+  { id:"err", title:"Error Handling", sub:"errors, not exceptions", groups:[
+    { label:"The Go way", items:[
+      ["if err != nil { return err }","Check and bubble up.","The fundamental idiom: check the error right after the call and return it if something went wrong."],
+      ["errors.New(\"<message>\")","Make a simple error.","Creates a basic error value with a fixed message."],
+      ["fmt.Errorf(\"<context>: %w\", err)","Wrap an error.","Adds context while keeping the original error reachable. The %w verb makes it unwrappable later."],
+      ["errors.Is(err, <target>)","Match a sentinel error.","Reports whether err — or anything it wraps — matches a known error value."],
+      ["errors.As(err, &<target>)","Extract an error type.","Finds the first error in the chain matching a type and assigns it, so you can read its fields."],
+      ["panic(\"<message>\")","Abort the program. ⚠️","Stops normal execution and unwinds the stack. Reserved for truly unrecoverable situations — not ordinary error handling."],
+    ]},
+  ]},
+  { id:"env", title:"Docs, Env & Workspaces", sub:"the rest of the toolchain", groups:[
+    { label:"Environment & workspaces", items:[
+      ["go version","Show the Go version.","Prints the installed Go version — the first thing to check in any environment."],
+      ["go env","Show Go's environment.","Prints all of Go's environment settings (GOOS, GOPATH, cache locations, and more)."],
+      ["go env -w <GOPROXY>=<value>","Change a setting.","Permanently sets a Go environment variable, e.g. a module proxy."],
+      ["go work init <dir-a> <dir-b>","Start a workspace.","Creates a go.work file so you can develop several local modules together as one."],
+      ["go work use <dir>","Add a module to the workspace.","Adds another local module directory to the active workspace."],
+    ]},
+  ]},
+];
+
+/* ===================== HELPERS ===================== */
+const escAttr = s => s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+/* placeholder = <Letter then safe chars>, so comparison "<" in code isn't captured */
+const PH_SPLIT = /(<[A-Za-z][\w.\-/:@#]*>)/g;
+const PH_MATCH = /^<([A-Za-z][\w.\-/:@#]*)>$/;
+
+function highlightLit(text){
+  let s = escHtml(text);
+  s = s.replace(/("[^"]*")/g,'<span class="c-str">$1</span>');
+  s = s.replace(/(^|\s)(--?[a-zA-Z][\w-]*)/g,'$1<span class="c-flag">$2</span>');
+  return s;
+}
+function buildCommandHTML(cmd){
+  return cmd.split(PH_SPLIT).map(p=>{
+    const m = p.match(PH_MATCH);
+    if(m){
+      const name = m[1];
+      return `<input class="ph" data-ph="${escAttr(name)}" placeholder="${escAttr(name)}" size="${Math.max(name.length,3)}" spellcheck="false" autocomplete="off">`;
+    }
+    return p ? `<span class="lit">${highlightLit(p)}</span>` : '';
+  }).join('');
+}
+function readCommand(codeEl){
+  let out='';
+  codeEl.childNodes.forEach(node=>{
+    if(node.nodeType===1 && node.classList.contains('ph')){
+      const v = node.value.trim();
+      out += v ? v : '<'+node.dataset.ph+'>';
+    } else { out += node.textContent; }
+  });
+  return out;
+}
+function cmdRow(cmd, explain){
+  return `<div class="cmd"><code class="cmd-code">${buildCommandHTML(cmd)}</code><button class="copy" data-explain="${escAttr(explain)}" aria-label="Copy command">copy</button></div>`;
+}
+
+/* ===================== RENDER ===================== */
+const content = document.getElementById('content');
+const index = document.getElementById('index');
+
+function addChip(label, target, lead){
+  const a = document.createElement('a');
+  a.href = '#'+target; a.textContent = label; a.dataset.target = target;
+  if(lead) a.classList.add('lead');
+  index.appendChild(a);
+}
+addChip('★ Scenarios','scenarios',true);
+addChip('★ Types','reference',true);
+DATA.forEach(t=>addChip(t.title.split('(')[0].trim(), t.id));
+
+/* Scenarios */
+const scnSection = document.createElement('section');
+scnSection.id = 'scenarios';
+let scnHtml = `<div class="section-head"><h2>Scenarios &amp; Recipes</h2><span class="meta">"how do I…" → exact steps</span></div>`;
+SCENARIOS.forEach((s,i)=>{
+  let body = '';
+  if(s.when) body += `<p class="scn-when">${s.when}</p>`;
+  let searchBits = s.q;
+  s.blocks.forEach(b=>{
+    body += `<div class="scn-block">`;
+    if(b.label) body += `<div class="block-label">${b.label}</div>`;
+    body += `<ol class="steps">`;
+    b.steps.forEach(([cmd,note])=>{
+      searchBits += ' '+cmd+' '+note;
+      body += `<li class="step"><span class="step-n">•</span><div class="step-main">${cmdRow(cmd,note)}<div class="step-note">${note}</div></div></li>`;
+    });
+    body += `</ol>`;
+    if(b.steps.length>1) body += `<button class="copy-all">Copy these steps</button>`;
+    body += `</div>`;
+  });
+  scnHtml += `
+    <div class="scenario searchable" data-search="${escAttr(searchBits.toLowerCase())}">
+      <button class="scn-head" aria-expanded="false">
+        <span class="scn-icon">${i+1}</span>
+        <span class="scn-q">${s.q}</span>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+      <div class="scn-body"><div class="scn-inner"><div class="scn-pad">${body}</div></div></div>
+    </div>`;
+});
+scnSection.innerHTML = scnHtml;
+content.appendChild(scnSection);
+document.querySelectorAll('.scn-block .steps').forEach(ol=>{
+  ol.querySelectorAll('.step-n').forEach((n,idx)=>n.textContent = idx+1);
+});
+
+/* Reference: types, zero values, declarations */
+const refSection = document.createElement('section');
+refSection.id = 'reference';
+const typeHtml = TYPES.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('');
+const zeroHtml = ZEROVALS.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('');
+const declHtml = DECL_CMDS.map(([cmd,desc,explain])=>{
+  const search = (cmd+' '+desc+' '+explain+' declare variable zero value type').toLowerCase();
+  return `<div class="cmd-block searchable" data-search="${escAttr(search)}">${cmdRow(cmd,explain)}<div class="desc">${desc}</div></div>`;
+}).join('');
+refSection.innerHTML = `
+  <div class="section-head"><h2>Types &amp; Zero Values</h2><span class="meta">quick lookup</span></div>
+  <div class="topic">
+    <button class="topic-head" aria-expanded="false">
+      <span class="num">★</span>
+      <span class="topic-title">Go in a Nutshell</span>
+      <span class="topic-sub">built-in types · zero values</span>
+      <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+    </button>
+    <div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">
+      <div class="group-label">Built-in types</div>
+      <div class="types">${typeHtml}</div>
+      <div class="group-label">Zero values (what you get with no initializer)</div>
+      <div class="types">${zeroHtml}</div>
+      <div class="group-label">Declaring</div>
+      <p class="conv-rule">Use <code>:=</code> inside functions for brevity, and <code>var</code> when you need an explicit type or a package-level variable.</p>
+      ${declHtml}
+    </div></div></div>
+  </div>`;
+content.appendChild(refSection);
+
+/* Command reference */
+DATA.forEach((topic,i)=>{
+  const section = document.createElement('section');
+  section.id = topic.id;
+  let groupsHtml = '';
+  topic.groups.forEach(g=>{
+    groupsHtml += `<div class="group"><div class="group-label">${g.label}</div>`;
+    g.items.forEach(([cmd,desc,explain])=>{
+      const search = (cmd+' '+desc+' '+(explain||'')).toLowerCase();
+      groupsHtml += `<div class="cmd-block searchable" data-search="${escAttr(search)}">${cmdRow(cmd,explain||desc)}<div class="desc">${desc}</div></div>`;
+    });
+    groupsHtml += `</div>`;
+  });
+  section.innerHTML = `
+    <div class="topic">
+      <button class="topic-head" aria-expanded="false">
+        <span class="num">${String(i+1).padStart(2,'0')}</span>
+        <span class="topic-title">${topic.title}</span>
+        <span class="topic-sub">${topic.sub}</span>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+      <div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">${groupsHtml}</div></div></div>
+    </div>`;
+  content.appendChild(section);
+});
+
+/* ===================== ACCORDION ===================== */
+function setOpen(el, open){
+  el.classList.toggle('open', open);
+  const head = el.querySelector('[aria-expanded]');
+  if(head) head.setAttribute('aria-expanded', open);
+}
+document.querySelectorAll('.topic-head, .scn-head').forEach(head=>{
+  head.addEventListener('click', ()=>{
+    const t = head.closest('.topic, .scenario');
+    setOpen(t, !t.classList.contains('open'));
+  });
+});
+document.getElementById('expandAll').onclick  = ()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,true));
+document.getElementById('collapseAll').onclick= ()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,false));
+index.querySelectorAll('a').forEach(a=>{
+  a.addEventListener('click', ()=>{
+    const sec = document.getElementById(a.dataset.target);
+    const acc = sec.querySelector('.topic, .scenario');
+    if(acc) setOpen(acc, true);
+  });
+});
+
+/* ===================== GLOSSARY TOGGLE ===================== */
+const glossary = document.getElementById('glossary');
+const glossaryBtn = document.getElementById('glossaryBtn');
+glossaryBtn.onclick = ()=>{
+  const open = glossary.classList.toggle('open');
+  glossaryBtn.classList.toggle('active', open);
+};
+
+/* ===================== PLACEHOLDER INPUTS ===================== */
+content.addEventListener('input', e=>{
+  const inp = e.target;
+  if(!inp.classList || !inp.classList.contains('ph')) return;
+  inp.size = Math.max(inp.value.length || inp.placeholder.length, 3);
+  inp.classList.toggle('filled', inp.value.trim().length>0);
+  const code = inp.closest('.cmd-code');
+  code.querySelectorAll('.ph').forEach(other=>{
+    if(other!==inp && other.dataset.ph===inp.dataset.ph){
+      other.value = inp.value;
+      other.size = Math.max(other.value.length || other.placeholder.length, 3);
+      other.classList.toggle('filled', other.value.trim().length>0);
+    }
+  });
+});
+content.addEventListener('click', e=>{
+  if(e.target.classList && e.target.classList.contains('ph')) e.stopPropagation();
+});
+
+/* ===================== TOAST ===================== */
+const toast = document.getElementById('toast');
+const toastCmd = document.getElementById('toastCmd');
+const toastBody = document.getElementById('toastBody');
+let toastTimer;
+function showToast(cmd, explanation){
+  toastCmd.textContent = cmd;
+  toastBody.textContent = explanation;
+  toast.classList.remove('show'); void toast.offsetWidth; toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toast.classList.remove('show'), 7000);
+}
+document.getElementById('toastClose').onclick = ()=>toast.classList.remove('show');
+
+/* ===================== COPY ===================== */
+content.addEventListener('click', e=>{
+  const btn = e.target.closest('.copy');
+  if(btn){
+    const code = btn.parentElement.querySelector('.cmd-code');
+    const text = readCommand(code);
+    navigator.clipboard.writeText(text).then(()=>{
+      btn.textContent='copied'; btn.classList.add('done');
+      setTimeout(()=>{ btn.textContent='copy'; btn.classList.remove('done'); },1300);
+      showToast(text, btn.dataset.explain);
+    });
+    return;
+  }
+  const ca = e.target.closest('.copy-all');
+  if(ca){
+    const block = ca.closest('.scn-block');
+    const text = [...block.querySelectorAll('.cmd-code')].map(readCommand).join('\n');
+    navigator.clipboard.writeText(text).then(()=>{
+      ca.textContent='copied all'; ca.classList.add('done');
+      setTimeout(()=>{ ca.textContent='Copy these steps'; ca.classList.remove('done'); },1500);
+      showToast(text, 'Run these commands in order in your terminal. Replace anything still shown as <…> with your own value first.');
+    });
+  }
+});
+
+/* ===================== SEARCH ===================== */
+const search = document.getElementById('search');
+const noResults = document.getElementById('noResults');
+search.addEventListener('input', ()=>{
+  const q = search.value.trim().toLowerCase();
+  document.querySelectorAll('.searchable').forEach(el=>{
+    el.style.display = (!q || el.dataset.search.includes(q)) ? '' : 'none';
+  });
+  document.querySelectorAll('.group').forEach(g=>{
+    const vis = [...g.querySelectorAll('.searchable')].some(e=>e.style.display!=='none');
+    g.style.display = vis ? '' : 'none';
+  });
+  let any = false;
+  document.querySelectorAll('main section').forEach(sec=>{
+    const vis = [...sec.querySelectorAll('.searchable')].some(e=>e.style.display!=='none');
+    sec.style.display = vis ? '' : 'none';
+    if(vis){
+      any = true;
+      if(q){
+        sec.querySelectorAll('.topic').forEach(t=>{
+          if([...t.querySelectorAll('.searchable')].some(e=>e.style.display!=='none')) setOpen(t,true);
+        });
+        sec.querySelectorAll('.scenario.searchable').forEach(s=>{
+          if(s.style.display!=='none') setOpen(s,true);
+        });
+      }
+    }
+  });
+  noResults.style.display = any ? 'none' : 'block';
+});
+
+/* ===================== INITIAL STATE ===================== */
+setOpen(document.querySelector('#scenarios .scenario'), true);
+setOpen(document.querySelector('#build .topic'), true);
+</script>
+</body>
+</html>

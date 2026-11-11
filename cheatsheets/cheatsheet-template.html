@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHEATSHEET_TITLE — Cheat Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- EDIT THEME ① : swap these two display/body fonts for a distinct look -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* EDIT THEME ② : two palettes. DARK is the default (page loads dark) and the
+     toggle in the toolbar switches to LIGHT. In each theme, the only thing you
+     usually change per-sheet is --accent (and --accent-soft). Keep code surfaces
+     dark in BOTH themes — it reads well and keeps the two looking related. */
+
+  /* ---- DARK (default) ---- */
+  :root,[data-theme="dark"]{
+    --bg:#16171c;          /* page background (dark) */
+    --paper:#1e2027;       /* card background (slightly lighter than bg) */
+    --ink:#eceef3;         /* main text */
+    --ink-soft:#9aa3b2;    /* secondary text */
+    --line:#2a2d36;        /* hairlines */
+    --line-strong:#3a3e49; /* borders */
+    --accent:#7c83ff;      /* THE accent hue — change this first (pick a lighter shade for dark) */
+    --accent-soft:#9aa0ff;
+    --green:#5fd38a;       /* success (copied badge) */
+    --code-bg:#0e0f13;     /* darkest: the code surface */
+    --code-ink:#e9edf3;
+    --code-dim:#8b93a3;
+    --code-ph:#fcd34d;     /* editable blank — gold reads on dark code */
+    --code-green:#5fd38a;  /* "filled" blank colour */
+    --on-accent:#16171c;   /* text on accent backgrounds (dark, since accent is light here) */
+    --radius:10px;
+    --dot:.7px;            /* background dot size */
+    /* EDIT THEME ③ : font-family names (must match the <link> above) */
+    --font-display:'Space Grotesk',sans-serif;
+    --font-body:'Inter',system-ui,sans-serif;
+    --font-mono:'JetBrains Mono',monospace;
+  }
+  /* ---- LIGHT (toggle target) ---- */
+  [data-theme="light"]{
+    --bg:#eef1f5;
+    --paper:#ffffff;
+    --ink:#1f2328;
+    --ink-soft:#59636e;
+    --line:#d8dee4;
+    --line-strong:#c8d1da;
+    --accent:#4f46e5;      /* a deeper shade of the SAME hue for the light background */
+    --accent-soft:#6d65ec;
+    --green:#16a34a;
+    --code-bg:#0e0f13;     /* code stays dark in light mode too */
+    --code-ink:#e9edf3;
+    --code-dim:#8b93a3;
+    --code-ph:#fcd34d;
+    --code-green:#5fd38a;
+    --on-accent:#ffffff;   /* text on accent backgrounds (white on the deep accent) */
+    --dot:.6px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;transition:background-color .3s ease}
+  body,.topic,.scenario,.panel-pad,.btn,.search input,.toast,.cmd,.type{transition:background-color .3s ease,border-color .3s ease,color .3s ease}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font-body);line-height:1.55;-webkit-font-smoothing:antialiased;background-image:radial-gradient(var(--line) var(--dot),transparent var(--dot));background-size:22px 22px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px}
+  header{padding:64px 0 26px}
+  .kicker{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  h1{font-family:var(--font-display);font-weight:700;font-size:clamp(2.5rem,8vw,4.2rem);line-height:.98;letter-spacing:-.025em;margin-bottom:16px}
+  h1 .mark{color:var(--accent);font-family:var(--font-mono);font-size:.62em;font-weight:600}
+  .lede{font-size:1.05rem;color:var(--ink-soft);max-width:54ch}
+  .lede code{font-family:var(--font-mono);font-size:.85em;color:var(--accent)}
+  .hint{font-family:var(--font-mono);font-size:.74rem;color:var(--ink-soft);margin-top:14px;border-left:2px solid var(--accent);padding-left:10px}
+  .controls{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 70%,transparent);padding:18px 0 14px;margin-bottom:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:200px;position:relative}
+  .search input{width:100%;font-family:var(--font-mono);font-size:.9rem;padding:12px 14px 12px 40px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+  .search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent)}
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.45}
+  .btn{font-family:var(--font-mono);font-size:.78rem;letter-spacing:.04em;padding:11px 16px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink-soft);cursor:pointer;transition:all .18s;white-space:nowrap}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+  .panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s ease}
+  .panel.open{grid-template-rows:1fr;margin-bottom:26px}
+  .panel-inner{overflow:hidden}
+  .panel-pad{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);padding:20px 22px;margin-top:2px}
+  .panel-pad h3{font-family:var(--font-display);font-size:1.2rem;font-weight:600;margin-bottom:3px}
+  .panel-pad .sub{font-family:var(--font-mono);font-size:.72rem;color:var(--code-dim);margin-bottom:16px}
+  .gloss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:15px 24px}
+  .gloss dt{font-family:var(--font-mono);font-size:.82rem;color:var(--accent);margin-bottom:3px}
+  .gloss dd{font-size:.9rem;color:var(--ink-soft);line-height:1.5}
+  .index{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:34px;padding-bottom:30px;border-bottom:1px solid var(--line)}
+  .index a{font-family:var(--font-mono);font-size:.74rem;color:var(--ink-soft);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:99px;transition:all .15s}
+  .index a:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .index a.lead{border-color:var(--accent);color:var(--accent)}
+  .index a.lead:hover{background:var(--accent);color:var(--on-accent)}
+  .section-head{display:flex;align-items:baseline;gap:12px;margin:34px 0 16px;flex-wrap:wrap}
+  .section-head h2{font-family:var(--font-display);font-size:1.7rem;font-weight:700;letter-spacing:-.02em}
+  .section-head .meta{font-family:var(--font-mono);font-size:.72rem;color:var(--code-dim)}
+  section{margin-bottom:14px;scroll-margin-top:90px}
+  .topic{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden}
+  .topic-head{display:flex;align-items:center;gap:14px;width:100%;padding:18px 20px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .topic-head:hover .topic-title{color:var(--accent)}
+  .num{font-family:var(--font-mono);font-size:.72rem;color:var(--accent);border:1px solid var(--line-strong);border-radius:6px;padding:3px 7px;flex-shrink:0}
+  .topic-title{font-family:var(--font-display);font-size:1.3rem;font-weight:600;letter-spacing:-.01em;transition:color .2s;flex:1}
+  .topic-sub{font-family:var(--font-mono);font-size:.72rem;color:var(--code-dim);font-weight:400}
+  .chev{flex-shrink:0;transition:transform .3s ease;color:var(--ink-soft)}
+  .topic.open .chev,.scenario.open .chev{transform:rotate(90deg)}
+  .topic-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .topic.open .topic-body{grid-template-rows:1fr}
+  .topic-body-inner{overflow:hidden}
+  .topic-pad{padding:0 20px 22px;border-top:1px solid var(--line)}
+  .group-label{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-soft);margin:22px 0 10px}
+  .scenario{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden;margin-bottom:10px}
+  .scn-head{display:flex;align-items:center;gap:13px;width:100%;padding:16px 18px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .scn-head:hover .scn-q{color:var(--accent)}
+  .scn-icon{flex-shrink:0;width:27px;height:27px;border-radius:7px;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-family:var(--font-mono);font-size:.78rem;font-weight:600}
+  .scn-q{flex:1;font-family:var(--font-display);font-size:1.05rem;font-weight:600;letter-spacing:-.01em;transition:color .2s}
+  .scn-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .scenario.open .scn-body{grid-template-rows:1fr}
+  .scn-inner{overflow:hidden}
+  .scn-pad{padding:2px 18px 18px;border-top:1px solid var(--line)}
+  .scn-when{font-size:.92rem;color:var(--ink-soft);margin:14px 0 2px;font-style:italic}
+  .scn-block{margin-top:14px}
+  .block-label{font-family:var(--font-mono);font-size:.71rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-soft);margin-bottom:10px}
+  .steps{list-style:none}
+  .step{display:flex;gap:11px;margin-bottom:11px}
+  .step-n{flex-shrink:0;width:22px;height:22px;margin-top:7px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;font-family:var(--font-mono);font-size:.68rem;color:var(--accent)}
+  .step-main{flex:1;min-width:0}
+  .step-note{font-size:.88rem;color:var(--ink-soft);margin:3px 0 0 2px}
+  .copy-all{margin-top:4px;font-family:var(--font-mono);font-size:.73rem;padding:9px 14px;border:1px dashed var(--line-strong);border-radius:8px;background:none;color:var(--ink-soft);cursor:pointer;transition:all .15s}
+  .copy-all:hover{border-color:var(--accent);color:var(--accent)}
+  .copy-all.done{color:var(--green);border-color:var(--green)}
+  .types{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:8px;margin:6px 0 18px}
+  .type{display:flex;gap:9px;align-items:baseline;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--code-bg)}
+  .type b{font-family:var(--font-mono);color:var(--code-ph);font-size:.78rem;flex-shrink:0;white-space:nowrap}
+  .type span{font-size:.84rem;color:var(--code-dim)}
+  .conv-rule{font-size:.92rem;color:var(--ink-soft);margin-bottom:8px}
+  .conv-rule code{font-family:var(--font-mono);font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+  .cmd{display:flex;align-items:stretch;gap:0;margin-bottom:8px;border-radius:8px;overflow:hidden;border:1px solid #232a33;background:var(--code-bg)}
+  .cmd-code{flex:1;font-family:var(--font-mono);font-size:.84rem;color:var(--code-ink);padding:9px 14px;overflow-x:auto;white-space:pre;line-height:1.7;display:flex;align-items:center;flex-wrap:wrap}
+  .cmd-code .lit{white-space:pre}
+  .ph{font-family:var(--font-mono);font-size:.84rem;background:color-mix(in srgb,var(--code-ph) 15%,transparent);color:var(--code-ph);border:none;border-bottom:1px dashed var(--code-ph);padding:1px 2px;margin:0 1px;outline:none;border-radius:3px 3px 0 0;transition:background .15s;min-width:1ch}
+  .ph::placeholder{color:var(--code-ph);opacity:.55;font-style:italic}
+  .ph:focus{background:color-mix(in srgb,var(--code-ph) 28%,transparent)}
+  .ph.filled{color:var(--code-green);border-bottom-color:var(--code-green);background:color-mix(in srgb,var(--code-green) 16%,transparent)}
+  .copy{flex-shrink:0;border:none;border-left:1px solid #232a33;background:#161b22;color:var(--code-dim);font-family:var(--font-mono);font-size:.7rem;padding:0 15px;cursor:pointer;transition:all .15s;letter-spacing:.05em;align-self:stretch}
+  .copy:hover{background:#1c232c;color:var(--code-ink)}
+  .copy.done{color:var(--code-green)}
+  .desc{font-size:.92rem;color:var(--ink-soft);margin:1px 0 13px 2px}
+  .desc code{font-family:var(--font-mono);font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+  .no-results{display:none;text-align:center;padding:50px 0;color:var(--ink-soft);font-family:var(--font-mono);font-size:.9rem}
+  footer{padding:40px 0 70px;margin-top:30px;border-top:1px solid var(--line);font-family:var(--font-mono);font-size:.74rem;color:var(--code-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  footer a{color:var(--accent);text-decoration:none}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);width:min(560px,calc(100% - 36px));z-index:60;background:var(--paper);border:1px solid var(--line-strong);border-radius:14px;box-shadow:0 18px 50px -12px rgba(20,20,30,.35);padding:18px 20px 19px;opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.2,.9,.25,1),opacity .35s}
+  .toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+  .toast-top{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+  .toast-badge{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--on-accent);background:var(--green);padding:3px 8px;border-radius:99px}
+  .toast-title{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);flex:1}
+  .toast-close{border:none;background:none;cursor:pointer;color:var(--ink-soft);font-size:1.2rem;line-height:1;padding:2px 4px;border-radius:6px}
+  .toast-close:hover{color:var(--accent);background:var(--line)}
+  .toast-cmd{font-family:var(--font-mono);font-size:.82rem;color:var(--code-ink);background:var(--code-bg);border-radius:8px;padding:9px 12px;margin-bottom:12px;overflow-x:auto;white-space:pre;max-height:150px}
+  .toast-body{font-size:1rem;color:var(--ink);line-height:1.6}
+  .toast-progress{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);border-radius:0 0 0 14px;width:100%}
+  .toast.show .toast-progress{animation:drain 7s linear forwards}
+  @keyframes drain{from{width:100%}to{width:0%}}
+  ::selection{background:var(--accent);color:var(--on-accent)}
+  @media(max-width:540px){header{padding:42px 0 22px}.topic-sub{display:none}.cmd-code{font-size:.79rem}}
+</style>
+</head>
+<body>
+<div class="wrap" id="top">
+  <header>
+    <!-- EDIT CONTENT ① : header text -->
+    <div class="kicker">CATEGORY · slug · v1</div>
+    <h1><span class="mark">/*/</span> TITLE cheat sheet</h1>
+    <p class="lede">One-sentence promise of what this sheet covers. Fill the blanks, copy, learn.</p>
+    <p class="hint">⌨ Blanks inside snippets are editable. ⊕ Copying explains what it does. ⊞ Hit “Glossary” for the jargon.</p>
+  </header>
+
+  <div class="controls">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="Search…  e.g. example query" autocomplete="off">
+    </label>
+    <button class="btn" id="themeBtn" aria-label="Toggle light and dark mode">☀ Light</button>
+    <button class="btn" id="glossaryBtn">Glossary</button>
+    <button class="btn" id="expandAll">Expand all</button>
+    <button class="btn" id="collapseAll">Collapse all</button>
+  </div>
+
+  <div class="panel glossary" id="glossary">
+    <div class="panel-inner"><div class="panel-pad">
+      <h3>Glossary</h3>
+      <div class="sub">the words people throw around, in plain language</div>
+      <dl class="gloss gloss-grid" id="glossList"></dl>
+    </div></div>
+  </div>
+
+  <nav class="index" id="index"></nav>
+  <main id="content"></main>
+  <div class="no-results" id="noResults">Nothing matches that search.</div>
+
+  <footer>
+    <span>Fill the blanks, copy, learn.</span>
+    <span><a href="#top">↑ back to top</a></span>
+  </footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <div class="toast-top"><span class="toast-badge">copied</span><span class="toast-title">what this does</span><button class="toast-close" id="toastClose" aria-label="Dismiss">×</button></div>
+  <div class="toast-cmd" id="toastCmd"></div>
+  <div class="toast-body" id="toastBody"></div>
+  <div class="toast-progress"></div>
+</div>
+
+<script>
+/* =================================================================
+   EDIT CONTENT ② : PLACEHOLDER STYLE
+   'angle'     →  <name>   (use for CLI / shells / most languages)
+   'guillemet' →  ‹name›   (use when the language uses literal < >,
+                            e.g. HTML/XML markup, regex, Apex generics)
+   ================================================================= */
+const PLACEHOLDER_STYLE = 'angle';
+
+/* EDIT CONTENT ③ : SCENARIOS — task-first recipes ("how do I…")
+   Each block's steps are [code, note]. Multi-step blocks get a "Copy these steps" button. */
+const SCENARIOS = [
+  {
+    q:"Do the common task",
+    when:"Optional one-line context: when you'd reach for this.",
+    blocks:[ { label:"The steps", steps:[
+      ["tool do <thing>","What this line does, in plain language."],
+      ["tool finish <thing>","The follow-up line."],
+    ]}]
+  },
+];
+
+/* EDIT CONTENT ④ : REFERENCE — the "mental model" block at the top.
+   block.kind: 'grid'  → items are [token, meaning]  (quick-glance grid)
+               'cmds'  → items are [code, short, explanation]  (copyable)
+               'rule'  → { html:'a <code>note</code> paragraph' } */
+const REFERENCE = {
+  sectionTitle:"The Survival Kit",
+  sectionMeta:"the 80% you reach for",
+  accTitle:"Essentials",
+  accSub:"flags · core tokens",
+  blocks:[
+    { label:"At a glance", kind:'grid', items:[
+      ["flag","what it does"],
+      ["token","what it matches"],
+    ]},
+    { label:"Note", kind:'rule', html:"A short framing <code>rule</code> that orients the reader." },
+    { label:"Build a piece", kind:'cmds', items:[
+      ["tool make <name>","Make a thing.","A fuller, beginner-friendly explanation of when and why to use this."],
+    ]},
+  ]
+};
+
+/* EDIT CONTENT ⑤ : DATA — the main reference, simple → complex.
+   Each item is [code, short-label, explanation]. Group items under labels. */
+const DATA = [
+  { id:"basics", title:"Basics", sub:"start here", groups:[
+    { label:"Group label", items:[
+      ["tool run <target>","Run something.","A clear, plain-English explanation: what it does, when to use it, and any caution (mark destructive ones with ⚠️)."],
+      ["tool show <id>","Show something.","Another explanation. Keep snippets to one line so they copy cleanly."],
+    ]},
+  ]},
+  { id:"advanced", title:"Advanced", sub:"deeper", groups:[
+    { label:"Group label", items:[
+      ["tool do <a> --flag <b>","A fancier command.","Explanation. Same-named blanks in one line stay in sync as you type."],
+    ]},
+  ]},
+];
+
+/* EDIT CONTENT ⑥ : GLOSSARY — [term, plain-language definition] */
+const GLOSSARY = [
+  ["term","A short, jargon-free definition of the term."],
+  ["another term","What it means and why it matters."],
+];
+
+/* ===================== ENGINE (do not edit below) ===================== */
+const escAttr = s => s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const PH = PLACEHOLDER_STYLE==='guillemet'
+  ? { split:/(‹[^›]+›)/g, match:/^‹([^›]+)›$/, wrap:n=>'‹'+n+'›' }
+  : { split:/(<[A-Za-z][\w.\-/:@#]*>)/g, match:/^<([A-Za-z][\w.\-/:@#]*)>$/, wrap:n=>'<'+n+'>' };
+
+function buildCommandHTML(cmd){
+  return cmd.split(PH.split).map(p=>{
+    const m = p.match(PH.match);
+    if(m){ const n=m[1]; return `<input class="ph" data-ph="${escAttr(n)}" placeholder="${escAttr(n)}" size="${Math.max(n.length,2)}" spellcheck="false" autocomplete="off">`; }
+    return p ? `<span class="lit">${escHtml(p)}</span>` : '';
+  }).join('');
+}
+function readCommand(codeEl){
+  let out='';
+  codeEl.childNodes.forEach(node=>{
+    if(node.nodeType===1 && node.classList.contains('ph')){ const v=node.value.trim(); out += v ? v : PH.wrap(node.dataset.ph); }
+    else { out += node.textContent; }
+  });
+  return out;
+}
+const cmdRow = (cmd,explain)=>`<div class="cmd"><code class="cmd-code">${buildCommandHTML(cmd)}</code><button class="copy" data-explain="${escAttr(explain)}" aria-label="Copy">copy</button></div>`;
+
+const content=document.getElementById('content'), index=document.getElementById('index');
+function addChip(label,target,lead){const a=document.createElement('a');a.href='#'+target;a.textContent=label;a.dataset.target=target;if(lead)a.classList.add('lead');index.appendChild(a);}
+addChip('★ Scenarios','scenarios',true); addChip('★ '+REFERENCE.accTitle.split(' ')[0],'reference',true);
+DATA.forEach(t=>addChip(t.title.split('(')[0].trim(), t.id));
+
+/* glossary */
+document.getElementById('glossList').innerHTML = GLOSSARY.map(([t,d])=>`<div><dt>${escHtml(t)}</dt><dd>${d}</dd></div>`).join('');
+
+/* scenarios */
+const scn=document.createElement('section'); scn.id='scenarios';
+let sH=`<div class="section-head"><h2>Scenarios &amp; Recipes</h2><span class="meta">"how do I…" → exact steps</span></div>`;
+SCENARIOS.forEach((s,i)=>{
+  let body=''; if(s.when) body+=`<p class="scn-when">${s.when}</p>`; let sb=s.q;
+  s.blocks.forEach(b=>{
+    body+=`<div class="scn-block">`; if(b.label) body+=`<div class="block-label">${b.label}</div>`; body+=`<ol class="steps">`;
+    b.steps.forEach(([c,n])=>{ sb+=' '+c+' '+n; body+=`<li class="step"><span class="step-n">•</span><div class="step-main">${cmdRow(c,n)}<div class="step-note">${n}</div></div></li>`; });
+    body+=`</ol>`; if(b.steps.length>1) body+=`<button class="copy-all">Copy these steps</button>`; body+=`</div>`;
+  });
+  sH+=`<div class="scenario searchable" data-search="${escAttr(sb.toLowerCase())}"><button class="scn-head" aria-expanded="false"><span class="scn-icon">${i+1}</span><span class="scn-q">${s.q}</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="scn-body"><div class="scn-inner"><div class="scn-pad">${body}</div></div></div></div>`;
+});
+scn.innerHTML=sH; content.appendChild(scn);
+document.querySelectorAll('.scn-block .steps').forEach(ol=>ol.querySelectorAll('.step-n').forEach((n,i)=>n.textContent=i+1));
+
+/* reference */
+const ref=document.createElement('section'); ref.id='reference';
+let rb='';
+REFERENCE.blocks.forEach(b=>{
+  rb+=`<div class="group-label">${b.label}</div>`;
+  if(b.kind==='grid') rb+=`<div class="types">${b.items.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('')}</div>`;
+  else if(b.kind==='rule') rb+=`<p class="conv-rule">${b.html}</p>`;
+  else if(b.kind==='cmds') rb+=b.items.map(([c,desc,ex])=>`<div class="cmd-block searchable" data-search="${escAttr((c+' '+desc+' '+ex).toLowerCase())}">${cmdRow(c,ex)}<div class="desc">${desc}</div></div>`).join('');
+});
+ref.innerHTML=`<div class="section-head"><h2>${REFERENCE.sectionTitle}</h2><span class="meta">${REFERENCE.sectionMeta}</span></div><div class="topic"><button class="topic-head" aria-expanded="false"><span class="num">★</span><span class="topic-title">${REFERENCE.accTitle}</span><span class="topic-sub">${REFERENCE.accSub}</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">${rb}</div></div></div></div>`;
+content.appendChild(ref);
+
+/* topics */
+DATA.forEach((topic,i)=>{
+  const sec=document.createElement('section'); sec.id=topic.id; let gh='';
+  topic.groups.forEach(g=>{
+    gh+=`<div class="group"><div class="group-label">${g.label}</div>`;
+    g.items.forEach(([c,desc,ex])=>{ gh+=`<div class="cmd-block searchable" data-search="${escAttr((c+' '+desc+' '+(ex||'')).toLowerCase())}">${cmdRow(c,ex||desc)}<div class="desc">${desc}</div></div>`; });
+    gh+=`</div>`;
+  });
+  sec.innerHTML=`<div class="topic"><button class="topic-head" aria-expanded="false"><span class="num">${String(i+1).padStart(2,'0')}</span><span class="topic-title">${topic.title}</span><span class="topic-sub">${topic.sub}</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">${gh}</div></div></div></div>`;
+  content.appendChild(sec);
+});
+
+/* accordion */
+function setOpen(el,open){el.classList.toggle('open',open);const h=el.querySelector('[aria-expanded]');if(h)h.setAttribute('aria-expanded',open);}
+document.querySelectorAll('.topic-head, .scn-head').forEach(h=>h.addEventListener('click',()=>{const t=h.closest('.topic, .scenario');setOpen(t,!t.classList.contains('open'));}));
+document.getElementById('expandAll').onclick=()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,true));
+document.getElementById('collapseAll').onclick=()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,false));
+index.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{const s=document.getElementById(a.dataset.target);const acc=s.querySelector('.topic, .scenario');if(acc)setOpen(acc,true);}));
+
+/* glossary toggle */
+const glossary=document.getElementById('glossary'), glossaryBtn=document.getElementById('glossaryBtn');
+glossaryBtn.onclick=()=>{const o=glossary.classList.toggle('open');glossaryBtn.classList.toggle('active',o);};
+
+/* theme toggle — dark by default; in-memory only (browser storage fails inside sandboxed artifacts) */
+const themeBtn=document.getElementById('themeBtn');
+function applyTheme(mode){document.documentElement.setAttribute('data-theme',mode);themeBtn.textContent=mode==='dark'?'☀ Light':'☾ Dark';}
+themeBtn.onclick=()=>applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
+applyTheme('dark');
+
+/* placeholder inputs */
+content.addEventListener('input',e=>{
+  const inp=e.target; if(!inp.classList||!inp.classList.contains('ph')) return;
+  inp.size=Math.max(inp.value.length||inp.placeholder.length,2); inp.classList.toggle('filled',inp.value.trim().length>0);
+  inp.closest('.cmd-code').querySelectorAll('.ph').forEach(o=>{ if(o!==inp&&o.dataset.ph===inp.dataset.ph){o.value=inp.value;o.size=Math.max(o.value.length||o.placeholder.length,2);o.classList.toggle('filled',o.value.trim().length>0);} });
+});
+content.addEventListener('click',e=>{ if(e.target.classList&&e.target.classList.contains('ph')) e.stopPropagation(); });
+
+/* toast */
+const toast=document.getElementById('toast'),toastCmd=document.getElementById('toastCmd'),toastBody=document.getElementById('toastBody');let toastTimer;
+function showToast(cmd,ex){toastCmd.textContent=cmd;toastBody.textContent=ex;toast.classList.remove('show');void toast.offsetWidth;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),7000);}
+document.getElementById('toastClose').onclick=()=>toast.classList.remove('show');
+
+/* copy */
+content.addEventListener('click',e=>{
+  const btn=e.target.closest('.copy');
+  if(btn){ const code=btn.parentElement.querySelector('.cmd-code'); const text=readCommand(code);
+    navigator.clipboard.writeText(text).then(()=>{btn.textContent='copied';btn.classList.add('done');setTimeout(()=>{btn.textContent='copy';btn.classList.remove('done');},1300);showToast(text,btn.dataset.explain);}); return; }
+  const ca=e.target.closest('.copy-all');
+  if(ca){ const block=ca.closest('.scn-block'); const text=[...block.querySelectorAll('.cmd-code')].map(readCommand).join('\n');
+    navigator.clipboard.writeText(text).then(()=>{ca.textContent='copied all';ca.classList.add('done');setTimeout(()=>{ca.textContent='Copy these steps';ca.classList.remove('done');},1500);showToast(text,'The key steps in order. Fill any blanks, then run or assemble them.');}); }
+});
+
+/* search */
+const search=document.getElementById('search'),noResults=document.getElementById('noResults');
+search.addEventListener('input',()=>{
+  const q=search.value.trim().toLowerCase();
+  document.querySelectorAll('.searchable').forEach(el=>{el.style.display=(!q||el.dataset.search.includes(q))?'':'none';});
+  document.querySelectorAll('.group').forEach(g=>{g.style.display=[...g.querySelectorAll('.searchable')].some(e=>e.style.display!=='none')?'':'none';});
+  let any=false;
+  document.querySelectorAll('main section').forEach(sec=>{
+    const vis=[...sec.querySelectorAll('.searchable')].some(e=>e.style.display!=='none'); sec.style.display=vis?'':'none';
+    if(vis){any=true; if(q){ sec.querySelectorAll('.topic').forEach(t=>{ if([...t.querySelectorAll('.searchable')].some(e=>e.style.display!=='none')) setOpen(t,true); }); sec.querySelectorAll('.scenario.searchable').forEach(s=>{ if(s.style.display!=='none') setOpen(s,true); }); }}
+  });
+  noResults.style.display=any?'none':'block';
+});
+
+/* initial state: first scenario + first topic open */
+const firstScn=document.querySelector('#scenarios .scenario'); if(firstScn) setOpen(firstScn,true);
+const firstTopic=document.querySelector('#'+DATA[0].id+' .topic'); if(firstTopic) setOpen(firstTopic,true);
+</script>
+</body>
+</html>

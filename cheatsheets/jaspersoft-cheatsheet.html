@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jaspersoft — Cheat Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@600;700&family=Mulish:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f4ecdd;
+    --paper:#fffdf8;
+    --ink:#2a2113;
+    --ink-soft:#6a5c43;
+    --line:#e8dcc4;
+    --line-strong:#dccaa8;
+    --accent:#c2710e;
+    --accent-soft:#dd8e22;
+    --green:#15803d;
+    --code-bg:#211a10;
+    --code-ink:#f1e9d8;
+    --code-dim:#a3937a;
+    --code-ph:#fcd34d;
+    --code-green:#4ade80;
+    --on-accent:#ffffff;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:'Mulish',system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;background-image:radial-gradient(var(--line) .6px,transparent .6px);background-size:22px 22px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px}
+  header{padding:64px 0 26px}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  h1{font-family:'Lexend',sans-serif;font-weight:700;font-size:clamp(2.4rem,8vw,4.1rem);line-height:.98;letter-spacing:-.03em;margin-bottom:16px}
+  h1 .mark{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:.55em;font-weight:600}
+  .lede{font-size:1.05rem;color:var(--ink-soft);max-width:55ch}
+  .lede code{font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--accent)}
+  .hint{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);margin-top:14px;border-left:2px solid var(--accent);padding-left:10px}
+  .controls{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 70%,transparent);padding:18px 0 14px;margin-bottom:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:200px;position:relative}
+  .search input{width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:12px 14px 12px 40px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+  .search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(194,113,14,.16)}
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.45}
+  .btn{font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.04em;padding:11px 16px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink-soft);cursor:pointer;transition:all .18s;white-space:nowrap}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+  .panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s ease}
+  .panel.open{grid-template-rows:1fr;margin-bottom:26px}
+  .panel-inner{overflow:hidden}
+  .panel-pad{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);padding:20px 22px;margin-top:2px}
+  .panel-pad h3{font-family:'Lexend',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:3px}
+  .panel-pad .sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);margin-bottom:16px}
+  .gloss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:15px 24px}
+  .gloss dt{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent);margin-bottom:3px}
+  .gloss dd{font-size:.9rem;color:var(--ink-soft);line-height:1.5}
+  .index{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:34px;padding-bottom:30px;border-bottom:1px solid var(--line)}
+  .index a{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:99px;transition:all .15s}
+  .index a:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .index a.lead{border-color:var(--accent);color:var(--accent)}
+  .index a.lead:hover{background:var(--accent);color:var(--on-accent)}
+  .section-head{display:flex;align-items:baseline;gap:12px;margin:34px 0 16px;flex-wrap:wrap}
+  .section-head h2{font-family:'Lexend',sans-serif;font-size:1.7rem;font-weight:700;letter-spacing:-.02em}
+  .section-head .meta{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim)}
+  section{margin-bottom:14px;scroll-margin-top:90px}
+  .topic{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden}
+  .topic-head{display:flex;align-items:center;gap:14px;width:100%;padding:18px 20px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .topic-head:hover .topic-title{color:var(--accent)}
+  .num{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);border:1px solid var(--line-strong);border-radius:6px;padding:3px 7px;flex-shrink:0}
+  .topic-title{font-family:'Lexend',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:-.01em;transition:color .2s;flex:1}
+  .topic-sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);font-weight:400}
+  .chev{flex-shrink:0;transition:transform .3s ease;color:var(--ink-soft)}
+  .topic.open .chev,.scenario.open .chev{transform:rotate(90deg)}
+  .topic-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .topic.open .topic-body{grid-template-rows:1fr}
+  .topic-body-inner{overflow:hidden}
+  .topic-pad{padding:0 20px 22px;border-top:1px solid var(--line)}
+  .group-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-soft);margin:22px 0 10px}
+  .scenario{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden;margin-bottom:10px}
+  .scn-head{display:flex;align-items:center;gap:13px;width:100%;padding:16px 18px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .scn-head:hover .scn-q{color:var(--accent)}
+  .scn-icon{flex-shrink:0;width:27px;height:27px;border-radius:7px;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:600}
+  .scn-q{flex:1;font-family:'Lexend',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:-.01em;transition:color .2s}
+  .scn-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .scenario.open .scn-body{grid-template-rows:1fr}
+  .scn-inner{overflow:hidden}
+  .scn-pad{padding:2px 18px 18px;border-top:1px solid var(--line)}
+  .scn-when{font-size:.92rem;color:var(--ink-soft);margin:14px 0 2px;font-style:italic}
+  .scn-block{margin-top:14px}
+  .block-label{font-family:'JetBrains Mono',monospace;font-size:.71rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-soft);margin-bottom:10px}
+  .steps{list-style:none}
+  .step{display:flex;gap:11px;margin-bottom:11px}
+  .step-n{flex-shrink:0;width:22px;height:22px;margin-top:7px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--accent)}
+  .step-main{flex:1;min-width:0}
+  .step-note{font-size:.88rem;color:var(--ink-soft);margin:3px 0 0 2px}
+  .copy-all{margin-top:4px;font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:9px 14px;border:1px dashed var(--line-strong);border-radius:8px;background:none;color:var(--ink-soft);cursor:pointer;transition:all .15s}
+  .copy-all:hover{border-color:var(--accent);color:var(--accent)}
+  .copy-all.done{color:var(--green);border-color:var(--green)}
+  .types{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:8px;margin:6px 0 18px}
+  .type{display:flex;gap:9px;align-items:baseline;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--code-bg)}
+  .type b{font-family:'JetBrains Mono',monospace;color:var(--code-ph);font-size:.78rem;flex-shrink:0;white-space:nowrap}
+  .type span{font-size:.84rem;color:var(--code-dim)}
+  .conv-rule{font-size:.92rem;color:var(--ink-soft);margin-bottom:8px}
+  .conv-rule code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+  .cmd{display:flex;align-items:stretch;gap:0;margin-bottom:8px;border-radius:8px;overflow:hidden;border:1px solid #2f2614;background:var(--code-bg)}
+  .cmd-code{flex:1;font-family:'JetBrains Mono',monospace;font-size:.84rem;color:var(--code-ink);padding:9px 14px;overflow-x:auto;white-space:pre;line-height:1.7;display:flex;align-items:center;flex-wrap:wrap}
+  .cmd-code .lit{white-space:pre}
+  .ph{font-family:'JetBrains Mono',monospace;font-size:.84rem;background:rgba(252,211,77,.16);color:var(--code-ph);border:none;border-bottom:1px dashed var(--code-ph);padding:1px 2px;margin:0 1px;outline:none;border-radius:3px 3px 0 0;transition:background .15s;min-width:1ch}
+  .ph::placeholder{color:var(--code-ph);opacity:.6;font-style:italic}
+  .ph:focus{background:rgba(252,211,77,.3)}
+  .ph.filled{color:var(--code-green);border-bottom-color:var(--code-green);background:rgba(74,222,128,.15)}
+  .copy{flex-shrink:0;border:none;border-left:1px solid #2f2614;background:#1a140b;color:var(--code-dim);font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:0 15px;cursor:pointer;transition:all .15s;letter-spacing:.05em;align-self:stretch}
+  .copy:hover{background:#241c10;color:var(--code-ink)}
+  .copy.done{color:var(--code-green)}
+  .desc{font-size:.92rem;color:var(--ink-soft);margin:1px 0 13px 2px}
+  .desc code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+  .no-results{display:none;text-align:center;padding:50px 0;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;font-size:.9rem}
+  footer{padding:40px 0 70px;margin-top:30px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--code-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  footer a{color:var(--accent);text-decoration:none}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);width:min(560px,calc(100% - 36px));z-index:60;background:var(--paper);border:1px solid var(--line-strong);border-radius:14px;box-shadow:0 18px 50px -12px rgba(60,40,10,.4);padding:18px 20px 19px;opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.2,.9,.25,1),opacity .35s}
+  .toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+  .toast-top{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+  .toast-badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--on-accent);background:var(--green);padding:3px 8px;border-radius:99px}
+  .toast-title{font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);flex:1}
+  .toast-close{border:none;background:none;cursor:pointer;color:var(--ink-soft);font-size:1.2rem;line-height:1;padding:2px 4px;border-radius:6px}
+  .toast-close:hover{color:var(--accent);background:var(--line)}
+  .toast-cmd{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--code-ink);background:var(--code-bg);border-radius:8px;padding:9px 12px;margin-bottom:12px;overflow-x:auto;white-space:pre;max-height:150px}
+  .toast-body{font-size:1rem;color:var(--ink);line-height:1.6}
+  .toast-progress{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);border-radius:0 0 0 14px;width:100%}
+  .toast.show .toast-progress{animation:drain 7s linear forwards}
+  @keyframes drain{from{width:100%}to{width:0%}}
+  ::selection{background:var(--accent);color:var(--on-accent)}
+  @media(max-width:540px){header{padding:42px 0 22px}.topic-sub{display:none}.cmd-code{font-size:.79rem}}
+</style>
+</head>
+<body>
+<div class="wrap" id="top">
+  <header>
+    <div class="kicker">Jaspersoft · JR Expressions · v1</div>
+    <h1><span class="mark">$F{ }</span> jaspersoft cheat sheet</h1>
+    <p class="lede">The Java expressions that make JasperReports painless — field/parameter/variable syntax, null-safety, strings, dates, the built-in function library, and patterns. Copy any snippet to see what it does.</p>
+    <p class="hint">⌨ Gold blanks like &lt;fieldName&gt; are editable. ⊕ Copying explains the expression. ⊞ Hit “Glossary” for the jargon. Expressions assume the default Java language.</p>
+  </header>
+
+  <div class="controls">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="Search…  e.g. null, date format, page of, substring" autocomplete="off">
+    </label>
+    <button class="btn" id="glossaryBtn">Glossary</button>
+    <button class="btn" id="expandAll">Expand all</button>
+    <button class="btn" id="collapseAll">Collapse all</button>
+  </div>
+
+  <div class="panel glossary" id="glossary">
+    <div class="panel-inner"><div class="panel-pad">
+      <h3>Jaspersoft glossary</h3>
+      <div class="sub">the report-building words people throw around, in plain language</div>
+      <dl class="gloss gloss-grid" id="glossList"></dl>
+    </div></div>
+  </div>
+
+  <nav class="index" id="index"></nav>
+  <main id="content"></main>
+  <div class="no-results" id="noResults">Nothing matches that search.</div>
+
+  <footer>
+    <span>Copy an expression to learn it. Empty blanks copy as &lt;placeholder&gt;.</span>
+    <span><a href="#top">↑ back to top</a></span>
+  </footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <div class="toast-top"><span class="toast-badge">copied</span><span class="toast-title">what this does</span><button class="toast-close" id="toastClose" aria-label="Dismiss">×</button></div>
+  <div class="toast-cmd" id="toastCmd"></div>
+  <div class="toast-body" id="toastBody"></div>
+  <div class="toast-progress"></div>
+</div>
+
+<script>
+/* ===================== SCENARIOS ===================== */
+const SCENARIOS = [
+  {
+    q:"Show a default when a field is null",
+    when:"Stop blank cells and Null Pointer errors when data is missing.",
+    blocks:[ { label:"Ternary fallback", steps:[
+      ["$F{<fieldName>} == null ? \"<N/A>\" : $F{<fieldName>}","If the field is null, show your fallback; otherwise show the value. The everyday null guard."],
+    ]}]
+  },
+  {
+    q:"Combine first and last name",
+    when:"Concatenate fields with a space — null-safely.",
+    blocks:[ { label:"Concatenate", steps:[
+      ["$F{<firstName>} + \" \" + $F{<lastName>}","Joins values with +. If either field can be null, wrap each in a null check first to avoid printing 'null'."],
+    ]}]
+  },
+  {
+    q:"Format a date",
+    when:"Turn a Date field into a readable string.",
+    blocks:[ { label:"In an expression", steps:[
+      ["new java.text.SimpleDateFormat(\"<dd/MM/yyyy>\").format($F{<dateField>})","Formats the date with a Java pattern. Tip: usually cleaner to leave the expression as $F{date} and set the text field's 'Pattern' property instead."],
+    ]}]
+  },
+  {
+    q:"Show 'Page X of Y'",
+    when:"The classic footer. The total page count must be evaluated at report end.",
+    blocks:[ { label:"Two-part footer", steps:[
+      ["\"Page \" + $V{PAGE_NUMBER} + \" of \"","First text field, evaluated normally."],
+      ["\"\" + $V{PAGE_NUMBER}","Second text field placed right after it, with Evaluation Time set to Report — that makes it print the final total."],
+    ]}]
+  },
+  {
+    q:"Colour a value by its status (conditional)",
+    when:"Drive a conditional style or a different label from a field's value.",
+    blocks:[ { label:"Boolean test for the condition", steps:[
+      ["\"<OVERDUE>\".equals($F{<status>})","Put this in a conditional style's expression (literal first = null-safe). When true, the style applies."],
+    ]}]
+  },
+  {
+    q:"Truncate long text with an ellipsis",
+    when:"Keep a cell from overflowing.",
+    blocks:[ { label:"Substring with a guard", steps:[
+      ["$F{<text>}.length() > <30> ? $F{<text>}.substring(0, <30>) + \"…\" : $F{<text>}","If longer than the limit, cut it and append an ellipsis; otherwise show it whole."],
+    ]}]
+  },
+  {
+    q:"Convert a string field to a number",
+    when:"You need to do math on a value stored as text.",
+    blocks:[ { label:"Parse, with a null guard", steps:[
+      ["$F{<numText>} == null ? 0 : Integer.parseInt($F{<numText>}.trim())","Trims and parses to an Integer, defaulting to 0 when empty. Use Double.valueOf for decimals."],
+    ]}]
+  },
+  {
+    q:"Pass a collection to an IN clause",
+    when:"Filter the report query by a list parameter.",
+    blocks:[ { label:"In the query (not a text field)", steps:[
+      ["$X{IN, <columnName>, <collectionParam>}","Expands a List/array parameter into a SQL IN (...) clause safely. There's also $X{NOTIN, ...} and $X{BETWEEN, ...}."],
+    ]}]
+  },
+];
+
+/* ===================== REFERENCE ===================== */
+const TOKENS = [
+  ["$F{name}","a field value"],
+  ["$P{name}","a parameter"],
+  ["$V{name}","a variable"],
+  ["$R{key}","a resource-bundle string (i18n)"],
+  ["$X{IN, col, p}","a SQL query clause"],
+  ["c ? a : b","inline if/else (ternary)"],
+  ["+","concatenate or add"],
+  ["(Type)expr","cast to a type"],
+];
+const SYSVARS = [
+  ["PAGE_NUMBER","current page number"],
+  ["PAGE_COUNT","pages (use eval=Report for total)"],
+  ["COLUMN_NUMBER","current column"],
+  ["REPORT_COUNT","records in the whole report"],
+  ["GROUP_COUNT","records in the current group"],
+  ["MASTER_CURRENT_PAGE","page in the master report"],
+];
+const BUILD = [
+  ["$F{<fieldName>}","Reference a field.","Pulls a query or data-source field into the expression — the most common token on any report."],
+  ["$F{<x>} == null ? <0> : $F{<x>}","Null-safe default.","If the field is null, use a fallback; otherwise the value. Wrap anything that could be null this way to avoid blank cells and errors."],
+];
+
+/* ===================== TOPICS ===================== */
+const DATA = [
+  { id:"basics", title:"Expression Basics", sub:"fields, params, ternary", groups:[
+    { label:"The tokens", items:[
+      ["$F{<fieldName>}","A field.","The value of a field from your query or data source."],
+      ["$P{<paramName>}","A parameter.","An input passed into the report — for filters, titles, user choices."],
+      ["$V{<variableName>}","A variable.","A computed value (a running sum, count, or your own calculation)."],
+      ["$R{<resourceKey>}","A localized string.","Looks up text in the report's resource bundle for internationalization."],
+    ]},
+    { label:"Putting values together", items:[
+      ["$F{<a>} + \" \" + $F{<b>}","Concatenate.","The + operator joins strings (and adds numbers). Cast or String.valueOf non-strings first."],
+      ["$F{<flag>} ? \"<Yes>\" : \"<No>\"","Inline if/else.","The ternary operator — condition ? whenTrue : whenFalse. Nest them for multiple branches."],
+      ["((String)$P{<param>})","Cast a value.","Parameters and fields are Objects; cast to the type you need before calling its methods."],
+      ["String.valueOf($F{<anything>})","Anything to text.","Safely turns any value (even null) into a String for display or concatenation."],
+    ]},
+  ]},
+  { id:"null", title:"Null Handling", sub:"avoid Null Pointer errors", groups:[
+    { label:"Guards & defaults", items:[
+      ["$F{<x>} == null ? \"<default>\" : $F{<x>}","Default for null.","Shows a fallback when the field is missing — the core null guard."],
+      ["$F{<x>} == null ? 0 : $F{<x>}","Numeric default.","Use 0 (or BigDecimal.ZERO) so calculations don't break on null."],
+      ["\"<VALUE>\".equals($F{<x>})","Null-safe equals.","Put the literal first so a null field can't throw — it just returns false."],
+      ["$F{<x>} != null && $F{<x>}.equals(\"<VALUE>\")","Check, then compare.","The && short-circuits: if the field is null, the .equals() never runs."],
+      ["$F{<x>} == null || $F{<x>}.trim().isEmpty()","Blank check.","True when the field is null OR empty/whitespace — a common 'is there anything here?' test."],
+    ]},
+  ]},
+  { id:"strings", title:"Strings", sub:"slice, search, transform", groups:[
+    { label:"Transform", items:[
+      ["$F{<s>}.toUpperCase()","Uppercase.","Also .toLowerCase(). Guard against null first if the field is optional."],
+      ["$F{<s>}.trim()","Trim whitespace.","Removes leading and trailing spaces."],
+      ["$F{<s>}.replace(\"<old>\", \"<new>\")","Replace text.","Swaps every occurrence of one substring for another."],
+      ["$F{<s>}.substring(0, <10>)","Take part of a string.","Characters from the start index up to (not including) the end index."],
+    ]},
+    { label:"Inspect & split", items:[
+      ["$F{<s>}.length()","Length.","The number of characters in the string."],
+      ["$F{<s>}.contains(\"<sub>\")","Contains?","True if the substring appears anywhere. Also .startsWith() and .endsWith()."],
+      ["$F{<s>}.indexOf(\"<sub>\")","Find position.","The index of the first match, or -1 if not found."],
+      ["$F{<s>}.split(\"<,>\")[0]","Split & pick.","Splits on a separator into an array; [0] takes the first piece."],
+      ["$F{<s>}.equalsIgnoreCase(\"<value>\")","Case-insensitive compare.","Compares ignoring upper/lower case."],
+    ]},
+  ]},
+  { id:"numbers", title:"Numbers & Math", sub:"parse, round, format", groups:[
+    { label:"Parse & convert", items:[
+      ["Integer.parseInt($F{<s>}.trim())","Text to int.","Parses a whole number from a string. Wrap in a null/empty guard to be safe."],
+      ["Double.valueOf($F{<s>})","Text to decimal.","Parses a decimal value. Use new BigDecimal($F{s}) for money."],
+      ["$F{<n>}.doubleValue()","Number to double.","Converts a Number field so you can do floating-point math (avoids integer division)."],
+    ]},
+    { label:"Calculate & format", items:[
+      ["Math.round($F{<n>})","Round.","Rounds to the nearest whole number. Also Math.abs, Math.max, Math.min, Math.ceil, Math.floor."],
+      ["$F{<a>}.doubleValue() / $F{<b>}.doubleValue()","Safe division.","Convert to double first so 1/2 gives 0.5, not 0. Guard against a zero divisor."],
+      ["new java.math.BigDecimal($F{<n>}.toString()).setScale(2, java.math.RoundingMode.HALF_UP)","Round money.","Precise decimal rounding to 2 places — the right way to handle currency."],
+      ["String.format(\"%.2f\", $F{<n>})","Format to 2 decimals.","Quick fixed-decimal text. For thousands separators, set the text field's Pattern instead."],
+    ]},
+  ]},
+  { id:"dates", title:"Dates & Time", sub:"format & compute", groups:[
+    { label:"Format & current", items:[
+      ["new java.text.SimpleDateFormat(\"<dd/MM/yyyy>\").format($F{<date>})","Format a date.","Turns a Date into text with a Java pattern. Often cleaner to set the text field Pattern instead."],
+      ["new java.util.Date()","Right now.","The current date and time."],
+      ["new java.text.SimpleDateFormat(\"<yyyy-MM-dd>\").parse(\"<2025-01-31>\")","Text to a date.","Parses a string into a Date using the pattern."],
+    ]},
+    { label:"Compare", items:[
+      ["$F{<date1>}.before($F{<date2>})","Is earlier?","True if date1 comes before date2. Also .after() and .equals()."],
+      ["$F{<date1>}.compareTo($F{<date2>})","Order dates.","Negative, zero, or positive — handy inside sorts or conditions."],
+    ]},
+  ]},
+  { id:"functions", title:"Built-in JR Functions", sub:"the functions library", groups:[
+    { label:"Dates", items:[
+      ["TODAY()","Today's date.","Returns the current date. NOW() includes the time. (Requires the JasperReports functions library, bundled with Studio.)"],
+      ["DATEFORMAT($F{<date>}, \"<dd/MM/yyyy>\")","Format a date.","Formats a date with a pattern — a tidy alternative to SimpleDateFormat."],
+      ["YEAR($F{<date>})","Part of a date.","Extracts the year. Also MONTH(), DAY(), WEEKDAY(), HOUR(), MINUTE()."],
+      ["DATEDIFF($F{<d1>}, $F{<d2>}, \"<day>\")","Difference between dates.","The number of days (or 'month', 'year') between two dates."],
+    ]},
+    { label:"Text", items:[
+      ["CONCATENATE($F{<a>}, \" \", $F{<b>})","Join values.","Concatenates several values into one string."],
+      ["LEFT($F{<s>}, <5>)","First N chars.","The leftmost N characters. Also RIGHT() and MID(text, start, len)."],
+      ["UPPER($F{<s>})","Uppercase.","Uppercases text. Also LOWER(), TRIM(), PROPER(), LENGTH()."],
+    ]},
+  ]},
+  { id:"patterns", title:"Patterns (text field)", sub:"set the Pattern property", groups:[
+    { label:"Date patterns", items:[
+      ["dd/MM/yyyy","Day/month/year.","Put this in the text field's Pattern property — keep the expression as plain $F{date}."],
+      ["MMM d, yyyy","Jan 5, 2025.","Short month name, day, year."],
+      ["HH:mm:ss","24-hour time.","Hours, minutes, seconds. Use hh for 12-hour with a (am/pm) marker."],
+    ]},
+    { label:"Number patterns", items:[
+      ["#,##0.00","Thousands + 2 decimals.","Groups thousands and always shows two decimal places."],
+      ["¤#,##0.00","Currency.","The ¤ symbol uses the report locale's currency sign."],
+      ["0.00%","Percentage.","Multiplies by 100 and adds a percent sign (so 0.25 shows as 25.00%)."],
+      ["#,##0;(#,##0)","Negatives in parentheses.","Accounting style — the part after ; formats negative numbers."],
+    ]},
+  ]},
+  { id:"variables", title:"Variables & System Vars", sub:"counts, sums, paging", groups:[
+    { label:"System variables", items:[
+      ["$V{PAGE_NUMBER}","Current page.","The page being rendered. Pair with PAGE_COUNT for 'Page X of Y'."],
+      ["$V{REPORT_COUNT}","Record count.","How many records the report has processed. GROUP_COUNT scopes it to a group."],
+      ["\"Page \" + $V{PAGE_NUMBER} + \" of \" + $V{PAGE_COUNT}","Page X of Y.","Set this text field's Evaluation Time to Report so PAGE_COUNT shows the final total."],
+    ]},
+    { label:"Your own variables", items:[
+      ["$F{<amount>}","A sum variable's expression.","Set the variable's expression to the field and its Calculation to Sum — Jasper accumulates it for you."],
+      ["$V{<runningTotal>}","Use a variable.","Reference a variable you defined. Set its Reset Type (Report/Page/Group) to control when it restarts."],
+      ["new Integer($V{<myCount>}.intValue() + 1)","Manual increment.","For a custom counter variable using Calculation = Nothing."],
+    ]},
+  ]},
+  { id:"misc", title:"Collections & Casting", sub:"lists, types, regex", groups:[
+    { label:"Lists & types", items:[
+      ["java.util.Arrays.asList(\"<A>\", \"<B>\").contains($F{<x>})","Is it one of these?","True if the field equals any value in the list — a compact multi-value check."],
+      ["$P{<param>} instanceof String","Type check.","True if the value is of that type — useful before casting."],
+      ["((java.util.List)$P{<listParam>}).size()","Cast a collection.","Cast a parameter to List (or Map) to call its methods."],
+    ]},
+    { label:"Pattern matching", items:[
+      ["$F{<s>}.matches(\"[0-9]+\")","Regex test.","True if the whole string matches the regular expression — here, all digits."],
+      ["$F{<s>}.replaceAll(\"[^0-9]\", \"\")","Strip with regex.","Removes everything that isn't a digit. Great for cleaning phone numbers."],
+    ]},
+  ]},
+];
+
+/* ===================== GLOSSARY ===================== */
+const GLOSSARY = [
+  ["$F{} field","A column from your query or data source, referenced in expressions."],
+  ["$P{} parameter","An input value passed into the report — for filters, titles, or query bind values."],
+  ["$V{} variable","A computed value: a built-in (PAGE_NUMBER…) or one you define with a calculation."],
+  ["$R{} resource","A localized string pulled from the report's resource bundle (i18n)."],
+  ["$X{} query clause","A safe SQL clause (IN, NOTIN, BETWEEN) built from a parameter in the query."],
+  ["expression","A snippet of Java (by default) that produces a value for a field, variable, or text element."],
+  ["band","A horizontal section of the report — title, page header, detail, summary, footers."],
+  ["detail band","The band repeated once per record — where row data lives."],
+  ["group","A way to cluster records (e.g. by region) with its own header/footer bands."],
+  ["text field","A report element whose printed value comes from an expression (vs. a static label)."],
+  ["pattern","A format string on a text field that controls how a date or number is displayed."],
+  ["calculation","A variable setting (Sum, Count, Average, Max…) telling Jasper how to accumulate it."],
+  ["reset type","When a variable restarts: per Report, Page, Column, or Group."],
+  ["evaluation time","When a text field's expression is computed: Now, Report, Page, Group, or Band."],
+  ["scriptlet","A Java class hooked into report events for logic too complex for expressions."],
+  ["data source","Where the report's records come from — a SQL query, a bean collection, JSON, CSV, etc."],
+  ["JRXML","The XML source file of a JasperReport; it compiles to a .jasper file."],
+  ["subreport","A report embedded inside another, fed its own data source and parameters."],
+  ["functions library","JasperReports' built-in functions (TODAY, DATEFORMAT, LEFT…), available in Studio."],
+  ["resource bundle","A set of .properties files holding translated strings, keyed by $R{}."],
+];
+
+/* ===================== ENGINE ===================== */
+const escAttr = s => s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const PH_SPLIT = /(<[A-Za-z][\w.\-/:@#]*>)/g;
+const PH_MATCH = /^<([A-Za-z][\w.\-/:@#]*)>$/;
+function buildCommandHTML(cmd){
+  return cmd.split(PH_SPLIT).map(p=>{
+    const m=p.match(PH_MATCH);
+    if(m){const n=m[1];return `<input class="ph" data-ph="${escAttr(n)}" placeholder="${escAttr(n)}" size="${Math.max(n.length,2)}" spellcheck="false" autocomplete="off">`;}
+    return p ? `<span class="lit">${escHtml(p)}</span>` : '';
+  }).join('');
+}
+function readCommand(codeEl){
+  let out='';
+  codeEl.childNodes.forEach(node=>{
+    if(node.nodeType===1 && node.classList.contains('ph')){const v=node.value.trim();out+=v?v:'<'+node.dataset.ph+'>';}
+    else { out+=node.textContent; }
+  });
+  return out;
+}
+const cmdRow=(cmd,explain)=>`<div class="cmd"><code class="cmd-code">${buildCommandHTML(cmd)}</code><button class="copy" data-explain="${escAttr(explain)}" aria-label="Copy expression">copy</button></div>`;
+
+const content=document.getElementById('content'), index=document.getElementById('index');
+function addChip(label,target,lead){const a=document.createElement('a');a.href='#'+target;a.textContent=label;a.dataset.target=target;if(lead)a.classList.add('lead');index.appendChild(a);}
+addChip('★ Scenarios','scenarios',true); addChip('★ Tokens','reference',true);
+DATA.forEach(t=>addChip(t.title.split('(')[0].trim(), t.id));
+
+document.getElementById('glossList').innerHTML = GLOSSARY.map(([t,d])=>`<div><dt>${escHtml(t)}</dt><dd>${escHtml(d)}</dd></div>`).join('');
+
+const scn=document.createElement('section');scn.id='scenarios';
+let sH=`<div class="section-head"><h2>Scenarios &amp; Recipes</h2><span class="meta">"how do I…" → exact expression</span></div>`;
+SCENARIOS.forEach((s,i)=>{
+  let body=''; if(s.when) body+=`<p class="scn-when">${s.when}</p>`; let sb=s.q;
+  s.blocks.forEach(b=>{
+    body+=`<div class="scn-block">`; if(b.label) body+=`<div class="block-label">${b.label}</div>`; body+=`<ol class="steps">`;
+    b.steps.forEach(([c,n])=>{ sb+=' '+c+' '+n; body+=`<li class="step"><span class="step-n">•</span><div class="step-main">${cmdRow(c,n)}<div class="step-note">${n}</div></div></li>`; });
+    body+=`</ol>`; if(b.steps.length>1) body+=`<button class="copy-all">Copy these steps</button>`; body+=`</div>`;
+  });
+  sH+=`<div class="scenario searchable" data-search="${escAttr(sb.toLowerCase())}"><button class="scn-head" aria-expanded="false"><span class="scn-icon">${i+1}</span><span class="scn-q">${s.q}</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="scn-body"><div class="scn-inner"><div class="scn-pad">${body}</div></div></div></div>`;
+});
+scn.innerHTML=sH; content.appendChild(scn);
+document.querySelectorAll('.scn-block .steps').forEach(ol=>ol.querySelectorAll('.step-n').forEach((n,i)=>n.textContent=i+1));
+
+const ref=document.createElement('section');ref.id='reference';
+const tokHtml=TOKENS.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('');
+const sysHtml=SYSVARS.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('');
+const buildHtml=BUILD.map(([c,desc,ex])=>`<div class="cmd-block searchable" data-search="${escAttr((c+' '+desc+' '+ex).toLowerCase())}">${cmdRow(c,ex)}<div class="desc">${desc}</div></div>`).join('');
+ref.innerHTML=`<div class="section-head"><h2>The Building Blocks</h2><span class="meta">tokens &amp; system vars</span></div><div class="topic"><button class="topic-head" aria-expanded="false"><span class="num">★</span><span class="topic-title">Tokens, System Vars &amp; Defaults</span><span class="topic-sub">$F $P $V · $V system vars</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="topic-body"><div class="topic-body-inner"><div class="topic-pad"><div class="group-label">Expression tokens</div><p class="conv-rule">Every report expression is Java that returns the element's value. Pull data with <code>$F{}</code>, <code>$P{}</code>, <code>$V{}</code>; combine with <code>+</code> and the ternary <code>? :</code>.</p><div class="types">${tokHtml}</div><div class="group-label">System variables ($V{...})</div><div class="types">${sysHtml}</div><div class="group-label">The two you'll use most</div>${buildHtml}</div></div></div></div>`;
+content.appendChild(ref);
+
+DATA.forEach((topic,i)=>{
+  const sec=document.createElement('section');sec.id=topic.id;let gh='';
+  topic.groups.forEach(g=>{
+    gh+=`<div class="group"><div class="group-label">${g.label}</div>`;
+    g.items.forEach(([c,desc,ex])=>{ gh+=`<div class="cmd-block searchable" data-search="${escAttr((c+' '+desc+' '+(ex||'')).toLowerCase())}">${cmdRow(c,ex||desc)}<div class="desc">${desc}</div></div>`; });
+    gh+=`</div>`;
+  });
+  sec.innerHTML=`<div class="topic"><button class="topic-head" aria-expanded="false"><span class="num">${String(i+1).padStart(2,'0')}</span><span class="topic-title">${topic.title}</span><span class="topic-sub">${topic.sub}</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">${gh}</div></div></div></div>`;
+  content.appendChild(sec);
+});
+
+function setOpen(el,open){el.classList.toggle('open',open);const h=el.querySelector('[aria-expanded]');if(h)h.setAttribute('aria-expanded',open);}
+document.querySelectorAll('.topic-head, .scn-head').forEach(h=>h.addEventListener('click',()=>{const t=h.closest('.topic, .scenario');setOpen(t,!t.classList.contains('open'));}));
+document.getElementById('expandAll').onclick=()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,true));
+document.getElementById('collapseAll').onclick=()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,false));
+index.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{const s=document.getElementById(a.dataset.target);const acc=s.querySelector('.topic, .scenario');if(acc)setOpen(acc,true);}));
+
+const glossary=document.getElementById('glossary'), glossaryBtn=document.getElementById('glossaryBtn');
+glossaryBtn.onclick=()=>{const o=glossary.classList.toggle('open');glossaryBtn.classList.toggle('active',o);};
+
+content.addEventListener('input',e=>{
+  const inp=e.target; if(!inp.classList||!inp.classList.contains('ph')) return;
+  inp.size=Math.max(inp.value.length||inp.placeholder.length,2); inp.classList.toggle('filled',inp.value.trim().length>0);
+  inp.closest('.cmd-code').querySelectorAll('.ph').forEach(o=>{ if(o!==inp&&o.dataset.ph===inp.dataset.ph){o.value=inp.value;o.size=Math.max(o.value.length||o.placeholder.length,2);o.classList.toggle('filled',o.value.trim().length>0);} });
+});
+content.addEventListener('click',e=>{ if(e.target.classList&&e.target.classList.contains('ph')) e.stopPropagation(); });
+
+const toast=document.getElementById('toast'),toastCmd=document.getElementById('toastCmd'),toastBody=document.getElementById('toastBody');let toastTimer;
+function showToast(cmd,ex){toastCmd.textContent=cmd;toastBody.textContent=ex;toast.classList.remove('show');void toast.offsetWidth;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),7000);}
+document.getElementById('toastClose').onclick=()=>toast.classList.remove('show');
+
+content.addEventListener('click',e=>{
+  const btn=e.target.closest('.copy');
+  if(btn){ const code=btn.parentElement.querySelector('.cmd-code'); const text=readCommand(code);
+    navigator.clipboard.writeText(text).then(()=>{btn.textContent='copied';btn.classList.add('done');setTimeout(()=>{btn.textContent='copy';btn.classList.remove('done');},1300);showToast(text,btn.dataset.explain);}); return; }
+  const ca=e.target.closest('.copy-all');
+  if(ca){ const block=ca.closest('.scn-block'); const text=[...block.querySelectorAll('.cmd-code')].map(readCommand).join('\n');
+    navigator.clipboard.writeText(text).then(()=>{ca.textContent='copied all';ca.classList.add('done');setTimeout(()=>{ca.textContent='Copy these steps';ca.classList.remove('done');},1500);showToast(text,'The pieces of this recipe. Fill any blanks, then drop them into the right text fields / properties.');}); }
+});
+
+const search=document.getElementById('search'),noResults=document.getElementById('noResults');
+search.addEventListener('input',()=>{
+  const q=search.value.trim().toLowerCase();
+  document.querySelectorAll('.searchable').forEach(el=>{el.style.display=(!q||el.dataset.search.includes(q))?'':'none';});
+  document.querySelectorAll('.group').forEach(g=>{g.style.display=[...g.querySelectorAll('.searchable')].some(e=>e.style.display!=='none')?'':'none';});
+  let any=false;
+  document.querySelectorAll('main section').forEach(sec=>{
+    const vis=[...sec.querySelectorAll('.searchable')].some(e=>e.style.display!=='none'); sec.style.display=vis?'':'none';
+    if(vis){any=true; if(q){ sec.querySelectorAll('.topic').forEach(t=>{ if([...t.querySelectorAll('.searchable')].some(e=>e.style.display!=='none')) setOpen(t,true); }); sec.querySelectorAll('.scenario.searchable').forEach(s=>{ if(s.style.display!=='none') setOpen(s,true); }); }}
+  });
+  noResults.style.display=any?'none':'block';
+});
+
+setOpen(document.querySelector('#scenarios .scenario'),true);
+setOpen(document.querySelector('#basics .topic'),true);
+</script>
+</body>
+</html>

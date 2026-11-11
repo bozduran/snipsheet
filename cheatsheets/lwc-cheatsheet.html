@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LWC — Cheat Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@700;800&family=Mulish:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* DARK (default) */
+  :root,[data-theme="dark"]{
+    --bg:#0e1422;
+    --paper:#141c2e;
+    --ink:#e8edf8;
+    --ink-soft:#8fa3c8;
+    --line:#1e2a3f;
+    --line-strong:#2c3d5a;
+    --accent:#4d9fff;
+    --accent-soft:#7abbff;
+    --green:#5fd38a;
+    --code-bg:#090d18;
+    --code-ink:#dde8f8;
+    --code-dim:#607898;
+    --code-ph:#fcd34d;
+    --code-green:#5fd38a;
+    --on-accent:#060d1c;
+    --radius:10px;
+    --dot:.7px;
+  }
+  /* LIGHT */
+  [data-theme="light"]{
+    --bg:#edf2fc;
+    --paper:#ffffff;
+    --ink:#0d1b30;
+    --ink-soft:#4a6080;
+    --line:#d4dff0;
+    --line-strong:#bccce6;
+    --accent:#0a6ed1;
+    --accent-soft:#1a7ee0;
+    --green:#15803d;
+    --code-bg:#090d18;
+    --code-ink:#dde8f8;
+    --code-dim:#607898;
+    --code-ph:#fcd34d;
+    --code-green:#5fd38a;
+    --on-accent:#ffffff;
+    --dot:.6px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;transition:background-color .3s ease}
+  body,.topic,.scenario,.panel-pad,.btn,.search input,.toast,.cmd,.type{transition:background-color .3s ease,border-color .3s ease,color .3s ease}
+  body{background:var(--bg);color:var(--ink);font-family:'Mulish',system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;background-image:radial-gradient(var(--line) var(--dot),transparent var(--dot));background-size:22px 22px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px}
+  header{padding:64px 0 26px}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  h1{font-family:'Urbanist',sans-serif;font-weight:800;font-size:clamp(2.4rem,8vw,4.1rem);line-height:.98;letter-spacing:-.03em;margin-bottom:16px}
+  h1 .mark{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:.6em;font-weight:600}
+  .lede{font-size:1.05rem;color:var(--ink-soft);max-width:57ch}
+  .lede code{font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--accent-soft)}
+  .hint{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);margin-top:14px;border-left:2px solid var(--accent);padding-left:10px}
+  .controls{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 70%,transparent);padding:18px 0 14px;margin-bottom:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:200px;position:relative}
+  .search input{width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:12px 14px 12px 40px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+  .search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent)}
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.45}
+  .btn{font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.04em;padding:11px 16px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);color:var(--ink-soft);cursor:pointer;transition:all .18s;white-space:nowrap}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+  .panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s ease}
+  .panel.open{grid-template-rows:1fr;margin-bottom:26px}
+  .panel-inner{overflow:hidden}
+  .panel-pad{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);padding:20px 22px;margin-top:2px}
+  .panel-pad h3{font-family:'Urbanist',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:3px}
+  .panel-pad .sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);margin-bottom:16px}
+  .gloss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:15px 24px}
+  .gloss dt{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent-soft);margin-bottom:3px}
+  .gloss dd{font-size:.9rem;color:var(--ink-soft);line-height:1.5}
+  .index{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:34px;padding-bottom:30px;border-bottom:1px solid var(--line)}
+  .index a{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--ink-soft);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:99px;transition:all .15s}
+  .index a:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .index a.lead{border-color:var(--accent);color:var(--accent)}
+  .index a.lead:hover{background:var(--accent);color:var(--on-accent)}
+  .section-head{display:flex;align-items:baseline;gap:12px;margin:34px 0 16px;flex-wrap:wrap}
+  .section-head h2{font-family:'Urbanist',sans-serif;font-size:1.7rem;font-weight:800;letter-spacing:-.02em}
+  .section-head .meta{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim)}
+  section{margin-bottom:14px;scroll-margin-top:90px}
+  .topic{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden}
+  .topic-head{display:flex;align-items:center;gap:14px;width:100%;padding:18px 20px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .topic-head:hover .topic-title{color:var(--accent)}
+  .num{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);border:1px solid var(--line-strong);border-radius:6px;padding:3px 7px;flex-shrink:0}
+  .topic-title{font-family:'Urbanist',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:-.01em;transition:color .2s;flex:1}
+  .topic-sub{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--code-dim);font-weight:400}
+  .chev{flex-shrink:0;transition:transform .3s ease;color:var(--ink-soft)}
+  .topic.open .chev,.scenario.open .chev{transform:rotate(90deg)}
+  .topic-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .topic.open .topic-body{grid-template-rows:1fr}
+  .topic-body-inner{overflow:hidden}
+  .topic-pad{padding:0 20px 22px;border-top:1px solid var(--line)}
+  .group-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-soft);margin:22px 0 10px}
+  .scenario{border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper);overflow:hidden;margin-bottom:10px}
+  .scn-head{display:flex;align-items:center;gap:13px;width:100%;padding:16px 18px;cursor:pointer;background:none;border:none;text-align:left;font-family:inherit;color:var(--ink)}
+  .scn-head:hover .scn-q{color:var(--accent)}
+  .scn-icon{flex-shrink:0;width:27px;height:27px;border-radius:7px;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:700}
+  .scn-q{flex:1;font-family:'Urbanist',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:-.01em;transition:color .2s}
+  .scn-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}
+  .scenario.open .scn-body{grid-template-rows:1fr}
+  .scn-inner{overflow:hidden}
+  .scn-pad{padding:2px 18px 18px;border-top:1px solid var(--line)}
+  .scn-when{font-size:.92rem;color:var(--ink-soft);margin:14px 0 2px;font-style:italic}
+  .scn-block{margin-top:14px}
+  .block-label{font-family:'JetBrains Mono',monospace;font-size:.71rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-soft);margin-bottom:10px}
+  .steps{list-style:none}
+  .step{display:flex;gap:11px;margin-bottom:11px}
+  .step-n{flex-shrink:0;width:22px;height:22px;margin-top:7px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--accent)}
+  .step-main{flex:1;min-width:0}
+  .step-note{font-size:.88rem;color:var(--ink-soft);margin:3px 0 0 2px}
+  .copy-all{margin-top:4px;font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:9px 14px;border:1px dashed var(--line-strong);border-radius:8px;background:none;color:var(--ink-soft);cursor:pointer;transition:all .15s}
+  .copy-all:hover{border-color:var(--accent);color:var(--accent)}
+  .copy-all.done{color:var(--green);border-color:var(--green)}
+  .types{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:8px;margin:6px 0 18px}
+  .type{display:flex;gap:9px;align-items:baseline;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--code-bg)}
+  .type b{font-family:'JetBrains Mono',monospace;color:var(--code-ph);font-size:.78rem;flex-shrink:0;white-space:nowrap}
+  .type span{font-size:.84rem;color:var(--code-dim)}
+  .conv-rule{font-size:.92rem;color:var(--ink-soft);margin-bottom:8px}
+  .conv-rule code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+  .cmd{display:flex;align-items:stretch;gap:0;margin-bottom:8px;border-radius:8px;overflow:hidden;border:1px solid #0f1726;background:var(--code-bg)}
+  .cmd-code{flex:1;font-family:'JetBrains Mono',monospace;font-size:.84rem;color:var(--code-ink);padding:9px 14px;overflow-x:auto;white-space:pre;line-height:1.7;display:flex;align-items:center;flex-wrap:wrap}
+  .cmd-code .lit{white-space:pre}
+  .ph{font-family:'JetBrains Mono',monospace;font-size:.84rem;background:rgba(252,211,77,.16);color:var(--code-ph);border:none;border-bottom:1px dashed var(--code-ph);padding:1px 2px;margin:0 1px;outline:none;border-radius:3px 3px 0 0;transition:background .15s;min-width:1ch}
+  .ph::placeholder{color:var(--code-ph);opacity:.6;font-style:italic}
+  .ph:focus{background:rgba(252,211,77,.3)}
+  .ph.filled{color:var(--code-green);border-bottom-color:var(--code-green);background:rgba(95,211,138,.15)}
+  .copy{flex-shrink:0;border:none;border-left:1px solid #0f1726;background:#0b1220;color:var(--code-dim);font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:0 15px;cursor:pointer;transition:all .15s;letter-spacing:.05em;align-self:stretch}
+  .copy:hover{background:#121a2c;color:var(--code-ink)}
+  .copy.done{color:var(--code-green)}
+  .desc{font-size:.92rem;color:var(--ink-soft);margin:1px 0 13px 2px;line-height:1.6}
+  .desc code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}
+  .no-results{display:none;text-align:center;padding:50px 0;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;font-size:.9rem}
+  footer{padding:40px 0 70px;margin-top:30px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--code-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  footer a{color:var(--accent-soft);text-decoration:none}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);width:min(560px,calc(100% - 36px));z-index:60;background:var(--paper);border:1px solid var(--line-strong);border-radius:14px;box-shadow:0 18px 50px -12px rgba(0,0,0,.6);padding:18px 20px 19px;opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.2,.9,.25,1),opacity .35s}
+  .toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+  .toast-top{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+  .toast-badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--on-accent);background:var(--green);padding:3px 8px;border-radius:99px}
+  .toast-title{font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);flex:1}
+  .toast-close{border:none;background:none;cursor:pointer;color:var(--ink-soft);font-size:1.2rem;line-height:1;padding:2px 4px;border-radius:6px}
+  .toast-close:hover{color:var(--accent);background:var(--line)}
+  .toast-cmd{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--code-ink);background:var(--code-bg);border-radius:8px;padding:9px 12px;margin-bottom:12px;overflow-x:auto;white-space:pre;max-height:150px}
+  .toast-body{font-size:1rem;color:var(--ink);line-height:1.6}
+  .toast-progress{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);border-radius:0 0 0 14px;width:100%}
+  .toast.show .toast-progress{animation:drain 7s linear forwards}
+  @keyframes drain{from{width:100%}to{width:0%}}
+  ::selection{background:var(--accent);color:var(--on-accent)}
+  @media(max-width:540px){header{padding:42px 0 22px}.topic-sub{display:none}.cmd-code{font-size:.79rem}}
+</style>
+</head>
+<body>
+<div class="wrap" id="top">
+  <header>
+    <div class="kicker">Salesforce · Lightning Web Components · v1</div>
+    <h1><span class="mark">&lt;c-/&gt;</span> lwc cheat sheet</h1>
+    <p class="lede">The HTML, JavaScript, and wiring that makes Lightning Web Components click — templates, data binding, events, <code>@wire</code>, lifecycle hooks, parent↔child communication, and navigation. Copy any snippet to see what it does.</p>
+    <p class="hint">⌨ Gold blanks like ‹propName› are editable — uses guillemets so literal &lt;tags&gt; stay intact. ⊕ Copying explains the snippet. ☀/☾ toggles light &amp; dark.</p>
+  </header>
+
+  <div class="controls">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="Search…  e.g. wire, event, getter, navigate, slot" autocomplete="off">
+    </label>
+    <button class="btn" id="themeBtn" aria-label="Toggle light and dark mode">☀ Light</button>
+    <button class="btn" id="glossaryBtn">Glossary</button>
+    <button class="btn" id="expandAll">Expand all</button>
+    <button class="btn" id="collapseAll">Collapse all</button>
+  </div>
+
+  <div class="panel glossary" id="glossary">
+    <div class="panel-inner"><div class="panel-pad">
+      <h3>LWC glossary</h3>
+      <div class="sub">the framework words in plain language</div>
+      <dl class="gloss gloss-grid" id="glossList"></dl>
+    </div></div>
+  </div>
+
+  <nav class="index" id="index"></nav>
+  <main id="content"></main>
+  <div class="no-results" id="noResults">Nothing matches that search.</div>
+
+  <footer>
+    <span>Copy a snippet to learn it. Empty blanks copy as ‹placeholder›.</span>
+    <span><a href="#top">↑ back to top</a></span>
+  </footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <div class="toast-top"><span class="toast-badge">copied</span><span class="toast-title">what this does</span><button class="toast-close" id="toastClose" aria-label="Dismiss">×</button></div>
+  <div class="toast-cmd" id="toastCmd"></div>
+  <div class="toast-body" id="toastBody"></div>
+  <div class="toast-progress"></div>
+</div>
+
+<script>
+/* ===================== SCENARIOS ===================== */
+const SCENARIOS = [
+  {
+    q:"Create a new LWC component",
+    when:"Every LWC is a folder of three files with matching names.",
+    blocks:[{ label:"The three files", steps:[
+      ["‹myComponent›.html","The template file — wrap everything in a single <template> tag. The component name becomes the folder name."],
+      ["‹myComponent›.js","The JavaScript class — export default class ‹MyComponent› extends LightningElement {}. The class name is the folder name in PascalCase."],
+      ["‹myComponent›.js-meta.xml","The metadata file — declares where the component can be used (targets: lightning__AppPage, lightning__RecordPage, etc.)."],
+    ]}]
+  },
+  {
+    q:"Display a record field with @wire",
+    when:"Load a single record's fields reactively using the wire service — no Apex needed for simple reads.",
+    blocks:[{ label:"HTML + JS together", steps:[
+      ["import { LightningElement, api, wire } from 'lwc';","Import the decorators you need at the top of the JS file."],
+      ["import { getRecord, getFieldValue } from 'lightning/uiRecordApi';","Import the wire adapter and helper from the UI API module."],
+      ["import ‹NAME_FIELD› from '@salesforce/schema/‹Account.Name›';","Import a schema reference — this gives you a type-safe reference to the field."],
+      ["@api recordId;","Expose the record page's record ID as a public property — the platform passes it in automatically on a record page."],
+      ["@wire(getRecord, { recordId: '$recordId', fields: [‹NAME_FIELD›] }) ‹record›;","Wire the adapter. The '$' prefix on recordId makes it reactive — if recordId changes, the wire re-runs automatically."],
+      ["get ‹name›() { return getFieldValue(this.‹record›.data, ‹NAME_FIELD›); }","A getter to extract the value from the wire result for use in the template as {‹name›}."],
+    ]}]
+  },
+  {
+    q:"Call an Apex method with @wire",
+    when:"You need server-side logic or a SOQL query beyond the UI API.",
+    blocks:[{ label:"Import, wire, display", steps:[
+      ["import ‹getContacts› from '@salesforce/apex/‹ContactController.getContacts›';","Import the Apex method — the path is @salesforce/apex/ClassName.methodName."],
+      ["@wire(‹getContacts›, { ‹accountId›: '$recordId' }) ‹contacts›;","Wire it with any parameters. Parameters prefixed with '$' are reactive properties — the method re-runs when they change."],
+      ["<template lwc:if={‹contacts›.data}>","In the template, check for data before rendering to avoid errors during loading."],
+      ["<template for:each={‹contacts›.data} for:item=\"‹con›\"><p key={‹con›.Id}>{‹con›.Name}</p></template>","Iterate the results — every element inside for:each must have a unique key attribute."],
+    ]}]
+  },
+  {
+    q:"Call Apex imperatively (on a button click)",
+    when:"You need to call Apex in response to an action, not on load, or you need to control timing.",
+    blocks:[{ label:"Import, call, handle", steps:[
+      ["import ‹saveRecord› from '@salesforce/apex/‹MyController.saveRecord›';","Import the Apex method the same way as wired."],
+      ["‹saveRecord›({ ‹fieldValue›: this.‹inputValue› }).then(result => { }).catch(error => { });","Call it as a Promise. Always handle both .then (success) and .catch (error) — failing to catch leaves silent errors."],
+    ]}]
+  },
+  {
+    q:"Pass data from parent to child",
+    when:"A parent component controls some state that a child needs to display.",
+    blocks:[{ label:"@api in the child, property binding in the parent", steps:[
+      ["@api ‹title›;","In the child JS, decorate the property with @api to make it publicly settable by the parent."],
+      ["<c-‹child-component› title={‹parentProp›}></c-‹child-component›>","In the parent template, bind the parent's property to the child's @api property using curly braces — no quotes."],
+    ]}]
+  },
+  {
+    q:"Send data from child to parent (custom event)",
+    when:"The child does something (a selection, a form submit) that the parent needs to react to.",
+    blocks:[{ label:"Fire in child, handle in parent", steps:[
+      ["this.dispatchEvent(new CustomEvent('‹select›', { detail: this.‹selectedId› }));","Fire the event from the child JS. The event name is lowercase; the detail carries the payload."],
+      ["<c-‹child-component› on‹select›={‹handleSelect›}></c-‹child-component›>","In the parent template, listen with on + eventname (no space) pointing to a handler method."],
+      ["‹handleSelect›(event) { const id = event.detail; }","In the parent JS, the handler receives the event — event.detail holds whatever the child put in detail."],
+    ]}]
+  },
+  {
+    q:"Navigate to a record page",
+    when:"Redirect the user to a standard Salesforce record page programmatically.",
+    blocks:[{ label:"NavigationMixin + navigate", steps:[
+      ["import { NavigationMixin } from 'lightning/navigation';","Import the mixin at the top of the JS file."],
+      ["export default class ‹MyComp› extends NavigationMixin(LightningElement) {}","Wrap LightningElement with NavigationMixin so the class gets the [NavigationMixin.Navigate] method."],
+      ["this[NavigationMixin.Navigate]({ type: 'standard__recordPage', attributes: { recordId: ‹this.recordId›, actionName: 'view' } });","Call Navigate with a page reference object — type, attributes, and optional state describe where to go."],
+    ]}]
+  },
+  {
+    q:"Show a toast notification",
+    when:"Give the user feedback after a save, an error, or any important action.",
+    blocks:[{ label:"Import and fire", steps:[
+      ["import { ShowToastEvent } from 'lightning/platformShowToastEvent';","Import the event class."],
+      ["this.dispatchEvent(new ShowToastEvent({ title: '‹Success›', message: '‹Record saved›', variant: '‹success›' }));","Dispatch it. variant can be success, error, warning, or info — it sets the colour and icon."],
+    ]}]
+  },
+];
+
+/* ===================== REFERENCE ===================== */
+const DECORATORS = [
+  ["@api","public property or method — settable by a parent"],
+  ["@track","deep reactive (objects/arrays) — rarely needed now"],
+  ["@wire","reactive server data from Apex or UI API"],
+  ["get prop()","a getter — computed, reactive to its dependencies"],
+];
+const HOOKS = [
+  ["connectedCallback()","component added to DOM"],
+  ["disconnectedCallback()","component removed from DOM"],
+  ["renderedCallback()","after every render — use carefully"],
+  ["errorCallback(e,s)","child threw an error — like an error boundary"],
+  ["constructor()","instance created — call super() first"],
+];
+const BUILD = [
+  ["‹myProp›: value","A reactive property.","Any property in the class is reactive by default — change it and the template re-renders. @track is only needed for nested mutation of objects/arrays."],
+  ["@api ‹publicProp›;","A public API property.","@api exposes a property to parent components and to the page via property panel. Never mutate @api properties from inside the component — they're read-only from the child's perspective."],
+];
+
+/* ===================== TOPICS ===================== */
+const DATA = [
+  { id:"template", title:"Templates", sub:"HTML directives", groups:[
+    { label:"Conditionals", items:[
+      ["<template lwc:if={‹condition›}>","Show if true.","Renders the content only when the expression is truthy. Use lwc:elseif and lwc:else on sibling templates for if/else chains. This replaced the older if:true directive."],
+      ["<template lwc:elseif={‹otherCondition›}>","Else-if branch.","Must be a sibling of the lwc:if template with nothing between them."],
+      ["<template lwc:else>","Fallback.","The catch-all branch when no prior condition matched."],
+    ]},
+    { label:"Iteration", items:[
+      ["<template for:each={‹items›} for:item=\"‹item›\">","Loop a list.","Repeats its children for each element of the array. Every direct child must have a key attribute with a unique, stable identifier — LWC uses it to reconcile the DOM efficiently."],
+      ["<template iterator:‹it›={‹items›}>","Iterator — first/last flags.","Gives each iteration ‹it›.value, ‹it›.index, ‹it›.first, and ‹it›.last, so you can style the first or last item without extra logic."],
+    ]},
+    { label:"Binding", items:[
+      ["<lightning-input label=\"‹Label›\" value={‹prop›} onchange={‹handleChange›}></lightning-input>","Two-way-style input.","Bind value to display the current state; handle onchange to update the property. LWC has no automatic two-way binding — you update the property yourself in the handler."],
+      ["{‹propName›}","Interpolate a value.","Outputs a property or getter's value inline. Expressions in templates are intentionally limited — complex logic belongs in a getter in the JS."],
+      ["<p class={‹computedClass›}>","Dynamic attribute.","Any attribute can be bound to a property or getter with curly braces — works for class, style, href, disabled, and others."],
+    ]},
+    { label:"Slots", items:[
+      ["<slot></slot>","A default slot.","A placeholder in a child component where a parent injects its own markup — the primary way to make reusable container components."],
+      ["<slot name=\"‹header›\"></slot>","A named slot.","A labelled placeholder; the parent fills it with <span slot=\"‹header›\">."],
+    ]},
+  ]},
+  { id:"js", title:"JavaScript Class", sub:"properties, getters, handlers", groups:[
+    { label:"Decorators", items:[
+      ["@api ‹propName›;","Public property.","Makes the property settable from the parent template or the page builder. @api properties are reactive — changing them from outside re-renders the component."],
+      ["@api ‹methodName›() { }","Public method.","A method decorated with @api can be called by a parent component via a template ref."],
+      ["@wire(‹AdapterOrApex›, { ‹param›: '$‹reactiveParam›' }) ‹result›;","Wire a data source.","Declarative data fetching — the framework calls the adapter whenever reactive parameters change. Result has .data and .error."],
+    ]},
+    { label:"State & getters", items:[
+      ["‹myProp› = ‹defaultValue›;","A private reactive property.","Assign any class property and it's reactive by default — no decorator needed for primitives. The template re-renders when it changes."],
+      ["get ‹fullName›() { return this.‹first› + ' ' + this.‹last›; }","A computed getter.","Acts like a property in the template — {‹fullName›} — but computed on demand. Keeps logic out of the template."],
+      ["‹handleChange›(event) { this.‹value› = event.target.value; }","An event handler.","Update state in handlers; the template re-renders automatically. Handlers are plain methods — no special decorator needed."],
+    ]},
+    { label:"Lifecycle hooks", items:[
+      ["connectedCallback() { }","On mount.","Called once when the component is inserted into the DOM — the right place for setup logic, subscriptions, and imperative Apex calls on load."],
+      ["disconnectedCallback() { }","On unmount.","Called when removed — unsubscribe, clear timers, and release resources here to avoid memory leaks."],
+      ["renderedCallback() { }","After every render.","Runs after each render — be very careful: any state change here triggers another render. Guard with a flag if you need it."],
+    ]},
+  ]},
+  { id:"events", title:"Events", sub:"communicate between components", groups:[
+    { label:"Fire an event", items:[
+      ["this.dispatchEvent(new CustomEvent('‹eventname›'));","A simple event.","Fires a custom event with no payload — the event name should be lowercase and kebab-case. The parent listens with on‹eventname›."],
+      ["this.dispatchEvent(new CustomEvent('‹eventname›', { detail: ‹payload› }));","Event with a payload.","Pass data in the detail property — the parent accesses it via event.detail. Keep detail serializable (no DOM nodes)."],
+      ["this.dispatchEvent(new CustomEvent('‹eventname›', { bubbles: true, composed: true }));","Bubble up the DOM.","bubbles: true travels up the shadow DOM tree; composed: true crosses shadow-DOM boundaries. Use sparingly — it makes tracing the event harder."],
+    ]},
+    { label:"Handle an event", items:[
+      ["<c-‹child› on‹eventname›={‹handleEvent›}></c-‹child›>","Listen on a child.","Attach a handler to the child's custom event in the parent template. The handler name is on + event name, no spaces."],
+      ["‹handleEvent›(event) { const data = event.detail; }","The handler.","A plain class method — receives the CustomEvent; extract the payload from event.detail."],
+      ["<template><div onclick={‹handleClick›}></div></template>","DOM event listener.","Standard DOM events (onclick, onkeydown, oninput…) work the same way — put the handler name in curly braces."],
+    ]},
+    { label:"Pub/sub (LMS)", items:[
+      ["import { publish, MessageContext } from 'lightning/messageService';","Publish to a message channel.","Lightning Message Service lets unrelated components (not parent–child) communicate. Import publish and the @wire MessageContext."],
+      ["import ‹MY_CHANNEL› from '@salesforce/messageChannel/‹My_Channel__c›';","Import the channel.","Reference a deployed Message Channel metadata record by its API name."],
+      ["@wire(MessageContext) ‹messageContext›;","Wire the context.","Required context object — pass it as the first argument to publish() and subscribe()."],
+    ]},
+  ]},
+  { id:"wire", title:"Wire & Data", sub:"reactive server calls", groups:[
+    { label:"UI API adapters", items:[
+      ["@wire(getRecord, { recordId: '$recordId', fields: [‹FIELD›] }) ‹record›;","Load a record.","Fetches a single record's fields reactively. Fields must be imported as schema references. The $ on recordId makes it reactive."],
+      ["@wire(getPicklistValues, { recordTypeId: '$objectInfo.data.defaultRecordTypeId', fieldApiName: ‹STATUS_FIELD› }) ‹picklistValues›;","Picklist values.","Gets the allowed values for a picklist field — useful for building custom picklists without hardcoding options."],
+      ["@wire(getObjectInfo, { objectApiName: ‹ACCOUNT_OBJECT› }) ‹objectInfo›;","Object metadata.","Loads the object's describe — record type IDs, field labels, and permissions."],
+    ]},
+    { label:"Apex wire", items:[
+      ["@wire(‹apexMethod›, { ‹param›: '$‹prop›' }) ‹wiredResult›;","Wire an Apex method.","The Apex method must be annotated @AuraEnabled(cacheable=true). The result has .data and .error; handle both in the template."],
+      ["@wire(‹apexMethod›, { ‹param›: '$‹prop›' }) ‹wiredHandler›({ data, error }) { }","Wire to a function.","Instead of a property, wire to a handler function for more control — useful when you want to transform the data on arrival."],
+    ]},
+    { label:"Refresh wired data", items:[
+      ["import { refreshApex } from '@salesforce/apex';","Import refreshApex.","Used to manually re-run a wired Apex call after a mutation, since wired calls are cached and won't refresh automatically."],
+      ["refreshApex(this.‹wiredResult›);","Trigger a refresh.","Pass the wired property itself (not .data) — this busts the cache and re-calls the Apex method."],
+    ]},
+  ]},
+  { id:"apex", title:"Apex Integration", sub:"import, call, cache", groups:[
+    { label:"Import", items:[
+      ["import ‹methodAlias› from '@salesforce/apex/‹ClassName.methodName›';","Import an Apex method.","The local alias can be anything; the path must match the class and method name exactly. The method must be @AuraEnabled."],
+    ]},
+    { label:"Imperative call", items:[
+      ["‹apexMethod›({ ‹param›: this.‹value› }).then(result => { this.‹data› = result; }).catch(error => { this.‹error› = error; });","Call imperatively.","Returns a Promise. Always handle both outcomes — unhandled rejections cause silent failures. Call this from connectedCallback or an event handler, not during render."],
+      ["async ‹handleSave›() { try { const result = await ‹saveRecord›({ ‹data›: this.‹record› }); } catch(e) { } }","Async/await form.","The same call written with async/await — cleaner for sequential operations. Still wrap in try/catch."],
+    ]},
+    { label:"Cache settings", items:[
+      ["@AuraEnabled(cacheable=true)","Cacheable — use with @wire.","Mark an Apex method cacheable=true when it only reads data — required for @wire. Cached methods can't perform DML."],
+      ["@AuraEnabled","Not cached — imperative only.","Methods that write data (DML) must not be cacheable. Call them imperatively; calling a non-cacheable method with @wire will error."],
+    ]},
+  ]},
+  { id:"schema", title:"Schema & Labels", sub:"type-safe field references", groups:[
+    { label:"Import schema references", items:[
+      ["import ‹ACCOUNT_OBJECT› from '@salesforce/schema/Account';","An object reference.","Gives you a type-safe reference to the Account object — use with getObjectInfo and recordForm components."],
+      ["import ‹NAME_FIELD› from '@salesforce/schema/Account.Name';","A field reference.","Type-safe field reference for use with getRecord/getFieldValue and recordEditForm. Fails at deploy time if the field doesn't exist."],
+    ]},
+    { label:"Custom labels & permissions", items:[
+      ["import ‹labelAlias› from '@salesforce/label/c.‹My_Label›';","A custom label.","Imports a translatable Salesforce Custom Label as a JS variable. Use it in the template: {‹labelAlias›}."],
+      ["import ‹hasPermission› from '@salesforce/customPermission/‹My_Permission›';","A custom permission.","Returns true/false based on whether the current user has the named custom permission — useful for feature gating."],
+    ]},
+  ]},
+  { id:"nav", title:"Navigation", sub:"NavigationMixin", groups:[
+    { label:"Setup & page types", items:[
+      ["import { NavigationMixin } from 'lightning/navigation';","Import the mixin.","Always import this when you need programmatic navigation."],
+      ["export default class ‹MyComp› extends NavigationMixin(LightningElement) { }","Apply the mixin.","Wrap LightningElement with NavigationMixin — this adds the [NavigationMixin.Navigate] and [NavigationMixin.GenerateUrl] methods."],
+    ]},
+    { label:"Navigate to pages", items:[
+      ["this[NavigationMixin.Navigate]({ type: 'standard__recordPage', attributes: { recordId: '‹recId›', actionName: 'view' } });","Go to a record.","actionName can be view, edit, or clone."],
+      ["this[NavigationMixin.Navigate]({ type: 'standard__objectPage', attributes: { objectApiName: '‹Account›', actionName: 'new' } });","Open the new-record modal.","Navigates to the standard new-record form for any object."],
+      ["this[NavigationMixin.Navigate]({ type: 'standard__namedPage', attributes: { pageName: 'home' } });","Go to a named page.","pageName: home, chatter, or any named app-builder page."],
+      ["this[NavigationMixin.Navigate]({ type: 'standard__webPage', attributes: { url: 'https://‹example.com›' } });","Go to an external URL.","Opens a URL — note it navigates the current tab, not a new one, unless you use a target."],
+    ]},
+  ]},
+  { id:"forms", title:"Record Forms", sub:"lightning-record-*", groups:[
+    { label:"Display forms", items:[
+      ["<lightning-record-view-form record-id={recordId} object-api-name=\"‹Account›\"></lightning-record-view-form>","Read-only form.","Wraps lightning-output-field components to display a record's fields without any Apex."],
+      ["<lightning-record-edit-form record-id={recordId} object-api-name=\"‹Account›\" onsubmit={‹handleSubmit›}></lightning-record-edit-form>","Edit form.","Renders editable inputs for the fields you put inside it. Handles validation and the save automatically — or intercept onsubmit to customize."],
+      ["<lightning-record-form record-id={recordId} object-api-name=\"‹Account›\" fields={‹fieldList›} mode=\"view\"></lightning-record-form>","All-in-one form.","The quickest option — pass a field list and a mode (view / edit / readonly) and the component handles the rest. Less flexible than edit-form."],
+    ]},
+    { label:"Inside the forms", items:[
+      ["<lightning-input-field field-name=\"‹Name›\"></lightning-input-field>","An input field.","Goes inside lightning-record-edit-form — renders the right input type for the field's metadata."],
+      ["<lightning-output-field field-name=\"‹Name›\"></lightning-output-field>","An output field.","Goes inside lightning-record-view-form — renders the value with proper formatting."],
+      ["<lightning-button type=\"submit\" label=\"Save\"></lightning-button>","Submit button.","A button with type=\"submit\" inside a record-edit-form triggers the save."],
+    ]},
+  ]},
+  { id:"misc", title:"Utilities & Misc", sub:"labels, ids, refs, SLDS", groups:[
+    { label:"SLDS & styling", items:[
+      ["<div class=\"slds-m-around_medium\">","SLDS spacing utility.","The Salesforce Lightning Design System utility classes apply spacing, layout, typography, and colour without writing CSS. slds-m-* is margin, slds-p-* is padding."],
+      ["<div class=\"slds-text-heading_large\">","SLDS typography.","Applies the standard Lightning heading styles consistently."],
+      [":host { display: block; }","Component host styling.","Each component is wrapped in a custom element — :host lets you style the wrapper itself. Set display:block since custom elements default to inline."],
+    ]},
+    { label:"Template utilities", items:[
+      ["<template lwc:ref=\"‹myDiv›\">","A template ref.","Creates a named reference to an element; access it in JS with this.refs.‹myDiv›. Added in Summer '23."],
+      ["import { api } from 'lwc'; @api ‹focus›() { this.template.querySelector('input').focus(); }","Call a child method.","A parent can call a child's @api method by getting a ref to the child and calling it directly."],
+      ["<c-‹child› lwc:spread={‹propsObject›}></c-‹child›>","Spread properties.","Passes all keys of an object as individual properties on the child — like the JSX spread operator. Added in Spring '24."],
+    ]},
+  ]},
+];
+
+/* ===================== GLOSSARY ===================== */
+const GLOSSARY = [
+  ["LWC","Lightning Web Components — Salesforce's modern, standards-based component framework built on Web Components."],
+  ["@api","Decorator that makes a property or method public — settable by a parent and readable from outside the component."],
+  ["@wire","Decorator that declaratively connects a component to a data source (UI API adapter or cacheable Apex method)."],
+  ["@track","Decorator that enables deep reactivity on objects/arrays — rarely needed since API 39.0 where all properties became shallowly reactive."],
+  ["reactive property","A class property that, when changed, causes the template to re-render automatically."],
+  ["getter","A JavaScript get accessor — treated like a property in the template, but computed on demand."],
+  ["connectedCallback","Lifecycle hook called once when the component is added to the DOM."],
+  ["renderedCallback","Lifecycle hook called after every render — use with care to avoid infinite loops."],
+  ["CustomEvent","Standard web platform event used in LWC to communicate from child to parent."],
+  ["dispatchEvent","Fires an event from the component — parents listen with on + eventname."],
+  ["detail","The payload property of a CustomEvent — how a child passes data to the parent."],
+  ["bubbles / composed","Event options: bubbles sends the event up the DOM tree; composed allows it to cross shadow DOM boundaries."],
+  ["Lightning Message Service","Pub/sub channel for communicating between unrelated components across the page."],
+  ["getRecord","Wire adapter from lightning/uiRecordApi that reactively loads a record's fields."],
+  ["getFieldValue","Helper that safely extracts a field's value from a getRecord wire result."],
+  ["refreshApex","Function that busts the wire cache and re-runs a wired Apex call after a mutation."],
+  ["NavigationMixin","A mixin applied to a component class to add programmatic navigation methods."],
+  ["PageReference","A plain object describing a page to navigate to — has a type, attributes, and optional state."],
+  ["shadow DOM","LWC's style isolation boundary — styles in one component don't leak in or out by default."],
+  ["slot","An HTML placeholder in a child component where a parent can inject markup."],
+  ["SLDS","Salesforce Lightning Design System — the CSS framework for standard Salesforce styling."],
+  ["@AuraEnabled","Apex annotation that exposes a method to LWC and Aura. Add cacheable=true for @wire."],
+  ["schema reference","An import from @salesforce/schema/Object.Field — type-safe and validated at deploy time."],
+];
+
+/* ===================== ENGINE ===================== */
+const escAttr = s => s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+/* guillemet blanks — keeps literal <tags> intact */
+const PH_SPLIT = /(‹[^›]+›)/g;
+const PH_MATCH = /^‹([^›]+)›$/;
+function buildCommandHTML(cmd){
+  return cmd.split(PH_SPLIT).map(p=>{
+    const m=p.match(PH_MATCH);
+    if(m){const n=m[1];return `<input class="ph" data-ph="${escAttr(n)}" placeholder="${escAttr(n)}" size="${Math.max(n.length,2)}" spellcheck="false" autocomplete="off">`;}
+    return p ? `<span class="lit">${escHtml(p)}</span>` : '';
+  }).join('');
+}
+function readCommand(codeEl){
+  let out='';
+  codeEl.childNodes.forEach(node=>{
+    if(node.nodeType===1 && node.classList.contains('ph')){const v=node.value.trim();out+=v?v:'‹'+node.dataset.ph+'›';}
+    else{out+=node.textContent;}
+  });
+  return out;
+}
+const cmdRow=(cmd,explain)=>`<div class="cmd"><code class="cmd-code">${buildCommandHTML(cmd)}</code><button class="copy" data-explain="${escAttr(explain)}" aria-label="Copy snippet">copy</button></div>`;
+
+const content=document.getElementById('content'),index=document.getElementById('index');
+function addChip(label,target,lead){const a=document.createElement('a');a.href='#'+target;a.textContent=label;a.dataset.target=target;if(lead)a.classList.add('lead');index.appendChild(a);}
+addChip('★ Scenarios','scenarios',true); addChip('★ Anatomy','reference',true);
+DATA.forEach(t=>addChip(t.title.split('(')[0].trim(),t.id));
+
+document.getElementById('glossList').innerHTML=GLOSSARY.map(([t,d])=>`<div><dt>${escHtml(t)}</dt><dd>${escHtml(d)}</dd></div>`).join('');
+
+/* Scenarios */
+const scn=document.createElement('section');scn.id='scenarios';
+let sH=`<div class="section-head"><h2>Scenarios &amp; Recipes</h2><span class="meta">"how do I…" → exact snippets</span></div>`;
+SCENARIOS.forEach((s,i)=>{
+  let body=''; if(s.when) body+=`<p class="scn-when">${escHtml(s.when)}</p>`; let sb=s.q;
+  s.blocks.forEach(b=>{
+    body+=`<div class="scn-block">`; if(b.label) body+=`<div class="block-label">${escHtml(b.label)}</div>`; body+=`<ol class="steps">`;
+    b.steps.forEach(([c,n])=>{sb+=' '+c+' '+n; body+=`<li class="step"><span class="step-n">•</span><div class="step-main">${cmdRow(c,n)}<div class="step-note">${escHtml(n)}</div></div></li>`;});
+    body+=`</ol>`; if(b.steps.length>1) body+=`<button class="copy-all">Copy these steps</button>`; body+=`</div>`;
+  });
+  sH+=`<div class="scenario searchable" data-search="${escAttr(sb.toLowerCase())}"><button class="scn-head" aria-expanded="false"><span class="scn-icon">${i+1}</span><span class="scn-q">${escHtml(s.q)}</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="scn-body"><div class="scn-inner"><div class="scn-pad">${body}</div></div></div></div>`;
+});
+scn.innerHTML=sH; content.appendChild(scn);
+document.querySelectorAll('.scn-block .steps').forEach(ol=>ol.querySelectorAll('.step-n').forEach((n,i)=>n.textContent=i+1));
+
+/* Reference */
+const ref=document.createElement('section');ref.id='reference';
+const decHtml=DECORATORS.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('');
+const hkHtml=HOOKS.map(([t,d])=>`<div class="type"><b>${escHtml(t)}</b><span>${escHtml(d)}</span></div>`).join('');
+const buildHtml=BUILD.map(([c,desc,ex])=>`<div class="cmd-block searchable" data-search="${escAttr((c+' '+desc+' '+ex).toLowerCase())}">${cmdRow(c,ex)}<div class="desc">${escHtml(desc)}</div></div>`).join('');
+ref.innerHTML=`<div class="section-head"><h2>Anatomy of a Component</h2><span class="meta">the mental model</span></div><div class="topic"><button class="topic-head" aria-expanded="false"><span class="num">★</span><span class="topic-title">Decorators, Lifecycle &amp; Reactivity</span><span class="topic-sub">@api · @wire · hooks</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="topic-body"><div class="topic-body-inner"><div class="topic-pad"><div class="group-label">How reactivity works</div><p class="conv-rule">Every class property in LWC is reactive — change it and the template re-renders. <code>@api</code> makes it public; <code>@wire</code> binds it to a data source. Use getters in the JS to keep complex logic out of the HTML. Shadow DOM keeps styles isolated.</p>${buildHtml}<div class="group-label">Decorators at a glance</div><div class="types">${decHtml}</div><div class="group-label">Lifecycle hooks</div><div class="types">${hkHtml}</div></div></div></div></div>`;
+content.appendChild(ref);
+
+/* Topics */
+DATA.forEach((topic,i)=>{
+  const sec=document.createElement('section');sec.id=topic.id;let gh='';
+  topic.groups.forEach(g=>{
+    gh+=`<div class="group"><div class="group-label">${escHtml(g.label)}</div>`;
+    g.items.forEach(([c,desc,ex])=>{gh+=`<div class="cmd-block searchable" data-search="${escAttr((c+' '+desc+' '+(ex||'')).toLowerCase())}">${cmdRow(c,ex||desc)}<div class="desc">${escHtml(desc)}</div></div>`;});
+    gh+=`</div>`;
+  });
+  sec.innerHTML=`<div class="topic"><button class="topic-head" aria-expanded="false"><span class="num">${String(i+1).padStart(2,'0')}</span><span class="topic-title">${escHtml(topic.title)}</span><span class="topic-sub">${escHtml(topic.sub)}</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button><div class="topic-body"><div class="topic-body-inner"><div class="topic-pad">${gh}</div></div></div></div>`;
+  content.appendChild(sec);
+});
+
+/* Accordion */
+function setOpen(el,open){el.classList.toggle('open',open);const h=el.querySelector('[aria-expanded]');if(h)h.setAttribute('aria-expanded',open);}
+document.querySelectorAll('.topic-head, .scn-head').forEach(h=>h.addEventListener('click',()=>{const t=h.closest('.topic, .scenario');setOpen(t,!t.classList.contains('open'));}));
+document.getElementById('expandAll').onclick=()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,true));
+document.getElementById('collapseAll').onclick=()=>document.querySelectorAll('.topic, .scenario').forEach(t=>setOpen(t,false));
+index.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{const s=document.getElementById(a.dataset.target);const acc=s.querySelector('.topic, .scenario');if(acc)setOpen(acc,true);}));
+
+/* Glossary */
+const glossary=document.getElementById('glossary'),glossaryBtn=document.getElementById('glossaryBtn');
+glossaryBtn.onclick=()=>{const o=glossary.classList.toggle('open');glossaryBtn.classList.toggle('active',o);};
+
+/* Theme toggle */
+const themeBtn=document.getElementById('themeBtn');
+function applyTheme(mode){document.documentElement.setAttribute('data-theme',mode);themeBtn.textContent=mode==='dark'?'☀ Light':'☾ Dark';}
+themeBtn.onclick=()=>applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
+applyTheme('dark');
+
+/* Placeholder inputs */
+content.addEventListener('input',e=>{
+  const inp=e.target; if(!inp.classList||!inp.classList.contains('ph')) return;
+  inp.size=Math.max(inp.value.length||inp.placeholder.length,2); inp.classList.toggle('filled',inp.value.trim().length>0);
+  inp.closest('.cmd-code').querySelectorAll('.ph').forEach(o=>{if(o!==inp&&o.dataset.ph===inp.dataset.ph){o.value=inp.value;o.size=Math.max(o.value.length||o.placeholder.length,2);o.classList.toggle('filled',o.value.trim().length>0);}});
+});
+content.addEventListener('click',e=>{if(e.target.classList&&e.target.classList.contains('ph'))e.stopPropagation();});
+
+/* Toast */
+const toast=document.getElementById('toast'),toastCmd=document.getElementById('toastCmd'),toastBody=document.getElementById('toastBody');let toastTimer;
+function showToast(cmd,ex){toastCmd.textContent=cmd;toastBody.textContent=ex;toast.classList.remove('show');void toast.offsetWidth;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),7000);}
+document.getElementById('toastClose').onclick=()=>toast.classList.remove('show');
+
+/* Copy */
+content.addEventListener('click',e=>{
+  const btn=e.target.closest('.copy');
+  if(btn){const code=btn.parentElement.querySelector('.cmd-code');const text=readCommand(code);
+    navigator.clipboard.writeText(text).then(()=>{btn.textContent='copied';btn.classList.add('done');setTimeout(()=>{btn.textContent='copy';btn.classList.remove('done');},1300);showToast(text,btn.dataset.explain);}); return;}
+  const ca=e.target.closest('.copy-all');
+  if(ca){const block=ca.closest('.scn-block');const text=[...block.querySelectorAll('.cmd-code')].map(readCommand).join('\n');
+    navigator.clipboard.writeText(text).then(()=>{ca.textContent='copied all';ca.classList.add('done');setTimeout(()=>{ca.textContent='Copy these steps';ca.classList.remove('done');},1500);showToast(text,'The pieces of this recipe in order. Fill any blanks, then drop them into your HTML and JS files.');}); }
+});
+
+/* Search */
+const search=document.getElementById('search'),noResults=document.getElementById('noResults');
+search.addEventListener('input',()=>{
+  const q=search.value.trim().toLowerCase();
+  document.querySelectorAll('.searchable').forEach(el=>{el.style.display=(!q||el.dataset.search.includes(q))?'':'none';});
+  document.querySelectorAll('.group').forEach(g=>{g.style.display=[...g.querySelectorAll('.searchable')].some(e=>e.style.display!=='none')?'':'none';});
+  let any=false;
+  document.querySelectorAll('main section').forEach(sec=>{
+    const vis=[...sec.querySelectorAll('.searchable')].some(e=>e.style.display!=='none');sec.style.display=vis?'':'none';
+    if(vis){any=true;if(q){sec.querySelectorAll('.topic').forEach(t=>{if([...t.querySelectorAll('.searchable')].some(e=>e.style.display!=='none'))setOpen(t,true);});sec.querySelectorAll('.scenario.searchable').forEach(s=>{if(s.style.display!=='none')setOpen(s,true);});}}
+  });
+  noResults.style.display=any?'none':'block';
+});
+
+/* Initial state */
+setOpen(document.querySelector('#scenarios .scenario'),true);
+setOpen(document.querySelector('#template .topic'),true);
+</script>
+</body>
+</html>
