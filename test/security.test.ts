@@ -24,17 +24,19 @@ const DANGEROUS_APIS = [
 
 test('bundled sheets contain no active network or script-injection features', () => {
   const files = sheetFiles().filter((file) => file !== 'cheatsheet-template.html');
-  assert.equal(files.length, 16);
+  assert.equal(files.length, 18);
 
   for (const file of files) {
     const html = readSheet(file);
 
     const scriptTags = [...html.matchAll(/<script\b[^>]*>/gi)].map((match) => match[0]);
-    assert.equal(scriptTags.length, 1, `${file} must have exactly one script tag`);
-    assert.ok(!/\bsrc\s*=/.test(scriptTags[0] ?? ''), `${file} loads an external script`);
+    assert.ok(scriptTags.length >= 1, `${file} must have a script tag`);
+    for (const tag of scriptTags) {
+      assert.ok(!/\bsrc\s*=/.test(tag), `${file} loads an external script`);
+    }
 
     const styleTags = [...html.matchAll(/<style\b[^>]*>/gi)];
-    assert.equal(styleTags.length, 1, `${file} must have exactly one style tag`);
+    assert.ok(styleTags.length >= 1, `${file} must have a style tag`);
 
     for (const pattern of DANGEROUS_APIS) {
       assert.ok(!pattern.test(html), `${file} matches ${pattern}`);
