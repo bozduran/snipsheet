@@ -12,6 +12,25 @@ Offline cheat sheets in your editor sidebar. SnipSheet bundles 18 curated comman
 - **Sheets open in editor tabs** with their own search, copy buttons and theme toggle intact.
 - **No network, no telemetry, no runtime dependencies.**
 
+## Screenshots
+
+<table>
+  <tr>
+    <td valign="top">
+      <img src="media/screenshots/sidebar.png" alt="SnipSheet sidebar with favorites and seven groups" width="300">
+      <br><sub>Search, favorites and all seven groups</sub>
+    </td>
+    <td valign="top">
+      <img src="media/screenshots/options.png" alt="SnipSheet options with group and sheet visibility switches" width="300">
+      <br><sub>Hide groups or individual sheets</sub>
+    </td>
+  </tr>
+</table>
+
+![Claude Code cheat sheet open in an editor tab](media/screenshots/sheet-view.png)
+
+*The Claude Code sheet opens with its own search, copy buttons and theme.*
+
 ## Install
 
 Download the latest `snipsheet-<version>.vsix` from the [Releases](https://github.com/bozduran/snipsheet/releases) page, then run:
