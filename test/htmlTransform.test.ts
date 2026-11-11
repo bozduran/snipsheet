@@ -30,6 +30,23 @@ test('every bundled sheet transforms without remote resources', () => {
     assert.match(out, new RegExp(`<style nonce="${NONCE}">`), file);
     assert.match(out, /acquireVsCodeApi/, file);
     assert.match(out, /postMessage\(\{ type: 'openExternal'/, file);
+    assert.ok(out.includes('/^https:\\/\\//i'), file);
+    assert.ok(!out.includes('/^https?:\\/\\//i'), file);
+
+    const charsetOffset = out.indexOf('<meta charset');
+    assert.ok(charsetOffset >= 0, file);
+    assert.ok(
+      Buffer.byteLength(out.slice(0, charsetOffset), 'utf8') < 1024,
+      `${file} charset declaration is outside the prescan window`,
+    );
+    assert.ok(
+      out.indexOf('Content-Security-Policy') > charsetOffset,
+      `${file} CSP must follow the charset declaration`,
+    );
+    assert.ok(
+      out.indexOf('Content-Security-Policy') < out.indexOf('<style'),
+      `${file} CSP must precede the sheet style`,
+    );
   }
 });
 

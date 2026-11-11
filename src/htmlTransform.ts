@@ -98,7 +98,7 @@ function shim(nonce: string): string {
     var href = anchor.getAttribute('href') || '';
     if (href.charAt(0) === '#') { return; }
     event.preventDefault();
-    if (!/^https?:\\/\\//i.test(href)) { return; }
+    if (!/^https:\\/\\//i.test(href)) { return; }
     api.postMessage({ type: 'openExternal', url: href });
   }, true);
 })();
@@ -145,7 +145,12 @@ export function prepareSheetHtml(html: string, options: SheetHtmlOptions): strin
     throw new SheetHtmlError('Sheet HTML still references an external script.');
   }
 
+  // Keep the encoding declaration inside HTML's 1024-byte prescan window.
+  // CSP still lands before the first sheet style/script.
   const injection = `${csp(options.nonce, options.cspSource)}\n${shim(options.nonce)}`;
-  out = out.replace(/<head\b[^>]*>/i, (match) => `${match}\n${injection}`);
+  const charset = out.match(/<meta\b[^>]*\bcharset\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)[^>]*>/i);
+  out = charset
+    ? out.replace(charset[0], `${charset[0]}\n${injection}`)
+    : out.replace(/<head\b[^>]*>/i, (match) => `${match}\n${injection}`);
   return out;
 }

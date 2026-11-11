@@ -106,6 +106,16 @@ export function hasHiddenEntries(settings: SnipSheetSettings): boolean {
   return settings.hiddenGroups.length > 0 || settings.hiddenSheets.length > 0;
 }
 
+export function hasHiddenVisibility(
+  state: Pick<SidebarState, 'showFavorites' | 'groups'>,
+): boolean {
+  return (
+    !state.showFavorites ||
+    state.groups.some((group) => group.hidden) ||
+    state.groups.some((group) => group.sheets.some((sheet) => sheet.hidden))
+  );
+}
+
 export function sanitizeCollapsedGroups(value: unknown, catalog: Catalog): string[] {
   if (!Array.isArray(value)) {
     return [];
