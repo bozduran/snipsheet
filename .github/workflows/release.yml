@@ -12,29 +12,27 @@ on:
           - patch
           - minor
           - major
-  push:
-    tags:
-      - 'v*'
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: release-pr
   cancel-in-progress: false
 
 jobs:
-  release:
-    name: Build, tag and release
+  open-pr:
+    name: Open release PR
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: npm
@@ -44,88 +42,49 @@ jobs:
 
       - name: Verify
         run: |
+          npm run audit
           npm run lint
           npm run typecheck
           npm test
 
-      - name: Bump version
-        if: github.event_name == 'workflow_dispatch'
+      - name: Open release PR
         env:
           BUMP: ${{ inputs.bump }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           if [ "${GITHUB_REF}" != "refs/heads/${DEFAULT_BRANCH}" ]; then
-            echo "::error::Run a version bump from the default branch (${DEFAULT_BRANCH})."
+            echo "::error::Run the release workflow from the default branch (${DEFAULT_BRANCH})."
             exit 1
           fi
 
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
-          npm version "${BUMP}" -m 'chore(release): %s'
-
+          npm version "${BUMP}" --no-git-tag-version
           VERSION=$(node -p "require('./package.json').version")
-          if git ls-remote --exit-code --tags origin "refs/tags/v${VERSION}" >/dev/null 2>&1; then
-            echo "::error::Tag v${VERSION} already exists on origin."
+          BRANCH="release/v${VERSION}"
+          TAG="v${VERSION}"
+
+          if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
+            echo "::error::Tag ${TAG} already exists on origin."
             exit 1
           fi
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "::error::The version bump left uncommitted changes."
-            git status --short
+          if git ls-remote --exit-code --heads origin "refs/heads/${BRANCH}" >/dev/null 2>&1; then
+            echo "::error::Branch ${BRANCH} already exists on origin."
             exit 1
           fi
 
-      - name: Resolve version
-        id: version
-        env:
-          REF_TYPE: ${{ github.ref_type }}
-          REF_NAME: ${{ github.ref_name }}
-        run: |
-          set -euo pipefail
-          VERSION=$(node -p "require('./package.json').version")
-          if [ "${REF_TYPE}" = "tag" ]; then
-            if [ "${REF_NAME}" != "v${VERSION}" ]; then
-              echo "::error::Tag ${REF_NAME} does not match package.json v${VERSION}."
-              exit 1
-            fi
-            TAG="${REF_NAME}"
-          else
-            TAG="v${VERSION}"
-          fi
-          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          git checkout -b "${BRANCH}"
+          git add package.json package-lock.json
+          git commit -m "chore(release): ${TAG}"
+          git push origin "${BRANCH}"
 
-      - name: Package VSIX
-        env:
-          VERSION: ${{ steps.version.outputs.version }}
-        run: |
-          npm run build
-          npx --no-install vsce package --no-dependencies --out "snipsheet-${VERSION}.vsix"
+          gh pr create \
+            --base "${DEFAULT_BRANCH}" \
+            --head "${BRANCH}" \
+            --title "chore(release): ${TAG}" \
+            --body "Automated release PR for ${TAG}. Merge this PR to publish. The Publish release workflow tags the merge commit, builds the VSIX and SHA256SUMS, and creates the GitHub Release. Keep 'chore(release):' in the PR title and merge commit message so the publish workflow recognises the release."
 
-      - name: Upload VSIX artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: snipsheet-vsix
-          path: '*.vsix'
-          if-no-files-found: error
-
-      - name: Push release commit and tag
-        if: github.event_name == 'workflow_dispatch'
-        env:
-          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-          TAG: ${{ steps.version.outputs.tag }}
-        run: |
-          set -euo pipefail
-          # GITHUB_TOKEN pushes do not trigger another workflow run, so this
-          # same run creates the release below.
-          git push --atomic origin "HEAD:${DEFAULT_BRANCH}" "refs/tags/${TAG}"
-
-      - name: Create GitHub release
-        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ steps.version.outputs.tag }}
-        run: |
-          set -euo pipefail
-          gh release create "${TAG}" ./*.vsix --verify-tag --generate-notes --title "SnipSheet ${TAG}"
+          echo "Opened release PR for ${TAG}."

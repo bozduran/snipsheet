@@ -16,6 +16,12 @@ All notable changes to SnipSheet are documented here.
 - Offline security hardening: manifest path validation, strict CSP with per-render nonces, stripped font requests, https-only external links, and message validation.
 - CI, manual tag/release workflow, unit tests, and packaging configuration.
 
+### Security
+
+- Pinned GitHub Actions to commit SHAs, added a dependency-audit gate, Dependabot, CodeQL, and SHA-256 release checksums.
+- Release version bumps now arrive through a PR; publishing runs after merge and only pushes a tag and GitHub Release, never `master`.
+- Added a tested `minimatch` override so the development audit reports no advisories.
+
 ### Fixed
 
 - Reset visibility also restores the Favorites section, and the Reset button is enabled when only that section is hidden.

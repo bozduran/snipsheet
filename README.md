@@ -91,7 +91,8 @@ SnipSheet is deliberately small and treats its own sidebar and sheets as separat
 - **No remote resources.** Google Fonts links are stripped when a sheet is opened, so sheets stay offline and fall back to local fonts. External links open the browser only after a user click, and only `https:` URLs without embedded credentials are accepted.
 - **Validated messages.** The sidebar can send only a fixed vocabulary of messages, and ids must exist in the catalog. Sheet tabs can send only `copy` and `openExternal`; copy text is length-capped.
 - **No command execution.** The extension never runs a shell, reads workspace files, or evaluates sheet content in the extension host.
-- **Least privilege.** The CI workflow has read-only repository access. Only the release workflow can write, and only to create the release commit, tag, and GitHub Release. No Marketplace token is stored in the repository.
+- **Least privilege.** The CI workflow has read-only repository access. The release workflow can only push a release branch and open a PR; publishing runs separately on `master` and only pushes a tag and GitHub Release. No Marketplace token is stored in the repository.
+- **Supply chain.** GitHub Actions are pinned to full commit SHAs; Dependabot, CodeQL, `npm audit`, and SHA-256 release checksums are configured. The `minimatch` override keeps the development audit clean.
 - **Zero runtime dependencies.** The packaged extension ships no `node_modules`.
 
 The bundled sheets are first-party content. Their inline scripts render the page and implement copy/search; they are nonce-approved because the pages are JavaScript-generated. The CI tests scan the sheets for remote scripts, `eval`, `fetch`, storage and similar APIs, and verify the transformed output stays under the CSP.
@@ -110,6 +111,7 @@ Requires Node.js 22 or newer for the toolchain.
 
 ```bash
 npm ci
+npm run audit          # no moderate-or-higher advisories
 npm run typecheck
 npm run lint
 npm test
@@ -123,9 +125,10 @@ The extension entry point is bundled to `dist/extension.js`; the sidebar client 
 
 ## CI and releases
 
-- **CI** runs on pull requests and on pushes to `master`: lint, typecheck, unit tests, bundle, and package. A push/merge to `master` also uploads the VSIX as the `snipsheet-vsix` artifact.
-- **Release** is a manual `workflow_dispatch` with a `patch` / `minor` / `major` bump. It verifies the code, runs `npm version`, pushes the release commit and `vX.Y.Z` tag atomically, packages the VSIX, and creates a GitHub Release. Pushing an existing `vX.Y.Z` tag validates that the tag matches `package.json` and creates the release for it.
-- Tag pushes are checked against `package.json`; a mismatched tag fails instead of publishing the wrong version.
+- **CI** runs on pull requests and on pushes to `master`: dependency audit, lint, typecheck, unit tests, bundle, and package. A push/merge to `master` also uploads the VSIX as the `snipsheet-vsix` artifact.
+- **Release** is a manual `workflow_dispatch` with a `patch` / `minor` / `major` bump. It verifies the code, bumps `package.json`/`package-lock.json` on a `release/vX.Y.Z` branch, pushes that branch, and opens a release PR. It **does not push `master` and does not create a tag**.
+- After you merge the release PR, **Publish release** runs on `master`, validates the release commit, tags the merge commit, builds the VSIX and a `SHA256SUMS` file, and creates the GitHub Release. Keep `chore(release):` in the PR title/merge message so the publish workflow recognises the release.
+- The release flow is designed for a PR-protected `master`. Creating the release PR uses the GitHub Actions token, so the repository must allow GitHub Actions to create pull requests.
 
 ## Publishing later
 
