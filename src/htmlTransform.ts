@@ -96,8 +96,9 @@ function shim(nonce: string): string {
     var anchor = target && target.closest ? target.closest('a[href]') : null;
     if (!anchor) { return; }
     var href = anchor.getAttribute('href') || '';
-    if (!/^https?:\\/\\//i.test(href)) { return; }
+    if (href.charAt(0) === '#') { return; }
     event.preventDefault();
+    if (!/^https?:\\/\\//i.test(href)) { return; }
     api.postMessage({ type: 'openExternal', url: href });
   }, true);
 })();

@@ -70,11 +70,14 @@ export class SidebarViewProvider implements vscode.WebviewViewProvider, vscode.D
   }
 
   async focus(): Promise<void> {
-    try {
-      await vscode.commands.executeCommand('workbench.view.extension.snipsheet');
-      await vscode.commands.executeCommand('snipsheet.main.focus');
-    } catch (error) {
-      this.reportError(error);
+    // Try the container and the view command independently: if one id changes
+    // in a future VS Code release, the other can still reveal the sidebar.
+    for (const command of ['workbench.view.extension.snipsheet', 'snipsheet.main.focus']) {
+      try {
+        await vscode.commands.executeCommand(command);
+      } catch (error) {
+        this.output.appendLine(`SnipSheet: ${command} failed: ${String(error)}`);
+      }
     }
   }
 
