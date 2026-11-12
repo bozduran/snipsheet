@@ -1,0 +1,697 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Go Syntax Cheat Sheet</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: masonry-style columns of reference cards, dark code blocks on a quiet neutral canvas, copper accent. */
+:root {
+  --bg: #eef6f4;
+  --paper: #ffffff;
+  --fg: #13221f;
+  --muted: #4e6661;
+  --line: #d5e5e1;
+  --accent: #0f766e;
+  --accent-soft: #d9f3ed;
+  --code-bg: #11201d;
+  --code-fg: #e6f2ee;
+  --c-k: #f2a65a;
+  --c-s: #8fd39a;
+  --c-c: #8a94a6;
+  --c-t: #78c2ea;
+  --c-n: #d8a8f2;
+  --c-a: #f28fa5;
+  --font-display: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #07110f;
+    --paper: #0e1b18;
+    --fg: #e2f2ed;
+    --muted: #91aaa4;
+    --line: #1d322d;
+    --accent: #5eead4;
+    --accent-soft: #12342d;
+    --code-bg: #040b09;
+    --code-fg: #e6f2ee;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #07110f;
+  --paper: #0e1b18;
+  --fg: #e2f2ed;
+  --muted: #91aaa4;
+  --line: #1d322d;
+  --accent: #5eead4;
+  --accent-soft: #12342d;
+  --code-bg: #040b09;
+  --code-fg: #e6f2ee;
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 28px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1280px; margin: 0 auto; }
+
+header { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2rem, 5.5vw, 3.2rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 .mark { font-family: var(--font-mono); font-weight: 500; color: var(--accent); margin-right: 0.15em; }
+.lede { margin: 0; max-width: 62ch; color: var(--muted); }
+
+nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+nav a {
+  display: inline-block;
+  padding: 3px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--fg);
+  font-size: 13px;
+  text-decoration: none;
+}
+nav a:hover { border-color: var(--accent); color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.sheet { columns: 340px; column-gap: 16px; }
+.card {
+  break-inside: avoid;
+  margin: 0 0 16px;
+  padding: 16px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  min-width: 0;
+}
+.card h2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.v {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  padding: 1px 7px;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  white-space: nowrap;
+}
+.lbl {
+  margin: 12px 0 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.lbl:first-of-type { margin-top: 0; }
+.card p { margin: 8px 0; font-size: 14px; }
+
+pre {
+  margin: 0 0 8px;
+  padding: 10px 12px;
+  background: var(--code-bg);
+  color: var(--code-fg);
+  border-radius: 6px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  tab-size: 4;
+}
+pre code { font: inherit; background: none; padding: 0; color: inherit; }
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--accent-soft);
+  color: var(--fg);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.k { color: var(--c-k); }
+.s { color: var(--c-s); }
+.c { color: var(--c-c); font-style: italic; }
+.t { color: var(--c-t); }
+.n { color: var(--c-n); }
+.a { color: var(--c-a); }
+
+.tw { overflow-x: auto; margin: 8px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 5px 8px 5px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { font-variant-numeric: tabular-nums; }
+td code { white-space: nowrap; }
+
+ul.rules { margin: 8px 0 0; padding-left: 18px; font-size: 14px; }
+ul.rules li { margin: 4px 0; }
+
+footer { margin-top: 8px; color: var(--muted); font-size: 13px; }
+@media (prefers-reduced-motion: no-preference) {
+  nav a { transition: border-color 0.15s, color 0.15s; }
+}
+</style>
+
+<div class="wrap">
+<header>
+  <h1><span class="mark">func</span> Go Syntax Cheat Sheet</h1>
+  <p class="lede">Core Go syntax in one place: types, slices, interfaces, generics, errors and concurrency, plus the rules that prevent surprises.</p>
+  <nav aria-label="Sections">
+    <a href="#structure">Structure</a>
+    <a href="#types">Types</a>
+    <a href="#variables">Variables</a>
+    <a href="#operators">Operators</a>
+    <a href="#strings">Strings</a>
+    <a href="#flow">Control flow</a>
+    <a href="#collections">Collections</a>
+    <a href="#functions">Functions</a>
+    <a href="#structs">Structs</a>
+    <a href="#interfaces">Interfaces</a>
+    <a href="#generics">Generics</a>
+    <a href="#errors">Errors</a>
+    <a href="#concurrency">Concurrency</a>
+    <a href="#stdlib">Standard library</a>
+    <a href="#testing">Testing</a>
+    <a href="#modern">Modern Go</a>
+    <a href="#gotchas">Gotchas</a>
+  </nav>
+</header>
+
+<main class="sheet">
+<section class="card" id="structure">
+  <h2>Program structure</h2>
+<pre><code>package main
+
+import (
+    "fmt"
+    "os"
+)
+
+func main() {
+    fmt.Println("hello", os.Args[1])
+}</code></pre><pre class="sh"><code>go mod init example.com/hello
+go run .                  # compile + run
+go build -o hello .       # produce a binary
+go test ./...             # run all tests</code></pre><ul class="rules">
+<li>Every file starts with a <code>package</code>. Executables use <code>package main</code> and <code>func main</code>.</li>
+<li>Imports are per file, and unused imports or local variables are compile errors.</li>
+<li><code>go fmt ./...</code> is the formatter; the compiler enforces the syntax, the formatter enforces style.</li>
+<li>Source files end in <code>.go</code> and live in a module (a directory with <code>go.mod</code>).</li>
+</ul>
+</section>
+
+<section class="card" id="types">
+  <h2>Primitive types</h2>
+<div class="tw"><table><thead><tr><th>Type</th><th class="num">Bits</th><th>Range / note</th><th>Zero</th></tr></thead><tbody><tr><td><code>bool</code></td><td class="num">8</td><td><code>true</code> / <code>false</code></td><td><code>false</code></td></tr><tr><td><code>string</code></td><td class="num">header</td><td>UTF-8 bytes, immutable</td><td><code>""</code></td></tr><tr><td><code>int</code></td><td class="num">32 or 64</td><td>platform-sized signed integer</td><td><code>0</code></td></tr><tr><td><code>int8</code> … <code>int64</code></td><td class="num">8–64</td><td>explicit signed widths</td><td><code>0</code></td></tr><tr><td><code>uint</code> … <code>uint64</code></td><td class="num">32–64</td><td>unsigned; wraps on overflow</td><td><code>0</code></td></tr><tr><td><code>float32</code> / <code>float64</code></td><td class="num">32 / 64</td><td>IEEE-754; prefer <code>float64</code></td><td><code>0</code></td></tr><tr><td><code>byte</code></td><td class="num">8</td><td>alias for <code>uint8</code></td><td><code>0</code></td></tr><tr><td><code>rune</code></td><td class="num">32</td><td>alias for <code>int32</code>; one code point</td><td><code>0</code></td></tr><tr><td><code>complex64</code> / <code>complex128</code></td><td class="num">64 / 128</td><td>complex numbers</td><td><code>0</code></td></tr></tbody></table></div><pre><code>var i int              // 0
+var s string           // ""
+var b bool             // false
+var p *int             // nil
+var xs []int           // nil slice
+
+n := 42                // int
+big := int64(n)        // explicit conversion
+f := 3.14              // float64
+r := 'A'               // rune (int32)
+raw := `C:	empile` // raw string, no escapes</code></pre><p>Zero values are always defined; there is no uninitialized primitive. <code>int</code> is platform-sized, so use <code>int64</code> for wire formats and database IDs.</p>
+</section>
+
+<section class="card" id="variables">
+  <h2>Variables &amp; constants</h2>
+<pre><code>var name string = "Ada"
+age := 36                      // short declaration, inside a function
+const Pi = 3.14159
+
+const (
+    KB = 1 &lt;&lt; (10 * (iota + 1))
+    MB
+    GB
+)
+
+var (
+    x, y = 1, 2
+    ok   bool
+)</code></pre><ul class="rules">
+<li><code>:=</code> declares and assigns at least one new variable; it is not allowed at package level.</li>
+<li><code>const</code> values are compile-time constants. <code>iota</code> starts at 0 and increments per line in the block.</li>
+<li>An inner <code>:=</code> can shadow an outer variable. The compiler will not warn; keep scopes small.</li>
+<li>Unused local variables and imports are errors, not warnings.</li>
+</ul>
+</section>
+
+<section class="card" id="operators">
+  <h2>Operators &amp; precedence</h2>
+<p class="lbl">Highest to lowest</p><div class="tw"><table><thead><tr><th class="num">Level</th><th>Operators</th><th>Meaning</th></tr></thead><tbody><tr><td class="num">5</td><td><code>* / % &lt;&lt; &gt;&gt; &amp; &amp;^</code></td><td>multiplicative, shifts, bitwise AND / clear</td></tr><tr><td class="num">4</td><td><code>+ - | ^</code></td><td>additive, bitwise OR / XOR</td></tr><tr><td class="num">3</td><td><code>== != &lt; &lt;= &gt; &gt;=</code></td><td>comparison</td></tr><tr><td class="num">2</td><td><code>&amp;&amp;</code></td><td>logical AND (short-circuits)</td></tr><tr><td class="num">1</td><td><code>||</code></td><td>logical OR (short-circuits)</td></tr></tbody></table></div><pre><code>a := 7 / 2          // 3, integer division
+b := 7 % 2          // 1
+c := 1 &lt;&lt; 4         // 16
+ok := x &gt; 0 &amp;&amp; y &lt; 10
+
+var p *int = &amp;x
+*p = 9
+
+x++                 // statement, not an expression
+x--
+// no ternary: use if/else</code></pre><ul class="rules">
+<li>There are no implicit numeric conversions. <code>int</code> to <code>int64</code> needs <code>int64(x)</code>.</li>
+<li><code>&amp;^</code> is bit clear: <code>x &amp;^ y</code> clears the bits of <code>y</code> that are set in <code>x</code>.</li>
+<li><code>++</code> and <code>--</code> are statements only.</li>
+<li>Integer overflow is deterministic for the type's representation; use a wider type or checked logic for money.</li>
+</ul>
+</section>
+
+<section class="card" id="strings">
+  <h2>Strings &amp; runes</h2>
+<pre><code>s := "héllo"
+len(s)                        // 6 bytes, not 5 characters
+utf8.RuneCountInString(s)     // 5
+s[0]                          // byte, not a rune
+for i, r := range s {         // i is a byte index, r a rune
+    _, _ = i, r
+}
+rs := []rune(s)
+string(rs[1:])                // "éllo"
+
+strings.Contains(s, "ell")    // true
+strings.Split("a,b,c", ",")   // ["a" "b" "c"]
+strings.Join([]string{"a", "b"}, "-") // "a-b"
+strings.TrimSpace("  x  ")    // "x"
+fmt.Sprintf("%s has %d bytes", s, len(s))
+
+var b strings.Builder
+b.WriteString("a")
+b.WriteString("b")
+b.String()                    // "ab"</code></pre><ul class="rules">
+<li>Strings are immutable UTF-8 byte sequences. <code>+</code> copies; use <code>strings.Builder</code> in loops.</li>
+<li><code>len</code> counts bytes; <code>range</code> yields rune boundaries. Use <code>[]rune</code> for character indexing.</li>
+<li><code>==</code> compares string bytes. Use <code>strings.EqualFold</code> for case-insensitive comparison.</li>
+</ul>
+</section>
+
+<section class="card" id="flow">
+  <h2>Control flow</h2>
+<pre><code>if n := len(xs); n &gt; 0 {
+    fmt.Println(n)
+}
+
+switch x {
+case 1:
+    fmt.Println("one")
+case 2, 3:
+    fmt.Println("two or three")
+default:
+    fmt.Println("other")
+}
+
+switch v := any(x).(type) {
+case int:
+    fmt.Println(v + 1)
+case string:
+    fmt.Println(v)
+}
+
+for i := 0; i &lt; 3; i++ { }
+for i, v := range xs { _, _ = i, v }
+for _, v := range xs { _ = v }
+for cond { }
+for { break }
+
+outer:
+for i := 0; i &lt; 2; i++ {
+    for j := 0; j &lt; 2; j++ {
+        if j == 1 { continue outer }
+        if i == 1 { break outer }
+    }
+}</code></pre><ul class="rules">
+<li><code>for</code> is the only loop; there is no <code>while</code>.</li>
+<li>Switch cases do not fall through. Use <code>fallthrough</code> only when you mean it.</li>
+<li><code>if</code> and <code>switch</code> can declare a variable in the header; its scope ends with the block.</li>
+<li>Labels let <code>break</code> and <code>continue</code> target an outer loop.</li>
+</ul>
+</section>
+
+<section class="card" id="collections">
+  <h2>Arrays, slices &amp; maps</h2>
+<pre><code>var a [3]int                 // fixed-size array, zero-filled
+a[0] = 1
+s := []int{1, 2, 3}          // slice
+s = append(s, 4)
+window := s[1:3]             // view; shares the backing array
+dst := make([]int, len(s))
+copy(dst, s)
+
+m := map[string]int{"a": 1}
+m["b"] = 2
+v, ok := m["a"]              // comma-ok
+delete(m, "b")
+for k, v := range m { _, _ = k, v }
+
+var nilSlice []int
+nilSlice = append(nilSlice, 1) // append works on nil</code></pre><div class="tw"><table><thead><tr><th>Type</th><th>Use it for</th><th>Watch out</th></tr></thead><tbody><tr><td>array</td><td>fixed-size, value semantics</td><td>length is part of the type; copies the whole array</td></tr><tr><td>slice</td><td>the default sequence</td><td>shares backing storage; append may reallocate</td></tr><tr><td>map</td><td>key → value lookup</td><td>nil map write panics; iteration is unordered</td></tr><tr><td><code>map[T]struct{}</code></td><td>a set</td><td>membership only; no value needed</td></tr></tbody></table></div><ul class="rules">
+<li>A slice is a descriptor: pointer, length and capacity. <code>len</code> and <code>cap</code> can differ.</li>
+<li>Maps are unordered and not safe for concurrent writes; use a mutex or a concurrent map design.</li>
+<li>Reading a missing map key returns the zero value; use the comma-ok form when presence matters.</li>
+</ul>
+</section>
+
+<section class="card" id="functions">
+  <h2>Functions &amp; methods</h2>
+<pre><code>func add(a, b int) int { return a + b }
+
+func divmod(a, b int) (int, int) { return a / b, a % b }
+
+func sum(xs ...int) int {
+    total := 0
+    for _, x := range xs { total += x }
+    return total
+}
+
+func apply(f func(int) int, x int) int { return f(x) }
+
+type Counter struct{ n int }
+func (c Counter) Value() int { return c.n }
+func (c *Counter) Inc() { c.n++ }</code></pre><ul class="rules">
+<li>Functions can return several values: <code>q, r := divmod(7, 2)</code>.</li>
+<li>Parameters are passed by value. A pointer receiver can mutate the original; a value receiver cannot.</li>
+<li>Variadic parameters are last: <code>sum(1, 2, 3)</code> or <code>sum(xs...)</code>.</li>
+<li>No overloading, default arguments or named optional parameters.</li>
+</ul>
+</section>
+
+<section class="card" id="structs">
+  <h2>Structs &amp; embedding</h2>
+<pre><code>type User struct {
+    ID    int    `json:"id"`
+    Name  string `json:"name"`
+    Email string `json:"email,omitempty"`
+}
+
+u := User{ID: 1, Name: "Ada"}
+u.Name = "Ada Lovelace"
+p := &amp;u
+p.Email = "ada@example.com"
+
+type Admin struct {
+    User
+    Level int
+}
+a := Admin{User: u, Level: 9}
+a.Name                       // promoted field
+a.User.Name                  // same field, explicit</code></pre><ul class="rules">
+<li>Structs are values; assigning or passing one copies its fields (pointers inside are shared).</li>
+<li>Tags are metadata used by reflection and packages such as <code>encoding/json</code>; they are not validation.</li>
+<li>Embedding promotes fields and methods, but it is composition, not inheritance.</li>
+<li>Exported fields start with an uppercase letter; unexported fields are package-private.</li>
+</ul>
+</section>
+
+<section class="card" id="interfaces">
+  <h2>Interfaces &amp; assertions</h2>
+<pre><code>type Reader interface {
+    Read(p []byte) (int, error)
+}
+
+type Closer interface {
+    Close() error
+}
+
+type ReadCloser interface {
+    Reader
+    Closer
+}
+
+var r io.Reader = os.Stdin
+if rc, ok := r.(io.ReadCloser); ok {
+    defer rc.Close()
+}
+
+switch v := any(r).(type) {
+case *os.File:
+    fmt.Println("file", v.Name())
+case io.Reader:
+    fmt.Println("reader")
+default:
+    fmt.Println("other")
+}</code></pre><ul class="rules">
+<li>Interfaces are satisfied implicitly; there is no <code>implements</code> keyword.</li>
+<li>An interface value holds a dynamic type and value. The zero interface is nil.</li>
+<li>A typed nil pointer stored in an interface makes the interface non-nil; check the dynamic value too.</li>
+<li>Accept interfaces, return concrete types; keep interfaces small and define them near the consumer.</li>
+</ul>
+</section>
+
+<section class="card" id="generics">
+  <h2>Generics</h2>
+<pre class="sh"><code>func Map[T, U any](xs []T, f func(T) U) []U {
+    out := make([]U, 0, len(xs))
+    for _, x := range xs {
+        out = append(out, f(x))
+    }
+    return out
+}
+
+type Number interface { ~int | ~int64 | ~float64 }
+
+func Sum[T Number](xs []T) T {
+    var total T
+    for _, x := range xs { total += x }
+    return total
+}
+
+type Stack[T any] struct { items []T }
+func (s *Stack[T]) Push(v T) { s.items = append(s.items, v) }</code></pre><ul class="rules">
+<li>Type parameters are declared in square brackets; constraints are interfaces.</li>
+<li><code>~T</code> matches a type whose underlying type is <code>T</code>; <code>any</code> and <code>comparable</code> are common constraints.</li>
+<li>Type inference works for many calls: <code>Map([]int{1}, func(i int) string { return "x" })</code>.</li>
+<li>Methods cannot declare their own type parameters, and there is no specialization in Go.</li>
+</ul>
+</section>
+
+<section class="card" id="errors">
+  <h2>Errors &amp; panic</h2>
+<pre><code>f, err := os.Open("data.txt")
+if err != nil {
+    return err
+}
+defer f.Close()
+
+if err := doWork(); err != nil {
+    return fmt.Errorf("doWork: %w", err)
+}
+
+if errors.Is(err, os.ErrNotExist) {
+    // missing file: handle it
+}
+
+var pe *os.PathError
+if errors.As(err, &amp;pe) {
+    fmt.Println(pe.Path)
+}
+
+var ErrNotFound = errors.New("not found")
+return fmt.Errorf("load: %w", ErrNotFound)</code></pre><ul class="rules">
+<li>Errors are ordinary values. Check them immediately and return them with context.</li>
+<li>Wrap with <code>%w</code>; unwrap with <code>errors.Is</code> (sentinel) or <code>errors.As</code> (type).</li>
+<li><code>panic</code> is for programmer bugs, not expected I/O failures. <code>recover</code> belongs at a boundary, not everywhere.</li>
+<li>Sentinel errors are package-level values; compare with <code>errors.Is</code>, not string matching.</li>
+</ul>
+</section>
+
+<section class="card" id="concurrency">
+  <h2>Goroutines &amp; channels</h2>
+<pre><code>ctx, cancel := context.WithCancel(context.Background())
+defer cancel()
+
+jobs := make(chan int, 10)
+var wg sync.WaitGroup
+wg.Add(1)
+go func() {
+    defer wg.Done()
+    for job := range jobs {
+        process(job)
+    }
+}()
+jobs &lt;- 1
+close(jobs)
+wg.Wait()
+
+ch := make(chan int)
+go func() { ch &lt;- 1 }()
+v := &lt;-ch
+
+select {
+case v := &lt;-ch:
+    _ = v
+case &lt;-ctx.Done():
+    return
+}</code></pre><ul class="rules">
+<li>Goroutines are cheap but not free; every one needs a clear lifetime and exit path.</li>
+<li>The sender closes a channel. A receive from a closed channel returns the zero value immediately.</li>
+<li>Unbuffered sends and receives meet; buffered channels decouple them up to capacity.</li>
+<li>Protect shared maps and counters with a mutex or use channels; run <code>go test -race ./...</code>.</li>
+</ul>
+</section>
+
+<section class="card" id="stdlib">
+  <h2>Output &amp; standard library</h2>
+<pre><code>fmt.Printf("%s %d %.2f %v %+v %T %q
+", s, n, f, v, v, v, s)
+strconv.Atoi("42")              // 42, nil
+strconv.Itoa(42)                // "42"
+time.Now().UTC()
+os.ReadFile("x.txt")
+os.WriteFile("x.txt", data, 0644)
+json.Marshal(v)
+json.Unmarshal(data, &amp;v)
+http.Get("https://example.com")</code></pre><div class="tw"><table><thead><tr><th>Verb</th><th>Output</th></tr></thead><tbody><tr><td><code>%v</code></td><td>default value</td></tr><tr><td><code>%+v</code></td><td>struct with field names</td></tr><tr><td><code>%#v</code></td><td>Go-syntax representation</td></tr><tr><td><code>%T</code></td><td>dynamic type</td></tr><tr><td><code>%q</code></td><td>quoted string or rune</td></tr><tr><td><code>%d</code> / <code>%x</code></td><td>decimal / hexadecimal integer</td></tr><tr><td><code>%.2f</code></td><td>float with 2 decimals</td></tr><tr><td><code>%t</code></td><td>boolean</td></tr><tr><td><code>%w</code></td><td>wrap an error (fmt.Errorf only)</td></tr></tbody></table></div><p>Always check returned errors. Close HTTP response bodies; <code>os.ReadFile</code> loads the whole file into memory.</p>
+</section>
+
+<section class="card" id="testing">
+  <h2>Testing</h2>
+<pre class="sh"><code>func TestAdd(t *testing.T) {
+    if got := Add(2, 3); got != 5 {
+        t.Fatalf("Add(2,3) = %d, want 5", got)
+    }
+}
+
+func TestTable(t *testing.T) {
+    tests := []struct {
+        name string
+        in   int
+        want int
+    }{{"one", 1, 2}, {"two", 2, 4}}
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            if got := Double(tt.in); got != tt.want {
+                t.Errorf("Double(%d) = %d, want %d", tt.in, got, tt.want)
+            }
+        })
+    }
+}
+
+func FuzzReverse(f *testing.F) {
+    f.Add("abc")
+    f.Fuzz(func(t *testing.T, s string) {
+        if Reverse(Reverse(s)) != s {
+            t.Errorf("round trip failed for %q", s)
+        }
+    })
+}</code></pre><pre class="sh"><code>go test ./...
+go test -race ./...
+go test -run TestAdd
+go test -bench .
+go test -cover
+go test -fuzz FuzzReverse</code></pre><ul class="rules">
+<li>Test files end in <code>_test.go</code>; test functions start with <code>Test</code> and take <code>*testing.T</code>.</li>
+<li>Use table tests plus <code>t.Run</code> for readable failure names.</li>
+<li><code>t.Parallel</code> opts a test into parallel execution; shared state must be safe.</li>
+<li>Fuzzing explores inputs you would not write by hand; seed it with valid and edge-case values.</li>
+</ul>
+</section>
+
+<section class="card" id="modern">
+  <h2>Modern Go</h2>
+<pre class="sh"><code>nums := []int{3, 1, 2}
+slices.Sort(nums)               // [1 2 3]
+ok := slices.Contains(nums, 2)  // true
+
+for i := range 3 {              // 0 1 2
+    fmt.Println(i)
+}
+
+m := min(3, 1, 2)               // 1
+largest := max(3, 1, 2)         // 3
+clear(nums)
+
+slog.Info("started", "port", 8080)
+
+func Seq(yield func(int) bool) {
+    for i := 0; i &lt; 3; i++ {
+        if !yield(i) { return }
+    }
+}
+for v := range Seq {
+    fmt.Println(v)
+}</code></pre><ul class="rules">
+<li><code>slices</code> and <code>maps</code> cover sorting, searching, cloning and comparison without hand-written loops (1.21+).</li>
+<li><code>min</code>, <code>max</code> and <code>clear</code> are builtins (1.21+); <code>for i := range n</code> is 1.22+.</li>
+<li>Range-over-func iterators are 1.23+. A module's <code>go</code> directive controls which language version the compiler accepts.</li>
+<li><code>log/slog</code> provides structured logging with levels and key/value pairs (1.21+).</li>
+</ul>
+</section>
+
+<section class="card" id="gotchas">
+  <h2>Common gotchas</h2>
+<ul class="rules">
+<li>Writing to a nil map panics; reading from it is fine and returns the zero value.</li>
+<li>Before Go 1.22, loop variables were reused; pass them into goroutines explicitly. Go 1.22 changed the semantics.</li>
+<li><code>append</code> may reuse the backing array, so two slices can observe each other's writes.</li>
+<li>An interface holding a typed nil is not equal to <code>nil</code>.</li>
+<li>Unchecked errors and leaked goroutines are the two most common production bugs.</li>
+<li><code>defer</code> arguments are evaluated immediately; defers in a loop accumulate until the function returns.</li>
+<li>Use <code>==</code> on structs only when all fields are comparable. Slices and maps need <code>slices.Equal</code> or <code>maps.Equal</code>.</li>
+<li>Integer division truncates, and mixing signed and unsigned types is a compile error.</li>
+</ul><p class="lbl">Naming conventions</p><div class="tw"><table><thead><tr><th>Thing</th><th>Style</th></tr></thead><tbody><tr><td>packages</td><td>lowercase, one short word</td></tr><tr><td>exported names</td><td><code>PascalCase</code></td></tr><tr><td>unexported names</td><td><code>camelCase</code></td></tr><tr><td>acronyms</td><td><code>URL</code>, <code>HTTP</code>, <code>ID</code></td></tr><tr><td>test files</td><td><code>name_test.go</code></td></tr><tr><td>interfaces</td><td>often an <code>-er</code> noun: <code>Reader</code></td></tr></tbody></table></div>
+</section>
+
+</main>
+
+<footer>Syntax shown for Go 1.23 and later. Generics require 1.18; min, max, clear and the slices/maps packages require 1.21; integer range requires 1.22; range-over-func requires 1.23.</footer>
+</div>
+
+<script>
+(function () {
+  var re = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(`[^`]*`|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(@[A-Za-z]\w*)|\b(break|case|chan|const|continue|default|defer|else|fallthrough|for|func|go|goto|if|import|interface|map|package|range|return|select|struct|switch|type|var|any|bool|byte|comparable|complex64|complex128|error|float32|float64|int|int8|int16|int32|int64|rune|string|uint|uint8|uint16|uint32|uint64|uintptr|true|false|nil)\b|\b(\d[\d_]*(?:\.\d+)?(?:[eE][+-]?\d+)?[LlFfDd]?)\b|\b([A-Z][A-Za-z0-9_]*)\b/g;
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  var blocks = document.querySelectorAll("pre:not(.sh) code");
+  for (var i = 0; i < blocks.length; i++) {
+    var el = blocks[i], src = el.textContent, out = "", last = 0, m;
+    re.lastIndex = 0;
+    while ((m = re.exec(src)) !== null) {
+      out += esc(src.slice(last, m.index));
+      var cls = m[1] ? "c" : m[2] ? "s" : m[3] ? "a" : m[4] ? "k" : m[5] ? "n" : "t";
+      out += '<span class="' + cls + '">' + esc(m[0]) + "</span>";
+      last = re.lastIndex;
+    }
+    out += esc(src.slice(last));
+    el.innerHTML = out;
+  }
+})();
+</script>
+
+</body></html>
