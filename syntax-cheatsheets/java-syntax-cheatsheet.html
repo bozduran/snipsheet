@@ -1,0 +1,686 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Java Syntax Cheat Sheet</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: masonry-style columns of reference cards, dark code blocks on a quiet neutral canvas, copper accent. */
+:root {
+  --bg: #f3f4f6;
+  --paper: #ffffff;
+  --fg: #1a1d23;
+  --muted: #596070;
+  --line: #dde0e6;
+  --accent: #a8480f;
+  --accent-soft: #f7e8dd;
+  --code-bg: #161a21;
+  --code-fg: #e4e7ec;
+  --c-k: #f2a65a;
+  --c-s: #8fd39a;
+  --c-c: #8a94a6;
+  --c-t: #78c2ea;
+  --c-n: #d8a8f2;
+  --c-a: #f28fa5;
+  --font-display: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1014;
+    --paper: #171a20;
+    --fg: #e6e8ed;
+    --muted: #9ba3b2;
+    --line: #292e38;
+    --accent: #f0955a;
+    --accent-soft: #2c2019;
+    --code-bg: #0b0d11;
+    --code-fg: #e4e7ec;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1014;
+  --paper: #171a20;
+  --fg: #e6e8ed;
+  --muted: #9ba3b2;
+  --line: #292e38;
+  --accent: #f0955a;
+  --accent-soft: #2c2019;
+  --code-bg: #0b0d11;
+  --code-fg: #e4e7ec;
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 28px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1280px; margin: 0 auto; }
+
+header { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2rem, 5.5vw, 3.2rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 .mark { font-family: var(--font-mono); font-weight: 500; color: var(--accent); margin-right: 0.15em; }
+.lede { margin: 0; max-width: 62ch; color: var(--muted); }
+
+nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+nav a {
+  display: inline-block;
+  padding: 3px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--fg);
+  font-size: 13px;
+  text-decoration: none;
+}
+nav a:hover { border-color: var(--accent); color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.sheet { columns: 340px; column-gap: 16px; }
+.card {
+  break-inside: avoid;
+  margin: 0 0 16px;
+  padding: 16px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  min-width: 0;
+}
+.card h2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.v {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  padding: 1px 7px;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  white-space: nowrap;
+}
+.lbl {
+  margin: 12px 0 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.lbl:first-of-type { margin-top: 0; }
+.card p { margin: 8px 0; font-size: 14px; }
+
+pre {
+  margin: 0 0 8px;
+  padding: 10px 12px;
+  background: var(--code-bg);
+  color: var(--code-fg);
+  border-radius: 6px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  tab-size: 4;
+}
+pre code { font: inherit; background: none; padding: 0; color: inherit; }
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--accent-soft);
+  color: var(--fg);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.k { color: var(--c-k); }
+.s { color: var(--c-s); }
+.c { color: var(--c-c); font-style: italic; }
+.t { color: var(--c-t); }
+.n { color: var(--c-n); }
+.a { color: var(--c-a); }
+
+.tw { overflow-x: auto; margin: 8px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 5px 8px 5px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { font-variant-numeric: tabular-nums; }
+td code { white-space: nowrap; }
+
+ul.rules { margin: 8px 0 0; padding-left: 18px; font-size: 14px; }
+ul.rules li { margin: 4px 0; }
+
+footer { margin-top: 8px; color: var(--muted); font-size: 13px; }
+@media (prefers-reduced-motion: no-preference) {
+  nav a { transition: border-color 0.15s, color 0.15s; }
+}
+</style>
+
+<div class="wrap">
+<header>
+  <h1><span class="mark">{ }</span>Java Syntax Cheat Sheet</h1>
+  <p class="lede">Core syntax and rules in one place, plus the modern features you meet in current code. Tags like <code>16+</code> show the Java version a feature arrived in.</p>
+  <nav aria-label="Sections">
+    <a href="#structure">Structure</a>
+    <a href="#types">Types</a>
+    <a href="#variables">Variables</a>
+    <a href="#operators">Operators</a>
+    <a href="#strings">Strings</a>
+    <a href="#flow">Control flow</a>
+    <a href="#arrays">Arrays</a>
+    <a href="#collections">Collections</a>
+    <a href="#methods">Methods</a>
+    <a href="#classes">Classes</a>
+    <a href="#inheritance">Inheritance</a>
+    <a href="#modern">Records &amp; enums</a>
+    <a href="#generics">Generics</a>
+    <a href="#exceptions">Exceptions</a>
+    <a href="#lambdas">Lambdas &amp; streams</a>
+    <a href="#utilities">Utilities</a>
+    <a href="#gotchas">Gotchas</a>
+  </nav>
+</header>
+
+<main class="sheet">
+
+<section class="card" id="structure">
+  <h2>Program structure</h2>
+<pre><code>package com.example.app;           // optional, mirrors the folder path
+
+import java.util.List;             // one type
+import java.util.*;                // whole package
+import static java.lang.Math.*;    // static members
+
+public class Main {                // file must be Main.java
+    public static void main(String[] args) {
+        System.out.println("Hello, Java");
+    }
+}</code></pre>
+  <p class="lbl">Compile and run</p>
+<pre class="sh"><code>javac Main.java     # produces Main.class
+java Main           # runs it
+java Main.java      # compile + run in one step (11+)</code></pre>
+  <ul class="rules">
+    <li>One <code>public</code> top-level class per file, and the file name must match it.</li>
+    <li>Java is case-sensitive. Statements end with <code>;</code>, blocks use <code>{ }</code>.</li>
+    <li>Execution starts at <code>main</code>. <code>java.lang</code> is imported automatically.</li>
+  </ul>
+</section>
+
+<section class="card" id="types">
+  <h2>Primitive types</h2>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Type</th><th class="num">Bits</th><th>Range / note</th><th>Default</th></tr></thead>
+    <tbody>
+      <tr><td><code>byte</code></td><td class="num">8</td><td>-128 to 127</td><td><code>0</code></td></tr>
+      <tr><td><code>short</code></td><td class="num">16</td><td>-32,768 to 32,767</td><td><code>0</code></td></tr>
+      <tr><td><code>int</code></td><td class="num">32</td><td>about ±2.1 billion</td><td><code>0</code></td></tr>
+      <tr><td><code>long</code></td><td class="num">64</td><td>about ±9.2 × 10<sup>18</sup></td><td><code>0L</code></td></tr>
+      <tr><td><code>float</code></td><td class="num">32</td><td>about 7 digits</td><td><code>0.0f</code></td></tr>
+      <tr><td><code>double</code></td><td class="num">64</td><td>about 15 digits</td><td><code>0.0</code></td></tr>
+      <tr><td><code>char</code></td><td class="num">16</td><td>one UTF-16 unit, <code>'A'</code></td><td><code>'\u0000'</code></td></tr>
+      <tr><td><code>boolean</code></td><td class="num">–</td><td><code>true</code> or <code>false</code></td><td><code>false</code></td></tr>
+    </tbody>
+  </table>
+  </div>
+<pre><code>int n = 1_000_000;        long big = 10_000_000_000L;
+float f = 1.5f;           double d = 1.5e3;
+int hex = 0xFF;           int bin = 0b1010;
+char c = 'A';             boolean ok = true;</code></pre>
+  <p>Everything else (<code>String</code>, arrays, your classes) is a reference type, default <code>null</code>. Wrappers: <code>Integer</code>, <code>Long</code>, <code>Double</code>, <code>Boolean</code>, <code>Character</code>.</p>
+</section>
+
+<section class="card" id="variables">
+  <h2>Variables &amp; casting</h2>
+<pre><code>int x = 5, y = 10;              // several of one type
+final double PI = 3.14159;      // constant, assigned once
+var names = new ArrayList&lt;String&gt;();   // local inference (10+)
+
+double d = 9.7;
+int i = (int) d;                // narrowing cast: 9, truncates
+long l = i;                     // widening is automatic
+int r = 7 / 2;                  // 3  (integer division)
+double q = 7 / 2.0;             // 3.5
+int m = -7 % 3;                 // -1 (sign follows left side)</code></pre>
+  <ul class="rules">
+    <li><code>var</code> works only for local variables with an initializer.</li>
+    <li>Locals must be assigned before use. Fields get the defaults above.</li>
+    <li>Scope ends at the closing <code>}</code> of the block that declared it.</li>
+  </ul>
+</section>
+
+<section class="card" id="operators">
+  <h2>Operators</h2>
+  <p class="lbl">Precedence, highest first</p>
+  <div class="tw">
+  <table>
+    <tbody>
+      <tr><td>Postfix</td><td><code>a++ a--</code></td></tr>
+      <tr><td>Unary</td><td><code>++a --a -a ! ~</code></td></tr>
+      <tr><td>Multiplicative</td><td><code>* / %</code></td></tr>
+      <tr><td>Additive</td><td><code>+ -</code></td></tr>
+      <tr><td>Shift</td><td><code>&lt;&lt; &gt;&gt; &gt;&gt;&gt;</code></td></tr>
+      <tr><td>Relational</td><td><code>&lt; &lt;= &gt; &gt;= instanceof</code></td></tr>
+      <tr><td>Equality</td><td><code>== !=</code></td></tr>
+      <tr><td>Bitwise</td><td><code>&amp;</code> then <code>^</code> then <code>|</code></td></tr>
+      <tr><td>Logical</td><td><code>&amp;&amp;</code> then <code>||</code></td></tr>
+      <tr><td>Ternary</td><td><code>? :</code></td></tr>
+      <tr><td>Assignment</td><td><code>= += -= *= /= %=</code></td></tr>
+    </tbody>
+  </table>
+  </div>
+<pre><code>int max = x &gt; y ? x : y;        // ternary
+boolean ok = a &amp;&amp; b || !c;     // &amp;&amp; and || short-circuit
+x += 2;   x++;   --y;
+int shifted = 1 &lt;&lt; 4;           // 16</code></pre>
+</section>
+
+<section class="card" id="strings">
+  <h2>Strings</h2>
+<pre><code>String s = "Java";
+s.length()                  // 4
+s.charAt(0)                 // 'J'
+s.substring(1, 3)           // "av" (end exclusive)
+s.indexOf("a")              // 1, or -1 if absent
+s.contains("av")   s.startsWith("J")   s.endsWith("a")
+s.toUpperCase()    s.trim()   s.strip()   s.isBlank()
+s.replace("a", "o")         s.split(",")
+s.equals(t)                 s.equalsIgnoreCase(t)
+s.compareTo(t)              // &lt;0, 0, &gt;0
+String.join("-", "a", "b")  // "a-b"
+"ab".repeat(3)              // "ababab"
+String.format("%s is %d", name, age)
+"%.2f".formatted(3.14159)   // "3.14"  (15+)</code></pre>
+  <p class="lbl">Text block <span class="v">15+</span></p>
+<pre><code>String json = """
+    {"name": "Ada"}
+    """;</code></pre>
+  <p class="lbl">Building in a loop</p>
+<pre><code>StringBuilder sb = new StringBuilder();
+sb.append("a").append(1).reverse();
+String out = sb.toString();</code></pre>
+  <p>Strings are immutable. Compare with <code>equals</code>, never <code>==</code>.</p>
+</section>
+
+<section class="card" id="flow">
+  <h2>Control flow</h2>
+<pre><code>if (x &gt; 0) { }
+else if (x == 0) { }
+else { }
+
+switch (day) {                  // classic: needs break
+    case 1: System.out.println("Mon"); break;
+    default: System.out.println("?");
+}</code></pre>
+  <p class="lbl">Switch expression <span class="v">14+</span></p>
+<pre><code>String kind = switch (day) {    // no fallthrough
+    case 6, 7 -&gt; "Weekend";
+    case 1 -&gt; { String t = "Mon"; yield t; }
+    default -&gt; "Weekday";
+};</code></pre>
+  <p class="lbl">Loops</p>
+<pre><code>for (int i = 0; i &lt; 5; i++) { }
+for (String s : list) { }       // for-each
+while (cond) { }
+do { } while (cond);
+
+outer:                          // label
+for (int i = 0; i &lt; n; i++) {
+    for (int j = 0; j &lt; n; j++) {
+        if (hit) break outer;   // leave both loops
+        if (skip) continue;     // next iteration
+    }
+}</code></pre>
+</section>
+
+<section class="card" id="arrays">
+  <h2>Arrays</h2>
+<pre><code>int[] a = new int[5];           // zero-filled
+int[] b = {1, 2, 3};
+int[][] grid = new int[3][4];   // 3 rows, 4 columns
+a.length                        // a field, no ()
+
+Arrays.toString(b)              // "[1, 2, 3]"
+Arrays.sort(b);   Arrays.fill(a, 7);
+Arrays.copyOf(b, 5);            // pads with zeros
+Arrays.equals(b, c);
+Arrays.asList(1, 2, 3)          // fixed-size List view</code></pre>
+  <p>Indexes start at 0. An index out of range throws <code>ArrayIndexOutOfBoundsException</code>. Array size is fixed once created.</p>
+</section>
+
+<section class="card" id="collections">
+  <h2>Collections</h2>
+<pre><code>List&lt;String&gt; list = new ArrayList&lt;&gt;();
+list.add("a");   list.get(0);   list.set(0, "b");
+list.remove(0);  list.size();   list.contains("a");
+List&lt;Integer&gt; fixed = List.of(1, 2, 3);   // immutable (9+)
+
+Map&lt;String, Integer&gt; m = new HashMap&lt;&gt;();
+m.put("a", 1);   m.get("a");   m.getOrDefault("z", 0);
+m.containsKey("a");            m.putIfAbsent("b", 2);
+m.merge("a", 1, Integer::sum); // counter idiom
+for (var e : m.entrySet())
+    System.out.println(e.getKey() + "=" + e.getValue());
+
+Set&lt;Integer&gt; set = new HashSet&lt;&gt;();   // no duplicates
+Deque&lt;Integer&gt; stack = new ArrayDeque&lt;&gt;();
+stack.push(1);  stack.pop();  stack.peek();
+Queue&lt;Integer&gt; q = new LinkedList&lt;&gt;();
+q.offer(1);     q.poll();     q.peek();</code></pre>
+  <p class="lbl">Which one?</p>
+  <div class="tw">
+  <table>
+    <tbody>
+      <tr><td><code>ArrayList</code></td><td>Indexed list, fast <code>get</code></td></tr>
+      <tr><td><code>ArrayDeque</code></td><td>Stack or queue</td></tr>
+      <tr><td><code>HashMap</code> / <code>HashSet</code></td><td>Fast lookup, no order</td></tr>
+      <tr><td><code>LinkedHashMap</code></td><td>Keeps insertion order</td></tr>
+      <tr><td><code>TreeMap</code> / <code>TreeSet</code></td><td>Sorted by key</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section class="card" id="methods">
+  <h2>Methods</h2>
+<pre><code>static int add(int a, int b) { return a + b; }
+static void log(String msg) { System.out.println(msg); }
+
+static int sum(int... nums) {           // varargs: last parameter
+    int t = 0;
+    for (int n : nums) t += n;
+    return t;
+}
+static int add(int a, int b, int c) {   // overload: same name,
+    return a + b + c;                   // different parameters
+}</code></pre>
+  <ul class="rules">
+    <li>A return type is required. Use <code>void</code> when nothing comes back.</li>
+    <li>Java is pass-by-value. For objects the reference is copied, so a method can change the object but cannot repoint the caller's variable.</li>
+  </ul>
+</section>
+
+<section class="card" id="classes">
+  <h2>Classes &amp; objects</h2>
+<pre><code>public class Person {
+    private String name;                 // field
+    private static int count = 0;        // shared by all instances
+
+    public Person(String name) {         // constructor: no return type
+        this.name = name;
+        count++;
+    }
+    public Person() { this("Unknown"); } // call another constructor
+
+    public String getName() { return name; }
+
+    @Override
+    public String toString() { return "Person(" + name + ")"; }
+}
+
+Person p = new Person("Ada");</code></pre>
+  <p class="lbl">Access modifiers</p>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Modifier</th><th>Class</th><th>Package</th><th>Subclass</th><th>Anywhere</th></tr></thead>
+    <tbody>
+      <tr><td><code>public</code></td><td>yes</td><td>yes</td><td>yes</td><td>yes</td></tr>
+      <tr><td><code>protected</code></td><td>yes</td><td>yes</td><td>yes</td><td>–</td></tr>
+      <tr><td><i>(none)</i></td><td>yes</td><td>yes</td><td>–</td><td>–</td></tr>
+      <tr><td><code>private</code></td><td>yes</td><td>–</td><td>–</td><td>–</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><code>static</code> belongs to the class. <code>final</code> on a variable means assign once, on a method means no override, on a class means no subclass.</p>
+</section>
+
+<section class="card" id="inheritance">
+  <h2>Inheritance &amp; interfaces</h2>
+<pre><code>abstract class Shape {
+    abstract double area();             // no body
+    void describe() { System.out.println(area()); }
+}
+class Circle extends Shape {            // one superclass only
+    private final double r;
+    Circle(double r) { super(); this.r = r; }
+    @Override double area() { return Math.PI * r * r; }
+}
+
+interface Drawable {
+    void draw();                        // public abstract by default
+    default void hide() { }             // has a body (8+)
+    static Drawable none() { return () -&gt; { }; }
+}
+class Sprite implements Drawable, Cloneable {
+    public void draw() { }
+}</code></pre>
+  <p class="lbl">Type checks</p>
+<pre><code>Shape s = new Circle(2);         // upcast: implicit
+Circle c = (Circle) s;           // downcast: explicit, may throw
+if (s instanceof Circle k) {     // pattern matching (16+)
+    k.area();
+}</code></pre>
+  <p>A class extends one class but can implement many interfaces. Override <code>equals</code> and <code>hashCode</code> together.</p>
+</section>
+
+<section class="card" id="modern">
+  <h2>Records, enums, sealed</h2>
+  <p class="lbl">Record <span class="v">16+</span></p>
+<pre><code>record Point(int x, int y) {        // immutable data carrier
+    Point {                         // compact constructor
+        if (x &lt; 0) throw new IllegalArgumentException();
+    }
+    double dist() { return Math.hypot(x, y); }
+}
+Point p = new Point(1, 2);
+p.x();                              // accessor is x(), not getX()</code></pre>
+  <p class="lbl">Enum</p>
+<pre><code>enum Level { LOW, MEDIUM, HIGH }
+Level l = Level.valueOf("LOW");
+Level.values();   l.ordinal();   l.name();
+
+enum Planet {
+    EARTH(5.97e24);
+    private final double mass;
+    Planet(double mass) { this.mass = mass; }
+}</code></pre>
+  <p class="lbl">Sealed types <span class="v">17+</span> and pattern switch <span class="v">21+</span></p>
+<pre><code>sealed interface Shape permits Circle, Square { }
+record Circle(double r) implements Shape { }
+record Square(double s) implements Shape { }
+
+double area = switch (shape) {
+    case Circle c -&gt; Math.PI * c.r() * c.r();
+    case Square q -&gt; q.s() * q.s();
+};                                  // no default needed</code></pre>
+</section>
+
+<section class="card" id="generics">
+  <h2>Generics</h2>
+<pre><code>class Box&lt;T&gt; {                        // type parameter
+    private T value;
+    T get() { return value; }
+    void set(T v) { value = v; }
+}
+Box&lt;String&gt; b = new Box&lt;&gt;();         // &lt;&gt; infers the type
+
+static &lt;T&gt; T first(List&lt;T&gt; xs) {      // generic method
+    return xs.get(0);
+}
+static &lt;T extends Comparable&lt;T&gt;&gt; T max(T a, T b) {   // bounded
+    return a.compareTo(b) &gt;= 0 ? a : b;
+}
+
+List&lt;? extends Number&gt; reader;        // read items as Number
+List&lt;? super Integer&gt; writer;         // add Integers</code></pre>
+  <p>Type arguments must be reference types: <code>List&lt;Integer&gt;</code>, not <code>List&lt;int&gt;</code>. Generic types are erased at runtime.</p>
+</section>
+
+<section class="card" id="exceptions">
+  <h2>Exceptions</h2>
+<pre><code>try {
+    int n = Integer.parseInt(s);
+} catch (NumberFormatException | NullPointerException e) {
+    System.err.println(e.getMessage());
+} finally {
+    cleanup();                          // always runs
+}
+
+try (var in = new Scanner(System.in)) { // closes automatically
+    String line = in.nextLine();
+}
+
+throw new IllegalStateException("bad state");
+void read() throws IOException { }      // declare checked exceptions
+
+class AppException extends Exception {  // custom checked exception
+    AppException(String m) { super(m); }
+}</code></pre>
+  <ul class="rules">
+    <li><b>Checked</b> (<code>Exception</code> but not <code>RuntimeException</code>) must be caught or declared with <code>throws</code>.</li>
+    <li><b>Unchecked</b> (<code>RuntimeException</code>, <code>Error</code>) need neither.</li>
+    <li>Catch the most specific type first.</li>
+  </ul>
+</section>
+
+<section class="card" id="lambdas">
+  <h2>Lambdas &amp; streams</h2>
+<pre><code>Runnable r = () -&gt; System.out.println("hi");
+Function&lt;Integer, Integer&gt; sq = x -&gt; x * x;
+BiFunction&lt;Integer, Integer, Integer&gt; add = (a, b) -&gt; a + b;
+Predicate&lt;String&gt; empty = String::isEmpty;   // method reference
+Supplier&lt;List&lt;String&gt;&gt; make = ArrayList::new;
+Consumer&lt;String&gt; out = System.out::println;</code></pre>
+  <p class="lbl">Stream pipeline</p>
+<pre><code>List&lt;String&gt; names = people.stream()
+    .filter(p -&gt; p.age() &gt;= 18)
+    .map(Person::name)
+    .sorted()
+    .toList();                           // 16+
+
+int total = nums.stream().mapToInt(Integer::intValue).sum();
+String csv = names.stream().collect(Collectors.joining(", "));
+Map&lt;Integer, List&lt;String&gt;&gt; byLen =
+    words.stream().collect(Collectors.groupingBy(String::length));
+IntStream.rangeClosed(1, 5).forEach(System.out::println);
+
+Optional&lt;String&gt; o = Optional.ofNullable(s);
+o.map(String::trim).orElse("none");</code></pre>
+  <p>Source, then lazy steps (<code>filter</code>, <code>map</code>, <code>sorted</code>), then one terminal step (<code>toList</code>, <code>sum</code>, <code>forEach</code>, <code>collect</code>) that runs it.</p>
+</section>
+
+<section class="card" id="utilities">
+  <h2>Output &amp; utilities</h2>
+<pre><code>System.out.println("line");
+System.out.printf("%-8s %5.1f%n", name, score);
+
+Math.max(a, b);   Math.abs(x);   Math.pow(2, 10);
+Math.sqrt(9);     Math.floor(2.7);  Math.ceil(2.1);
+Math.round(2.5);                  // 3
+
+Integer.parseInt("42");   Double.parseDouble("3.5");
+String.valueOf(42);       Integer.MAX_VALUE
+
+Scanner sc = new Scanner(System.in);
+sc.nextInt();   sc.nextLine();</code></pre>
+  <p class="lbl">Format specifiers</p>
+  <div class="tw">
+  <table>
+    <tbody>
+      <tr><td><code>%d</code></td><td>integer</td><td><code>%s</code></td><td>string</td></tr>
+      <tr><td><code>%f</code> <code>%.2f</code></td><td>decimal</td><td><code>%c</code></td><td>char</td></tr>
+      <tr><td><code>%5d</code></td><td>min width 5</td><td><code>%-5d</code></td><td>left-aligned</td></tr>
+      <tr><td><code>%05d</code></td><td>zero-padded</td><td><code>%,d</code></td><td>thousands</td></tr>
+      <tr><td><code>%x</code></td><td>hex</td><td><code>%b</code></td><td>boolean</td></tr>
+      <tr><td><code>%n</code></td><td>newline</td><td><code>%%</code></td><td>literal %</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section class="card" id="gotchas">
+  <h2>Common gotchas</h2>
+  <ul class="rules">
+    <li><code>==</code> on objects compares references. Use <code>equals</code>.</li>
+    <li><code>int</code> overflow wraps silently: <code>Integer.MAX_VALUE + 1</code> is negative.</li>
+    <li>Integer division truncates: <code>1 / 2</code> is <code>0</code>.</li>
+    <li><code>0.1 + 0.2 != 0.3</code>. Use <code>BigDecimal</code> for money.</li>
+    <li><code>'a' + 1</code> is the <code>int</code> 98. Write <code>(char) ('a' + 1)</code> for <code>'b'</code>.</li>
+    <li>Removing from a list inside a for-each throws <code>ConcurrentModificationException</code>. Use <code>removeIf</code>.</li>
+    <li>Calling a method on <code>null</code> throws <code>NullPointerException</code>.</li>
+    <li>Wrapper values outside -128 to 127 are separate objects, so <code>==</code> fails on them.</li>
+  </ul>
+  <p class="lbl">Naming conventions</p>
+  <div class="tw">
+  <table>
+    <tbody>
+      <tr><td>Classes, interfaces, records</td><td><code>PascalCase</code></td></tr>
+      <tr><td>Methods, variables</td><td><code>camelCase</code></td></tr>
+      <tr><td>Constants</td><td><code>UPPER_SNAKE</code></td></tr>
+      <tr><td>Packages</td><td><code>lowercase</code></td></tr>
+      <tr><td>Type parameters</td><td><code>T E K V</code></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+</main>
+
+<footer>Syntax shown for Java 21 and later. Older versions lack the features tagged with a higher number.</footer>
+</div>
+
+<script>
+(function () {
+  var re = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|("""[\s\S]*?"""|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(@[A-Za-z]\w*)|\b(abstract|assert|boolean|break|byte|case|catch|char|class|continue|default|do|double|else|enum|extends|final|finally|float|for|if|implements|import|instanceof|int|interface|long|new|package|permits|private|protected|public|record|return|sealed|short|static|super|switch|this|throw|throws|try|var|void|while|yield|true|false|null)\b|\b(\d[\d_]*(?:\.\d+)?(?:[eE][+-]?\d+)?[LlFfDd]?)\b|\b([A-Z][A-Za-z0-9_]*)\b/g;
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  var blocks = document.querySelectorAll("pre:not(.sh) code");
+  for (var i = 0; i < blocks.length; i++) {
+    var el = blocks[i], src = el.textContent, out = "", last = 0, m;
+    re.lastIndex = 0;
+    while ((m = re.exec(src)) !== null) {
+      out += esc(src.slice(last, m.index));
+      var cls = m[1] ? "c" : m[2] ? "s" : m[3] ? "a" : m[4] ? "k" : m[5] ? "n" : "t";
+      out += '<span class="' + cls + '">' + esc(m[0]) + "</span>";
+      last = re.lastIndex;
+    }
+    out += esc(src.slice(last));
+    el.innerHTML = out;
+  }
+})();
+</script>
+
+</body></html>
