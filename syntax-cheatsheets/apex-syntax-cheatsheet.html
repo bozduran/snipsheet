@@ -1,0 +1,652 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Apex Syntax Cheat Sheet</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: masonry-style columns of reference cards, dark code blocks on a quiet neutral canvas, copper accent. */
+:root {
+  --bg: #faf4f8;
+  --paper: #ffffff;
+  --fg: #241622;
+  --muted: #6b5966;
+  --line: #eadce5;
+  --accent: #a21caf;
+  --accent-soft: #fbe8ff;
+  --code-bg: #21121d;
+  --code-fg: #f3e8f4;
+  --c-k: #f2a65a;
+  --c-s: #8fd39a;
+  --c-c: #8a94a6;
+  --c-t: #78c2ea;
+  --c-n: #d8a8f2;
+  --c-a: #f28fa5;
+  --font-display: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #130e15;
+    --paper: #1c1420;
+    --fg: #f3e8f4;
+    --muted: #b19db5;
+    --line: #322638;
+    --accent: #f0abfc;
+    --accent-soft: #39203d;
+    --code-bg: #0b070d;
+    --code-fg: #f3e8f4;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #130e15;
+  --paper: #1c1420;
+  --fg: #f3e8f4;
+  --muted: #b19db5;
+  --line: #322638;
+  --accent: #f0abfc;
+  --accent-soft: #39203d;
+  --code-bg: #0b070d;
+  --code-fg: #f3e8f4;
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 28px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1280px; margin: 0 auto; }
+
+header { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2rem, 5.5vw, 3.2rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 .mark { font-family: var(--font-mono); font-weight: 500; color: var(--accent); margin-right: 0.15em; }
+.lede { margin: 0; max-width: 62ch; color: var(--muted); }
+
+nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+nav a {
+  display: inline-block;
+  padding: 3px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--fg);
+  font-size: 13px;
+  text-decoration: none;
+}
+nav a:hover { border-color: var(--accent); color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.sheet { columns: 340px; column-gap: 16px; }
+.card {
+  break-inside: avoid;
+  margin: 0 0 16px;
+  padding: 16px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  min-width: 0;
+}
+.card h2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.v {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  padding: 1px 7px;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  white-space: nowrap;
+}
+.lbl {
+  margin: 12px 0 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.lbl:first-of-type { margin-top: 0; }
+.card p { margin: 8px 0; font-size: 14px; }
+
+pre {
+  margin: 0 0 8px;
+  padding: 10px 12px;
+  background: var(--code-bg);
+  color: var(--code-fg);
+  border-radius: 6px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  tab-size: 4;
+}
+pre code { font: inherit; background: none; padding: 0; color: inherit; }
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--accent-soft);
+  color: var(--fg);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.k { color: var(--c-k); }
+.s { color: var(--c-s); }
+.c { color: var(--c-c); font-style: italic; }
+.t { color: var(--c-t); }
+.n { color: var(--c-n); }
+.a { color: var(--c-a); }
+
+.tw { overflow-x: auto; margin: 8px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 5px 8px 5px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { font-variant-numeric: tabular-nums; }
+td code { white-space: nowrap; }
+
+ul.rules { margin: 8px 0 0; padding-left: 18px; font-size: 14px; }
+ul.rules li { margin: 4px 0; }
+
+footer { margin-top: 8px; color: var(--muted); font-size: 13px; }
+@media (prefers-reduced-motion: no-preference) {
+  nav a { transition: border-color 0.15s, color 0.15s; }
+}
+</style>
+
+<div class="wrap">
+<header>
+  <h1><span class="mark">@</span> Apex Syntax Cheat Sheet</h1>
+  <p class="lede">Core Apex syntax and platform rules in one place: sObjects, SOQL, triggers, limits, async work, testing and security.</p>
+  <nav aria-label="Sections">
+    <a href="#structure">Structure</a>
+    <a href="#types">Types</a>
+    <a href="#variables">Variables</a>
+    <a href="#strings">Strings</a>
+    <a href="#flow">Control flow</a>
+    <a href="#collections">Collections</a>
+    <a href="#classes">Classes</a>
+    <a href="#inheritance">Inheritance</a>
+    <a href="#sobjects">sObjects &amp; DML</a>
+    <a href="#queries">SOQL &amp; SOSL</a>
+    <a href="#triggers">Triggers</a>
+    <a href="#limits">Limits</a>
+    <a href="#exceptions">Exceptions</a>
+    <a href="#async">Async Apex</a>
+    <a href="#testing">Testing</a>
+    <a href="#security">Security</a>
+    <a href="#callouts">Callouts &amp; JSON</a>
+    <a href="#gotchas">Gotchas</a>
+  </nav>
+</header>
+
+<main class="sheet">
+<section class="card" id="structure">
+  <h2>Program structure</h2>
+<pre><code>public class AccountService {
+    public static void rename(Id accountId, String name) {
+        Account a = [SELECT Id, Name FROM Account WHERE Id = :accountId];
+        a.Name = name;
+        update a;
+    }
+}</code></pre><pre class="sh"><code>sf project deploy start --source-dir force-app
+sf apex run --file scripts/apex/hello.apex
+sf apex tail log</code></pre><ul class="rules">
+<li>Apex lives in <code>.cls</code> and <code>.trigger</code> files and runs on the Salesforce platform; there is no <code>main</code>.</li>
+<li>Code is compiled and deployed to an org. A transaction is one Apex invocation; governor limits apply per transaction.</li>
+<li>Statements end in <code>;</code>, blocks use <code>{ }</code>, and every method declares a return type.</li>
+<li>Use the Salesforce CLI (<code>sf</code>) to deploy, run anonymous Apex and stream debug logs.</li>
+</ul>
+</section>
+
+<section class="card" id="types">
+  <h2>Types &amp; literals</h2>
+<div class="tw"><table><thead><tr><th>Type</th><th>Range / meaning</th><th>Default</th></tr></thead><tbody><tr><td><code>Boolean</code></td><td>true / false</td><td><code>false</code></td></tr><tr><td><code>Integer</code></td><td>32-bit signed</td><td><code>0</code></td></tr><tr><td><code>Long</code></td><td>64-bit signed</td><td><code>0</code></td></tr><tr><td><code>Double</code></td><td>64-bit floating point</td><td><code>0.0</code></td></tr><tr><td><code>Decimal</code></td><td>arbitrary precision</td><td><code>null</code></td></tr><tr><td><code>String</code></td><td>UTF-8 text</td><td><code>null</code></td></tr><tr><td><code>Id</code></td><td>15/18-character Salesforce ID</td><td><code>null</code></td></tr><tr><td><code>Date</code> / <code>Datetime</code> / <code>Time</code></td><td>calendar values</td><td><code>null</code></td></tr><tr><td><code>Blob</code></td><td>binary data</td><td><code>null</code></td></tr><tr><td><code>Object</code> / <code>SObject</code></td><td>generic / record value</td><td><code>null</code></td></tr></tbody></table></div><pre><code>Integer count = 3;
+Long big = 9000000000L;
+Decimal price = 19.99;
+String name = 'Acme';
+Boolean active = true;
+Id accountId = '001000000000001';
+Date today = Date.today();
+Datetime now = Datetime.now();
+Time t = Time.newInstance(9, 30, 0, 0);</code></pre><ul class="rules">
+<li>Use <code>Decimal</code> for money and anything where binary floating-point rounding would be wrong.</li>
+<li>All object types can be <code>null</code>; primitives have no separate “uninitialized” state.</li>
+<li><code>Id</code> is not an Integer; keep it as <code>Id</code> and bind it into SOQL instead of building a string.</li>
+</ul>
+</section>
+
+<section class="card" id="variables">
+  <h2>Variables &amp; operators</h2>
+<pre><code>final Integer MAX = 10;
+Integer total = 0;
+total += 2;
+
+Boolean ok = total &gt; 0 &amp;&amp; total &lt; MAX;
+String label = ok ? 'yes' : 'no';
+
+if (name == null || name.trim().length() == 0) {
+    name = 'Unknown';
+}
+
+Account a = null;
+String owner = a?.Owner?.Name;   // safe navigation</code></pre><ul class="rules">
+<li>Variables are explicitly typed. <code>final</code> means assigned once.</li>
+<li>Operators follow familiar precedence: arithmetic, comparison, <code>&amp;&amp;</code>, <code>||</code>, then <code>?:</code>.</li>
+<li><code>&amp;&amp;</code> and <code>||</code> short-circuit. The ternary operator is an expression.</li>
+<li>Guard nullable relationships with <code>?.</code> or an explicit null check.</li>
+</ul>
+</section>
+
+<section class="card" id="strings">
+  <h2>Strings</h2>
+<pre><code>String s = 'Apex';
+s.length();                    // 4
+s.substring(1, 3);             // 'pe'
+s.contains('ex');              // true
+s.startsWith('Ap');
+s.replace('A', 'a');
+s.split(',');
+
+String.join(new List&lt;String&gt;{'a', 'b'}, '-'); // 'a-b'
+String.format('Hello {0}', new List&lt;Object&gt;{'Ada'});
+String.valueOf(42);           // '42'
+s.toUpperCase();
+'It\'s valid';                // escape a single quote</code></pre><ul class="rules">
+<li>Strings use single quotes. Escape a quote with a backslash.</li>
+<li>Strings are immutable; methods return new strings.</li>
+<li>Use <code>String.format</code> for templated messages and <code>String.join</code> for lists.</li>
+<li>For comparisons, be explicit: use <code>equals</code> or <code>equalsIgnoreCase</code> rather than relying on Java intuition.</li>
+</ul>
+</section>
+
+<section class="card" id="flow">
+  <h2>Control flow</h2>
+<pre><code>if (ready) {
+    run();
+} else if (fallback) {
+    recover();
+} else {
+    throw new IllegalStateException('not ready');
+}
+
+for (Integer i = 0; i &lt; 3; i++) { }
+for (Account a : accounts) { }
+
+while (hasMore) { }
+do { work(); } while (hasMore);
+
+switch on status {
+    when 'NEW' { handleNew(); }
+    when 'CLOSED', 'CANCELLED' { handleClosed(); }
+    when else { handleOther(); }
+}</code></pre><ul class="rules">
+<li><code>switch on</code> is the modern branching form; <code>when else</code> covers the default.</li>
+<li>There is no fallthrough between <code>when</code> branches.</li>
+<li>Use the enhanced <code>for</code> loop for lists, sets and query results.</li>
+<li>Prefer returning early to deeply nested conditionals.</li>
+</ul>
+</section>
+
+<section class="card" id="collections">
+  <h2>Lists, sets &amp; maps</h2>
+<pre><code>List&lt;String&gt; names = new List&lt;String&gt;{'Ada', 'Grace'};
+names.add('Linus');
+names.get(0);                  // 'Ada'
+names.size();                  // 3
+names.contains('Ada');         // true
+
+Set&lt;Id&gt; ids = new Set&lt;Id&gt;();
+ids.add(accountId);
+ids.contains(accountId);
+
+Map&lt;Id, Account&gt; byId = new Map&lt;Id, Account&gt;();
+byId.put(accountId, account);
+byId.get(accountId);
+byId.containsKey(accountId);
+
+for (Account a : byId.values()) { }</code></pre><div class="tw"><table><thead><tr><th>Collection</th><th>Use it for</th><th>Notes</th></tr></thead><tbody><tr><td><code>List</code></td><td>ordered sequence</td><td>duplicates allowed; index and sort</td></tr><tr><td><code>Set</code></td><td>unique values</td><td>fast membership; no index</td></tr><tr><td><code>Map</code></td><td>key → value</td><td>unique keys; iterate keys or values</td></tr></tbody></table></div><ul class="rules">
+<li>A SOQL query returns a <code>List&lt;SObject&gt;</code>; a trigger gives you <code>Trigger.new</code> as a list.</li>
+<li><code>new Map&lt;Id, Account&gt;([SELECT ...])</code> indexes query results by ID in one line.</li>
+<li>Use sets to de-duplicate IDs before a query or DML operation.</li>
+</ul>
+</section>
+
+<section class="card" id="classes">
+  <h2>Classes &amp; access</h2>
+<pre><code>public virtual class AccountService {
+    private final Id accountId;
+    public String label { get; set; }
+
+    public AccountService(Id accountId) {
+        this.accountId = accountId;
+    }
+
+    public virtual void run() {
+        update new Account(Id = accountId, Name = label);
+    }
+
+    public static Integer count() {
+        return [SELECT COUNT() FROM Account];
+    }
+}</code></pre><div class="tw"><table><thead><tr><th>Modifier</th><th>Visible to</th></tr></thead><tbody><tr><td><code>private</code></td><td>only the containing class</td></tr><tr><td><code>protected</code></td><td>the class and its subclasses</td></tr><tr><td><code>public</code></td><td>any code in the org / namespace</td></tr><tr><td><code>global</code></td><td>any code, including outside a managed package</td></tr></tbody></table></div><ul class="rules">
+<li>Methods are final by default. Mark the class <code>virtual</code> or <code>abstract</code> and the method <code>virtual</code> or <code>abstract</code> to allow overriding.</li>
+<li>Properties use <code>get;</code> / <code>set;</code> accessors; a private setter is a common read-only pattern.</li>
+<li>Static members belong to the class. Constructors have no return type and run on <code>new</code>.</li>
+</ul>
+</section>
+
+<section class="card" id="inheritance">
+  <h2>Inheritance &amp; interfaces</h2>
+<pre><code>public interface Worker {
+    void run();
+}
+
+public abstract class BaseWorker implements Worker {
+    public abstract void run();
+}
+
+public class AccountWorker extends BaseWorker {
+    public override void run() {
+        System.debug('running');
+    }
+}</code></pre><ul class="rules">
+<li>A class extends one class and implements many interfaces.</li>
+<li><code>override</code> is required when replacing a virtual or abstract method.</li>
+<li>Abstract classes cannot be instantiated; interfaces declare behavior without state.</li>
+<li>Use <code>instanceof</code> and casts for type checks; prefer polymorphism when the type is known.</li>
+</ul>
+</section>
+
+<section class="card" id="sobjects">
+  <h2>sObjects &amp; DML</h2>
+<pre><code>Account a = new Account(
+    Name = 'Acme',
+    Industry = 'Technology'
+);
+insert a;
+
+a.Name = 'Acme Inc';
+update a;
+upsert a External_Id__c;
+delete a;
+
+List&lt;Account&gt; accounts = new List&lt;Account&gt;{ a };
+Database.SaveResult[] results = Database.insert(accounts, false);
+for (Database.SaveResult r : results) {
+    if (!r.isSuccess()) {
+        System.debug(r.getErrors()[0].getMessage());
+    }
+}</code></pre><ul class="rules">
+<li>DML statements are <code>insert</code>, <code>update</code>, <code>upsert</code>, <code>delete</code>, <code>undelete</code> and <code>merge</code>.</li>
+<li><code>Database.insert(records, false)</code> allows partial success and returns a result per record; inspect every result.</li>
+<li>Use IDs and relationships instead of hard-coded record IDs. Savepoints can roll back part of a transaction.</li>
+</ul>
+</section>
+
+<section class="card" id="queries">
+  <h2>SOQL &amp; SOSL</h2>
+<pre><code>List&lt;Account&gt; accounts = [
+    SELECT Id, Name, (SELECT Id, LastName FROM Contacts)
+    FROM Account
+    WHERE Industry = :industry
+    WITH SECURITY_ENFORCED
+    ORDER BY Name
+    LIMIT 100
+];
+
+List&lt;List&lt;SObject&gt;&gt; found = [
+    FIND 'Acme' IN ALL FIELDS
+    RETURNING Account(Id, Name), Contact(Id, Name)
+];</code></pre><ul class="rules">
+<li>Static SOQL uses bind variables (<code>:industry</code>) and is safer than string building.</li>
+<li><code>WITH SECURITY_ENFORCED</code> applies object and field permissions to the query.</li>
+<li>Query once for a batch, then work from maps and sets. Never put SOQL inside a loop.</li>
+<li>SOSL searches text across objects; SOQL queries structured records and relationships.</li>
+</ul>
+</section>
+
+<section class="card" id="triggers">
+  <h2>Triggers</h2>
+<pre><code>trigger AccountTrigger on Account (
+    before insert, before update, after update
+) {
+    if (Trigger.isBefore) {
+        for (Account a : Trigger.new) {
+            if (a.Name == null) a.Name = 'Unnamed';
+        }
+    }
+    if (Trigger.isAfter &amp;&amp; Trigger.isUpdate) {
+        Set&lt;Id&gt; ids = Trigger.newMap.keySet();
+        // queue related work in bulk
+    }
+}</code></pre><ul class="rules">
+<li><code>Trigger.new</code>, <code>Trigger.old</code>, <code>Trigger.newMap</code> and <code>Trigger.oldMap</code> expose the records for the current event.</li>
+<li>Context flags include <code>isBefore</code>, <code>isAfter</code>, <code>isInsert</code>, <code>isUpdate</code> and <code>isDelete</code>.</li>
+<li>Triggers fire once per bulk operation (up to 200 records), so write set-based code.</li>
+<li>Guard against recursion with a static <code>Boolean</code> and avoid SOQL/DML inside loops.</li>
+</ul>
+</section>
+
+<section class="card" id="limits">
+  <h2>Governor limits &amp; bulkification</h2>
+<pre><code>Set&lt;Id&gt; ids = new Set&lt;Id&gt;();
+for (Contact c : Trigger.new) {
+    if (c.AccountId != null) ids.add(c.AccountId);
+}
+
+Map&lt;Id, Account&gt; accounts = new Map&lt;Id, Account&gt;([
+    SELECT Id, Name FROM Account WHERE Id IN :ids
+]);
+
+System.debug(Limits.getQueries());
+System.debug(Limits.getLimitQueries());
+System.debug(Limits.getDmlStatements());
+System.debug(Limits.getLimitDmlStatements());</code></pre><div class="tw"><table><thead><tr><th>Check</th><th>Reads</th></tr></thead><tbody><tr><td><code>Limits.getQueries()</code></td><td>SOQL queries used</td></tr><tr><td><code>Limits.getDmlStatements()</code></td><td>DML statements used</td></tr><tr><td><code>Limits.getCpuTime()</code></td><td>CPU milliseconds used</td></tr><tr><td><code>Limits.getHeapSize()</code></td><td>heap bytes used</td></tr><tr><td><code>Limits.getLimitQueries()</code></td><td>maximum SOQL queries</td></tr><tr><td><code>Limits.getLimitDmlStatements()</code></td><td>maximum DML statements</td></tr><tr><td><code>Limits.getLimitCpuTime()</code></td><td>maximum CPU milliseconds</td></tr><tr><td><code>Limits.getLimitHeapSize()</code></td><td>maximum heap bytes</td></tr></tbody></table></div><ul class="rules">
+<li>Limits are per transaction; synchronous and asynchronous contexts have different ceilings.</li>
+<li>Bulkify: one query for a collection of IDs, one DML for a collection of records.</li>
+<li>Test with 200 records, not one. A single-record test hides the N+1 pattern.</li>
+<li>Async Apex has separate limits and runs in a new transaction.</li>
+</ul>
+</section>
+
+<section class="card" id="exceptions">
+  <h2>Exceptions</h2>
+<pre><code>try {
+    insert accounts;
+} catch (DmlException e) {
+    System.debug(e.getMessage());
+    throw new AccountException(e.getMessage());
+} finally {
+    cleanup();
+}
+
+public class AccountException extends Exception {
+}
+
+// Expected partial failures: use the Database methods and inspect results.
+Database.SaveResult[] results = Database.insert(accounts, false);</code></pre><ul class="rules">
+<li>Catch the most specific exception, log enough context, and rethrow or handle deliberately.</li>
+<li>Custom exceptions extend <code>Exception</code>; constructors may call <code>super(message)</code>.</li>
+<li><code>finally</code> runs whether the block succeeds or throws. Do not swallow an error just to keep going.</li>
+<li>For expected per-record failures, prefer <code>Database.insert(records, false)</code> over one big try/catch.</li>
+</ul>
+</section>
+
+<section class="card" id="async">
+  <h2>Async Apex</h2>
+<pre><code>@future(callout=true)
+public static void syncAccount(Id accountId) {
+    // one-off callout or slow work
+}
+
+public class Job implements Queueable {
+    public void execute(QueueableContext ctx) { }
+}
+System.enqueueJob(new Job());
+
+public class Cleanup implements Database.Batchable&lt;SObject&gt; {
+    public Database.QueryLocator start(Database.BatchableContext bc) {
+        return Database.getQueryLocator('SELECT Id FROM Account');
+    }
+    public void execute(Database.BatchableContext bc, List&lt;Account&gt; scope) { }
+    public void finish(Database.BatchableContext bc) { }
+}</code></pre><div class="tw"><table><thead><tr><th>Tool</th><th>Use it when</th></tr></thead><tbody><tr><td><code>@future</code></td><td>a simple one-off job; callouts with <code>callout=true</code></td></tr><tr><td><code>Queueable</code></td><td>structured jobs, chaining and state</td></tr><tr><td><code>Batchable</code></td><td>large data sets that exceed synchronous limits</td></tr><tr><td><code>Schedulable</code></td><td>cron-style recurring execution</td></tr></tbody></table></div><ul class="rules">
+<li>Async work runs in a separate transaction with separate limits.</li>
+<li><code>@future</code> methods are static, return <code>void</code>, and accept only supported primitive/collection parameters; pass IDs, not sObjects.</li>
+<li>Queueable can chain jobs; Batchable processes chunks and has start/execute/finish phases.</li>
+<li>Make async jobs idempotent and observable; failures are easy to miss.</li>
+</ul>
+</section>
+
+<section class="card" id="testing">
+  <h2>Testing</h2>
+<pre><code>@IsTest
+private class AccountServiceTest {
+    @TestSetup
+    static void makeData() {
+        insert new Account(Name = 'Acme');
+    }
+
+    @IsTest
+    static void renamesAccount() {
+        Account a = [SELECT Id FROM Account LIMIT 1];
+        Test.startTest();
+        AccountService.rename(a.Id, 'Acme 2');
+        Test.stopTest();
+        System.assertEquals(
+            'Acme 2',
+            [SELECT Name FROM Account WHERE Id = :a.Id].Name
+        );
+    }
+}</code></pre><ul class="rules">
+<li><code>@IsTest</code> classes do not count toward org limits and see only their own test data by default.</li>
+<li><code>@TestSetup</code> creates shared data once per test class; each test still gets a fresh transaction.</li>
+<li><code>Test.startTest()</code> and <code>stopTest()</code> isolate the code under test and reset governor limits.</li>
+<li>Mock callouts with <code>Test.setMock</code>; never make real callouts from tests. Org coverage must still be at least 75%.</li>
+</ul>
+</section>
+
+<section class="card" id="security">
+  <h2>Security &amp; sharing</h2>
+<pre><code>public with sharing class AccountController {
+    @AuraEnabled
+    public static List&lt;Account&gt; recent() {
+        return [
+            SELECT Id, Name
+            FROM Account
+            WITH SECURITY_ENFORCED
+            ORDER BY LastModifiedDate DESC
+            LIMIT 20
+        ];
+    }
+}
+
+SObjectAccessDecision d =
+    Security.stripInaccessible(AccessType.READABLE, records);
+List&lt;Account&gt; readable = (List&lt;Account&gt;) d.getRecords();</code></pre><ul class="rules">
+<li><code>with sharing</code> enforces record-level sharing; <code>without sharing</code> ignores it; <code>inherited sharing</code> uses the caller.</li>
+<li>Enforce CRUD/FLS with <code>WITH SECURITY_ENFORCED</code> or <code>Security.stripInaccessible</code>.</li>
+<li>Bind variables in SOQL. For dynamic filters, escape with <code>String.escapeSingleQuotes</code>.</li>
+<li>Store secrets in Named Credentials, not custom settings or source code.</li>
+</ul>
+</section>
+
+<section class="card" id="callouts">
+  <h2>Callouts &amp; JSON</h2>
+<pre><code>HttpRequest req = new HttpRequest();
+req.setEndpoint('callout:My_Named_Credential/users');
+req.setMethod('GET');
+req.setHeader('Accept', 'application/json');
+req.setTimeout(10000);
+
+HttpResponse res = new Http().send(req);
+if (res.getStatusCode() == 200) {
+    Map&lt;String, Object&gt; body =
+        (Map&lt;String, Object&gt;) JSON.deserializeUntyped(res.getBody());
+}
+
+String json = JSON.serialize(new Map&lt;String, Object&gt;{'id' =&gt; 1});
+Account parsed = (Account) JSON.deserialize(json, Account.class);</code></pre><ul class="rules">
+<li>Named Credentials keep endpoints and secrets out of code. Callouts count against limits and need timeouts.</li>
+<li>After uncommitted DML, a callout in the same transaction fails; move it to async or do the callout first.</li>
+<li><code>deserializeUntyped</code> returns generic maps/lists; <code>deserialize</code> maps into a typed class.</li>
+<li>Use <code>Test.setMock(HttpCalloutMock.class, ...)</code> in tests.</li>
+</ul>
+</section>
+
+<section class="card" id="gotchas">
+  <h2>Common gotchas</h2>
+<ul class="rules">
+<li>SOQL or DML inside a loop is the classic governor-limit failure. Bulkify.</li>
+<li>Null relationships throw; use safe navigation or check before dereferencing.</li>
+<li>Hard-coded record IDs fail across orgs and sandboxes. Query or configure IDs.</li>
+<li>Triggers are bulk operations. A static recursion guard is not a substitute for idempotent logic.</li>
+<li><code>@future</code> methods cannot receive sObjects; pass IDs and re-query.</li>
+<li>Callouts after uncommitted DML fail; call out first or use async.</li>
+<li>Test data is invisible to other tests unless created in <code>@TestSetup</code> or the test itself.</li>
+<li>Ignoring <code>Database.SaveResult</code> hides partial DML failures.</li>
+</ul><p class="lbl">Naming conventions</p><div class="tw"><table><thead><tr><th>Thing</th><th>Style</th></tr></thead><tbody><tr><td>classes, interfaces</td><td><code>PascalCase</code></td></tr><tr><td>methods, variables</td><td><code>camelCase</code></td></tr><tr><td>constants</td><td><code>UPPER_SNAKE</code></td></tr><tr><td>triggers</td><td><code>AccountTrigger</code></td></tr><tr><td>test classes</td><td><code>AccountServiceTest</code></td></tr><tr><td>custom objects / fields</td><td><code>Invoice__c</code>, <code>Total__c</code></td></tr><tr><td>relationships</td><td><code>Account__r</code></td></tr></tbody></table></div>
+</section>
+
+</main>
+
+<footer>Syntax shown for modern Apex (API 62.0 and later). Governor limits and feature availability vary by context and org.</footer>
+</div>
+
+<script>
+(function () {
+  var re = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|('(\\.|[^'\\])*')|(@[A-Za-z]\w*)|\b(abstract|after|all|and|as|before|begin|break|catch|class|continue|delete|do|else|end|enum|extends|false|final|finally|find|for|from|global|having|if|implements|in|inherited|insert|instanceof|interface|limit|merge|new|not|null|offset|on|or|order|override|private|protected|public|return|returning|select|sharing|static|super|switch|testmethod|this|throw|trigger|true|try|undelete|update|upsert|virtual|void|when|where|while|with|without)\b|\b(\d[\d_]*(?:\.\d+)?(?:[eE][+-]?\d+)?[LlFfDd]?)\b|\b([A-Z][A-Za-z0-9_]*)\b/g;
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  var blocks = document.querySelectorAll("pre:not(.sh) code");
+  for (var i = 0; i < blocks.length; i++) {
+    var el = blocks[i], src = el.textContent, out = "", last = 0, m;
+    re.lastIndex = 0;
+    while ((m = re.exec(src)) !== null) {
+      out += esc(src.slice(last, m.index));
+      var cls = m[1] ? "c" : m[2] ? "s" : m[3] ? "a" : m[4] ? "k" : m[5] ? "n" : "t";
+      out += '<span class="' + cls + '">' + esc(m[0]) + "</span>";
+      last = re.lastIndex;
+    }
+    out += esc(src.slice(last));
+    el.innerHTML = out;
+  }
+})();
+</script>
+
+</body></html>
