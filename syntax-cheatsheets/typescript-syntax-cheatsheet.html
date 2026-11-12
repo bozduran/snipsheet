@@ -1,0 +1,643 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>TypeScript Syntax Cheat Sheet</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: masonry-style columns of reference cards, dark code blocks on a quiet neutral canvas, copper accent. */
+:root {
+  --bg: #f5f5fb;
+  --paper: #ffffff;
+  --fg: #1a1b2e;
+  --muted: #5d607a;
+  --line: #dfe0ec;
+  --accent: #4338ca;
+  --accent-soft: #e8e7ff;
+  --code-bg: #15172a;
+  --code-fg: #e7e8f5;
+  --c-k: #f2a65a;
+  --c-s: #8fd39a;
+  --c-c: #8a94a6;
+  --c-t: #78c2ea;
+  --c-n: #d8a8f2;
+  --c-a: #f28fa5;
+  --font-display: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b0c16;
+    --paper: #151726;
+    --fg: #e8e9f5;
+    --muted: #9fa2bd;
+    --line: #282b40;
+    --accent: #a5b4fc;
+    --accent-soft: #23264a;
+    --code-bg: #070810;
+    --code-fg: #e7e8f5;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b0c16;
+  --paper: #151726;
+  --fg: #e8e9f5;
+  --muted: #9fa2bd;
+  --line: #282b40;
+  --accent: #a5b4fc;
+  --accent-soft: #23264a;
+  --code-bg: #070810;
+  --code-fg: #e7e8f5;
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 28px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1280px; margin: 0 auto; }
+
+header { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2rem, 5.5vw, 3.2rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 .mark { font-family: var(--font-mono); font-weight: 500; color: var(--accent); margin-right: 0.15em; }
+.lede { margin: 0; max-width: 62ch; color: var(--muted); }
+
+nav { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+nav a {
+  display: inline-block;
+  padding: 3px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--fg);
+  font-size: 13px;
+  text-decoration: none;
+}
+nav a:hover { border-color: var(--accent); color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.sheet { columns: 340px; column-gap: 16px; }
+.card {
+  break-inside: avoid;
+  margin: 0 0 16px;
+  padding: 16px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  min-width: 0;
+}
+.card h2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.v {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  padding: 1px 7px;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  white-space: nowrap;
+}
+.lbl {
+  margin: 12px 0 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.lbl:first-of-type { margin-top: 0; }
+.card p { margin: 8px 0; font-size: 14px; }
+
+pre {
+  margin: 0 0 8px;
+  padding: 10px 12px;
+  background: var(--code-bg);
+  color: var(--code-fg);
+  border-radius: 6px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  tab-size: 4;
+}
+pre code { font: inherit; background: none; padding: 0; color: inherit; }
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--accent-soft);
+  color: var(--fg);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.k { color: var(--c-k); }
+.s { color: var(--c-s); }
+.c { color: var(--c-c); font-style: italic; }
+.t { color: var(--c-t); }
+.n { color: var(--c-n); }
+.a { color: var(--c-a); }
+
+.tw { overflow-x: auto; margin: 8px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 5px 8px 5px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { font-variant-numeric: tabular-nums; }
+td code { white-space: nowrap; }
+
+ul.rules { margin: 8px 0 0; padding-left: 18px; font-size: 14px; }
+ul.rules li { margin: 4px 0; }
+
+footer { margin-top: 8px; color: var(--muted); font-size: 13px; }
+@media (prefers-reduced-motion: no-preference) {
+  nav a { transition: border-color 0.15s, color 0.15s; }
+}
+</style>
+
+<div class="wrap">
+<header>
+  <h1><span class="mark">TS</span> TypeScript Syntax Cheat Sheet</h1>
+  <p class="lede">The type system and everyday syntax in one place: inference, narrowing, generics, utility types and the runtime boundaries types cannot cross.</p>
+  <nav aria-label="Sections">
+    <a href="#structure">Structure</a>
+    <a href="#types">Types</a>
+    <a href="#variables">Variables</a>
+    <a href="#narrowing">Narrowing</a>
+    <a href="#strings">Strings</a>
+    <a href="#flow">Control flow</a>
+    <a href="#arrays">Arrays</a>
+    <a href="#objects">Objects</a>
+    <a href="#functions">Functions</a>
+    <a href="#classes">Classes</a>
+    <a href="#unions">Unions</a>
+    <a href="#generics">Generics</a>
+    <a href="#utility">Utility types</a>
+    <a href="#enums">Enums</a>
+    <a href="#async">Async</a>
+    <a href="#modules">Modules</a>
+    <a href="#gotchas">Gotchas</a>
+  </nav>
+</header>
+
+<main class="sheet">
+<section class="card" id="structure">
+  <h2>Program structure</h2>
+<pre><code>// tsconfig.json
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "noUncheckedIndexedAccess": true
+  }
+}</code></pre><pre class="sh"><code>npm install --save-dev typescript tsx
+npx tsc --init
+npx tsc                    # type-check and emit JavaScript
+npx tsx src/main.ts        # run TypeScript directly</code></pre><ul class="rules">
+<li>TypeScript compiles to JavaScript. Types are erased and do not exist at runtime.</li>
+<li>Use <code>strict</code> in <code>tsconfig.json</code>; it enables null checks and other safety rules.</li>
+<li>Source files use <code>.ts</code> or <code>.tsx</code>; declarations use <code>.d.ts</code>.</li>
+<li>Types catch mistakes at build time. They do not validate JSON or user input at runtime.</li>
+</ul>
+</section>
+
+<section class="card" id="types">
+  <h2>Types &amp; literals</h2>
+<div class="tw"><table><thead><tr><th>Type</th><th>Meaning</th></tr></thead><tbody><tr><td><code>string</code></td><td>text, always UTF-16</td></tr><tr><td><code>number</code></td><td>IEEE-754 double; no separate int</td></tr><tr><td><code>boolean</code></td><td><code>true</code> / <code>false</code></td></tr><tr><td><code>bigint</code></td><td>arbitrary precision; <code>10n</code></td></tr><tr><td><code>symbol</code></td><td>unique property key</td></tr><tr><td><code>null</code> / <code>undefined</code></td><td>explicit absence, under strict null checks</td></tr><tr><td><code>unknown</code></td><td>safe top type; must be narrowed before use</td></tr><tr><td><code>any</code></td><td>opts out of checking; avoid at boundaries</td></tr><tr><td><code>never</code></td><td>no possible value; exhaustive checks</td></tr><tr><td><code>void</code></td><td>function returns no useful value</td></tr></tbody></table></div><pre><code>let s: string = "hi";
+let n: number = 42;
+let big: bigint = 10n;
+let ok: boolean = true;
+let nothing: null = null;
+let missing: undefined = undefined;
+
+let payload: unknown = JSON.parse('{"id":1}');
+// payload.id;                 // error: narrow first
+if (typeof payload === "object" &amp;&amp; payload !== null) {
+    // payload is object here; cast to a known shape
+}</code></pre><ul class="rules">
+<li><code>unknown</code> is the safe alternative to <code>any</code> for untrusted input.</li>
+<li><code>never</code> is useful in exhaustive checks; it has no values.</li>
+<li>Use <code>Number.isInteger</code> and <code>Number.isFinite</code> for runtime numeric checks.</li>
+</ul>
+</section>
+
+<section class="card" id="variables">
+  <h2>Variables &amp; inference</h2>
+<pre><code>const name = "Ada";             // literal type "Ada"
+let age = 36;                   // number
+const ids = [1, 2] as const;    // readonly [1, 2]
+let user: { name: string; age?: number } = { name: "Ada" };
+
+const el = document.querySelector("#app")!;  // non-null assertion
+const value = input as string;               // assertion, no runtime check
+
+const config = { mode: "dark" } satisfies Config; // 4.9+
+// config.mode is "dark", and Config is checked</code></pre><ul class="rules">
+<li>Prefer <code>const</code>; use <code>let</code> only when reassigning. Avoid <code>var</code>.</li>
+<li>TypeScript infers local types. Annotate public function boundaries and empty collections.</li>
+<li><code>as</code> and <code>!</code> are assertions, not validation. They can hide runtime failures.</li>
+<li><code>satisfies</code> checks a value against a type without widening its inferred literal type.</li>
+</ul>
+</section>
+
+<section class="card" id="narrowing">
+  <h2>Narrowing &amp; unions</h2>
+<pre><code>function format(value: string | number | null): string {
+    if (value === null) return "";
+    if (typeof value === "number") return value.toFixed(2);
+    return value.toUpperCase();
+}
+
+type Shape =
+    | { kind: "circle"; r: number }
+    | { kind: "square"; s: number };
+
+function area(shape: Shape): number {
+    switch (shape.kind) {
+        case "circle": return Math.PI * shape.r ** 2;
+        case "square": return shape.s ** 2;
+        default: {
+            const exhaustive: never = shape;
+            return exhaustive;
+        }
+    }
+}</code></pre><ul class="rules">
+<li>Narrow with <code>typeof</code>, <code>in</code>, <code>instanceof</code>, equality and truthiness.</li>
+<li>A discriminated union needs a shared literal field, usually <code>kind</code> or <code>type</code>.</li>
+<li>The <code>never</code> assignment proves every case is handled.</li>
+<li>Prefer <code>===</code> to <code>==</code>; loose equality performs coercion.</li>
+</ul>
+</section>
+
+<section class="card" id="strings">
+  <h2>Strings &amp; templates</h2>
+<pre><code>const s = "TypeScript";
+s.length;                 // 10
+s.toUpperCase();          // "TYPESCRIPT"
+s.slice(0, 4);            // "Type"
+s.includes("Script");     // true
+
+const who = "Ada";
+`${who} has ${s.length} characters`; // "Ada has 10 characters"
+
+type Route = `/users/${string}`;     // template literal type
+const legacy = String.raw`C:	empile`; // backslashes preserved</code></pre><ul class="rules">
+<li>Strings are immutable UTF-16 sequences. There is no separate character type.</li>
+<li>Template literals interpolate with <code>${...}</code> and can span multiple lines.</li>
+<li>Template literal types model string patterns at compile time.</li>
+<li>Use <code>String()</code> or a template literal for conversion; avoid relying on <code>+</code> with mixed types.</li>
+</ul>
+</section>
+
+<section class="card" id="flow">
+  <h2>Control flow</h2>
+<pre><code>if (ok) {
+    // ...
+} else if (fallback) {
+    // ...
+} else {
+    // ...
+}
+
+switch (status) {
+    case "ok":
+        break;
+    case "error":
+        throw new Error("failed");
+    default:
+        break;
+}
+
+for (const item of items) { }
+for (const key in obj) {
+    if (!Object.hasOwn(obj, key)) continue;
+}
+
+while (cond) { }
+do { } while (cond);
+
+try {
+    risky();
+} catch (error: unknown) {
+    if (error instanceof Error) console.error(error.message);
+} finally {
+    cleanup();
+}</code></pre><ul class="rules">
+<li><code>for...of</code> iterates values; <code>for...in</code> iterates enumerable keys.</li>
+<li><code>switch</code> falls through until <code>break</code>; return or break deliberately.</li>
+<li><code>catch</code> is <code>unknown</code> under strict settings; narrow before reading properties.</li>
+<li><code>Object.hasOwn</code> is safer than the <code>in</code> operator for own-property checks.</li>
+</ul>
+</section>
+
+<section class="card" id="arrays">
+  <h2>Arrays &amp; tuples</h2>
+<pre><code>const names: string[] = ["a", "b"];
+const matrix: number[][] = [[1, 2], [3, 4]];
+const pair: [string, number] = ["a", 1];
+const optional: [string, number?] = ["a"];
+const rest: [string, ...number[]] = ["a", 1, 2];
+const readonlyNames: readonly string[] = ["a"];
+
+names.push("c");
+names.map((name) =&gt; name.toUpperCase());
+const [first, second] = pair;       // string, number
+const literal = ["a", 1] as const;  // readonly ["a", 1]</code></pre><ul class="rules">
+<li>Arrays are homogeneous. Tuples have a fixed shape and positional types.</li>
+<li><code>readonly</code> arrays prevent mutation at compile time; it is shallow.</li>
+<li><code>noUncheckedIndexedAccess</code> makes <code>arr[0]</code> possibly <code>undefined</code>. Handle it.</li>
+<li><code>as const</code> preserves literal and readonly modifiers in the inferred type.</li>
+</ul>
+</section>
+
+<section class="card" id="objects">
+  <h2>Objects &amp; interfaces</h2>
+<pre><code>interface User {
+    id: number;
+    name: string;
+    email?: string;
+    readonly createdAt: Date;
+}
+
+type Point = { x: number; y: number };
+type Scores = Record&lt;string, number&gt;;
+
+const user: User = {
+    id: 1,
+    name: "Ada",
+    createdAt: new Date(),
+};
+user.name = "Grace";
+// user.id = 2;            // error: readonly
+
+const point: Point = { x: 1, y: 2 };</code></pre><ul class="rules">
+<li><code>interface</code> can be extended and merged; <code>type</code> is better for unions and mapped types.</li>
+<li><code>?</code> means the property may be absent; <code>readonly</code> is compile-time only.</li>
+<li>Object literals get excess-property checks; a variable with extra fields can still be assignable structurally.</li>
+<li>Index signatures such as <code>Record&lt;string, number&gt;</code> describe dynamic keys.</li>
+</ul>
+</section>
+
+<section class="card" id="functions">
+  <h2>Functions</h2>
+<pre><code>function add(a: number, b: number): number {
+    return a + b;
+}
+const mul = (a: number, b: number): number =&gt; a * b;
+
+function greet(name: string, greeting = "Hello"): string {
+    return `${greeting}, ${name}`;
+}
+function sum(...nums: number[]): number {
+    return nums.reduce((total, n) =&gt; total + n, 0);
+}
+
+type Handler = (event: Event) =&gt; void;
+const onClick: Handler = (event) =&gt; console.log(event.type);
+
+function parse(value: string): string;
+function parse(value: number): number;
+function parse(value: string | number) { return value; }</code></pre><ul class="rules">
+<li>Annotate parameters and public return types; infer local return types.</li>
+<li>Optional parameters use <code>?</code>; default parameters are already optional.</li>
+<li>Overloads describe multiple call signatures, with one implementation signature.</li>
+<li>Functions are values; a function type is written <code>(arg: T) =&gt; R</code>.</li>
+</ul>
+</section>
+
+<section class="card" id="classes">
+  <h2>Classes</h2>
+<pre><code>class User {
+    readonly id: number;
+    private email: string;
+    #token: string;
+
+    constructor(id: number, email: string, token: string) {
+        this.id = id;
+        this.email = email;
+        this.#token = token;
+    }
+
+    get contact(): string { return this.email; }
+    greet(): string { return `User ${this.id}`; }
+}
+
+class Admin extends User {
+    constructor(
+        id: number,
+        email: string,
+        token: string,
+        public level: number,
+    ) {
+        super(id, email, token);
+    }
+    override greet(): string { return `Admin ${this.level}`; }
+}</code></pre><ul class="rules">
+<li><code>private</code> is compile-time only; <code>#field</code> is runtime-private.</li>
+<li>Parameter properties such as <code>public level</code> declare and assign a field.</li>
+<li><code>readonly</code> can be assigned in the constructor only; <code>override</code> catches base-class drift.</li>
+<li>Use <code>abstract</code> for a base that must be subclassed and cannot be instantiated.</li>
+</ul>
+</section>
+
+<section class="card" id="unions">
+  <h2>Unions &amp; intersections</h2>
+<pre><code>type Status = "idle" | "loading" | "error";
+type Result&lt;T&gt; =
+    | { ok: true; value: T }
+    | { ok: false; error: string };
+
+type Admin = User &amp; { level: number };
+
+function handle&lt;T&gt;(result: Result&lt;T&gt;): void {
+    if (result.ok) {
+        console.log(result.value);
+    } else {
+        console.error(result.error);
+    }
+}</code></pre><ul class="rules">
+<li>A union means one of the alternatives; narrow before using alternative-specific fields.</li>
+<li>An intersection combines requirements; <code>A &amp; B</code> must satisfy both.</li>
+<li>Discriminated unions plus <code>never</code> give exhaustive, type-safe branching.</li>
+<li>Use <code>keyof</code> to turn object keys into a union of string literals.</li>
+</ul>
+</section>
+
+<section class="card" id="generics">
+  <h2>Generics</h2>
+<pre><code>function first&lt;T&gt;(items: T[]): T | undefined {
+    return items[0];
+}
+
+function pick&lt;T, K extends keyof T&gt;(obj: T, key: K): T[K] {
+    return obj[key];
+}
+
+type Box&lt;T&gt; = { value: T };
+const box: Box&lt;string&gt; = { value: "x" };
+
+function tuple&lt;T extends readonly unknown[]&gt;(...args: T): T {
+    return args;
+}
+const pair = tuple("a", 1); // [string, number]</code></pre><p class="lbl">Const type parameters <span class="v">5.0+</span></p><pre><code>function literals&lt;const T extends readonly string[]&gt;(...values: T): T {
+    return values;
+}
+const modes = literals("light", "dark"); // readonly ["light", "dark"]</code></pre><ul class="rules">
+<li>Generics preserve the relationship between input and output types.</li>
+<li>Constraints use <code>extends</code>; defaults use <code>=</code>.</li>
+<li>Use <code>keyof</code>, <code>typeof</code> and indexed access to derive types from values.</li>
+<li><code>const</code> type parameters preserve literal types without requiring <code>as const</code> at the call site.</li>
+</ul>
+</section>
+
+<section class="card" id="utility">
+  <h2>Utility types</h2>
+<div class="tw"><table><thead><tr><th>Utility</th><th>Result</th></tr></thead><tbody><tr><td><code>Partial&lt;T&gt;</code></td><td>all properties optional</td></tr><tr><td><code>Required&lt;T&gt;</code></td><td>all properties required</td></tr><tr><td><code>Readonly&lt;T&gt;</code></td><td>all properties readonly</td></tr><tr><td><code>Pick&lt;T, K&gt;</code></td><td>only the selected keys</td></tr><tr><td><code>Omit&lt;T, K&gt;</code></td><td>all keys except the selected ones</td></tr><tr><td><code>Record&lt;K, V&gt;</code></td><td>an object with keys K and values V</td></tr><tr><td><code>Exclude&lt;T, U&gt;</code></td><td>union members assignable to U removed</td></tr><tr><td><code>Extract&lt;T, U&gt;</code></td><td>union members assignable to U kept</td></tr><tr><td><code>ReturnType&lt;F&gt;</code></td><td>the return type of a function</td></tr><tr><td><code>Parameters&lt;F&gt;</code></td><td>the parameter tuple of a function</td></tr><tr><td><code>NonNullable&lt;T&gt;</code></td><td>T without null and undefined</td></tr><tr><td><code>Awaited&lt;T&gt;</code></td><td>the resolved type of a promise</td></tr></tbody></table></div><pre><code>type UserPatch = Partial&lt;User&gt;;
+type PublicUser = Omit&lt;User, "email"&gt;;
+type ById = Record&lt;number, User&gt;;
+type Fn = (x: string) =&gt; number;
+type R = ReturnType&lt;Fn&gt;;        // number
+type P = Parameters&lt;Fn&gt;;        // [x: string]</code></pre><p>Utility types are built from mapped and conditional types. They are erased like every other type.</p>
+</section>
+
+<section class="card" id="enums">
+  <h2>Enums &amp; literal objects</h2>
+<pre><code>enum Direction { Up, Down }
+enum Role { Admin = "ADMIN", User = "USER" }
+
+const Colors = {
+    Red: "#f00",
+    Blue: "#00f",
+} as const;
+
+type Color = typeof Colors[keyof typeof Colors];
+const red: Color = Colors.Red;</code></pre><ul class="rules">
+<li>Numeric enums are reverse-mapped and emit runtime code. String enums are easier to debug.</li>
+<li><code>const enum</code> is inlined and can break under isolated modules or declaration emit; prefer a const object.</li>
+<li>For a small fixed set, a union of string literals is often simpler than an enum.</li>
+<li><code>typeof Colors[keyof typeof Colors]</code> derives the union of the object's values.</li>
+</ul>
+</section>
+
+<section class="card" id="async">
+  <h2>Async &amp; promises</h2>
+<pre><code>async function load(id: string): Promise&lt;User&gt; {
+    const res = await fetch(`/api/users/${id}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return (await res.json()) as User;
+}
+
+const [a, b] = await Promise.all([load("1"), load("2")]);
+const first = await Promise.race([load("1"), load("2")]);
+
+try {
+    await load("3");
+} catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "unknown";
+    console.error(message);
+}</code></pre><ul class="rules">
+<li><code>async</code> functions always return a <code>Promise</code>; <code>await</code> unwraps one.</li>
+<li><code>Promise.all</code> fails fast; <code>Promise.allSettled</code> waits for every result.</li>
+<li>Do not leave promises floating. Await, return, or attach a catch handler.</li>
+<li>Use <code>AbortController</code> for cancellation and a timeout; a promise has no built-in timeout.</li>
+</ul>
+</section>
+
+<section class="card" id="modules">
+  <h2>Modules &amp; declarations</h2>
+<pre><code>import { readFile } from "node:fs/promises";
+import type { User } from "./types.js";
+export type { User };
+export const VERSION = "1.0";
+
+export default class Client {
+    constructor(private readonly baseUrl: string) {}
+}
+
+// declarations.d.ts
+declare module "legacy-lib" {
+    export function run(input: string): void;
+}</code></pre><ul class="rules">
+<li><code>import type</code> is erased and avoids a runtime import.</li>
+<li>With NodeNext, relative ESM imports include the emitted <code>.js</code> extension.</li>
+<li><code>.d.ts</code> files describe types for JavaScript or external packages.</li>
+<li>Prefer ES modules. <code>export =</code> and <code>import = require()</code> are legacy CommonJS forms.</li>
+</ul>
+</section>
+
+<section class="card" id="gotchas">
+  <h2>Common gotchas</h2>
+<ul class="rules">
+<li><code>any</code> spreads silently through a codebase. Use <code>unknown</code> at boundaries and narrow.</li>
+<li><code>==</code> coerces types; use <code>===</code> unless you deliberately want coercion.</li>
+<li><code>Object.keys(obj)</code> is typed as <code>string[]</code>, not <code>keyof typeof obj</code>.</li>
+<li><code>readonly</code> is shallow; a readonly array can still contain mutable objects.</li>
+<li>Enums and <code>const enum</code> have runtime or build-mode caveats; const objects are often simpler.</li>
+<li><code>as</code> does not validate JSON. Use a runtime schema at the boundary.</li>
+<li>An optional property (<code>x?: T</code>) and <code>x: T | undefined</code> differ under <code>exactOptionalPropertyTypes</code>.</li>
+<li>Structural typing can accept extra fields through a variable even when an object literal would be rejected.</li>
+</ul><p class="lbl">Naming conventions</p><div class="tw"><table><thead><tr><th>Thing</th><th>Style</th></tr></thead><tbody><tr><td>types, interfaces, classes</td><td><code>PascalCase</code></td></tr><tr><td>variables, functions</td><td><code>camelCase</code></td></tr><tr><td>constants</td><td><code>UPPER_SNAKE</code></td></tr><tr><td>React components</td><td><code>PascalCase</code></td></tr><tr><td>files</td><td>follow the project; often kebab-case or camelCase</td></tr></tbody></table></div>
+</section>
+
+</main>
+
+<footer>Syntax shown for TypeScript 5.7 and later. Utility types and strictness options depend on the compiler version and tsconfig.</footer>
+</div>
+
+<script>
+(function () {
+  var re = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(`(?:\\.|[^`\\])*`|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(@[A-Za-z]\w*)|\b(abstract|any|as|asserts|async|await|bigint|boolean|break|case|catch|class|const|continue|declare|default|delete|do|else|enum|export|extends|false|finally|for|from|function|get|if|implements|import|in|infer|instanceof|interface|is|keyof|let|module|namespace|never|new|null|number|object|of|override|private|protected|public|readonly|return|satisfies|set|static|string|super|switch|symbol|this|throw|true|try|type|typeof|undefined|unique|unknown|using|var|void|while|with|yield)\b|\b(\d[\d_]*(?:\.\d+)?(?:[eE][+-]?\d+)?[LlFfDd]?)\b|\b([A-Z][A-Za-z0-9_]*)\b/g;
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  var blocks = document.querySelectorAll("pre:not(.sh) code");
+  for (var i = 0; i < blocks.length; i++) {
+    var el = blocks[i], src = el.textContent, out = "", last = 0, m;
+    re.lastIndex = 0;
+    while ((m = re.exec(src)) !== null) {
+      out += esc(src.slice(last, m.index));
+      var cls = m[1] ? "c" : m[2] ? "s" : m[3] ? "a" : m[4] ? "k" : m[5] ? "n" : "t";
+      out += '<span class="' + cls + '">' + esc(m[0]) + "</span>";
+      last = re.lastIndex;
+    }
+    out += esc(src.slice(last));
+    el.innerHTML = out;
+  }
+})();
+</script>
+
+</body></html>
